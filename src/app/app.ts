@@ -1,0 +1,13 @@
+import { Component } from '@angular/core';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { SharedModule } from './shared/shared.module';
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, SharedModule],
+  templateUrl: './app.html',
+  styleUrl: './app.scss'
+})
+export class App {
+  protected readonly title = 'taskboard-pro';
+}
