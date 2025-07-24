@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
+import { HttpClientModule } from '@angular/common/http';
+import { Store } from '@ngrx/store';
 
 // Material Modules
 import { MatCardModule } from '@angular/material/card';
@@ -19,12 +19,14 @@ import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 
-// Store
-import { authReducer } from './store/auth.reducer';
-import { AuthEffects } from './store/auth.effects';
+// Services
+import { ApiService } from '../../core/services/api.service';
+import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 
-// Core Module
-import { CoreModule } from '../../core/core.module';
+
+
+
 
 // Routes
 import { authRoutes } from './auth.routes';
@@ -38,10 +40,8 @@ import { authRoutes } from './auth.routes';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    HttpClientModule,
     RouterModule.forChild(authRoutes),
-    StoreModule.forFeature('auth', authReducer),
-    EffectsModule.forFeature([AuthEffects]),
-    CoreModule,
 
     // Material Modules
     MatCardModule,
@@ -51,6 +51,12 @@ import { authRoutes } from './auth.routes';
     MatCheckboxModule,
     MatProgressSpinnerModule,
     MatIconModule
+  ],
+  providers: [
+    Store,
+    ApiService,
+    AuthService,
+    NotificationService
   ]
 })
 export class AuthModule { }

@@ -27,7 +27,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   ) {
     this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
     this.error$ = this.store.select(AuthSelectors.selectError);
-    this.success$ = this.store.select(AuthSelectors.selectError); // Временно используем error для success
+    this.success$ = this.store.select(AuthSelectors.selectSuccess);
   }
 
   ngOnInit(): void {
@@ -69,15 +69,15 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   getErrorMessage(controlName: string): string {
     const control = this.forgotPasswordForm.get(controlName);
-    
+
     if (control?.hasError('required')) {
       return 'Это поле обязательно';
     }
-    
+
     if (controlName === 'email' && control?.hasError('email')) {
       return 'Введите корректный email';
     }
-    
+
     return '';
   }
 
@@ -91,4 +91,4 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     this.forgotPasswordForm.reset();
     this.clearError();
   }
-} 
+}

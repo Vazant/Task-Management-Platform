@@ -2,25 +2,47 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
+import { ProjectsEffects } from './features/projects/store/projects.effects';
+import { AuthEffects } from './features/auth/store/auth.effects';
+import { TasksEffects } from './features/tasks/store/tasks.effects';
+import { TimeTrackingEffects } from './features/time-tracking/store/time-tracking.effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
+import { projectsReducer } from './features/projects/store/projects.reducer';
+import { tasksReducer } from './features/tasks/store/tasks.reducer';
+import { timeTrackingReducer } from './features/time-tracking/store/time-tracking.reducer';
 import { authReducer } from './features/auth/store/auth.reducer';
 
 // Core Module
 import { CoreModule } from './core/core.module';
+
+// Interceptors
+import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { errorInterceptor } from './core/interceptors/error.interceptor';
+import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+
+// Material Design
+import { provideNativeDateAdapter } from '@angular/material/core';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(
+      withInterceptors([authInterceptor, errorInterceptor, loadingInterceptor])
+    ),
+    provideNativeDateAdapter(),
     provideStore({
       auth: authReducer,
+      projects: projectsReducer,
+      tasks: tasksReducer,
+      timeTracking: timeTrackingReducer,
     }),
-    provideEffects(),
+    provideEffects([AuthEffects, ProjectsEffects, TasksEffects, TimeTrackingEffects]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: false,

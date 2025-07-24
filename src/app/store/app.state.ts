@@ -8,4 +8,4 @@ export interface AppState {
   projects: ProjectsState;
   tasks: TasksState;
   timeTracking: TimeTrackingState;
-} 
+}

@@ -4,7 +4,7 @@ import { SharedModule } from './shared/shared.module';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, SharedModule],
+  imports: [RouterOutlet, SharedModule],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

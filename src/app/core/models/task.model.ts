@@ -29,4 +29,13 @@ export interface Label {
   name: string;
   color: string;
   projectId: string; // ref: Project
-} 
+}
+
+export interface TaskFilters {
+  status: 'all' | 'backlog' | 'in-progress' | 'done';
+  priority: 'all' | 'low' | 'medium' | 'high' | 'urgent';
+  assignee: 'all' | string;
+  project: 'all' | string;
+}
+
+export type TaskSortOption = 'created' | 'updated' | 'priority' | 'dueDate' | 'title';

@@ -8,10 +8,3 @@ export interface ProjectsState {
   selectedProjectId: string | null;
 }
 
-export const initialState: ProjectsState = {
-  entities: {},
-  ids: [],
-  loading: false,
-  error: null,
-  selectedProjectId: null
-}; 

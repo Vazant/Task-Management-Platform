@@ -1,5 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* Material Design */
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
 
 * {
   box-sizing: border-box;
@@ -33,6 +37,21 @@ a {
 
 button {
   font-family: inherit;
+}
+
+/* Material Design customizations */
+.mat-mdc-card {
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-raised-button {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
 }
 
 /* Utility classes */

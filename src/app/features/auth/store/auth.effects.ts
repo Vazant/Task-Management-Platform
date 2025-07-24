@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
 import { map, mergeMap, catchError, tap } from 'rxjs/operators';
@@ -7,15 +7,14 @@ import { Router } from '@angular/router';
 import * as AuthActions from './auth.actions';
 import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
+import { User } from '../../../core/models';
 
 @Injectable()
 export class AuthEffects {
-  constructor(
-    private actions$: Actions,
-    private authService: AuthService,
-    private notificationService: NotificationService,
-    private router: Router
-  ) {}
+  private actions$ = inject(Actions);
+  private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
+  private router = inject(Router);
 
   login$ = createEffect(() => {
     return this.actions$.pipe(
@@ -28,15 +27,18 @@ export class AuthEffects {
               response.token,
               response.refreshToken
             );
+            this.notificationService.success('Успех', 'Вы успешно вошли в систему');
             return AuthActions.loginSuccess({
               user: response.user,
               token: response.token,
               refreshToken: response.refreshToken
             });
           }),
-          catchError((error) =>
-            of(AuthActions.loginFailure({ error: error.message }))
-          )
+          catchError((error) => {
+            const errorMessage = error.message || 'Ошибка входа в систему';
+            this.notificationService.error('Ошибка', errorMessage);
+            return of(AuthActions.loginFailure({ error: errorMessage }));
+          })
         )
       )
     );
@@ -53,15 +55,18 @@ export class AuthEffects {
               response.token,
               response.refreshToken
             );
+            this.notificationService.success('Успех', 'Регистрация прошла успешно');
             return AuthActions.registerSuccess({
               user: response.user,
               token: response.token,
               refreshToken: response.refreshToken
             });
           }),
-          catchError((error) =>
-            of(AuthActions.registerFailure({ error: error.message }))
-          )
+          catchError((error) => {
+            const errorMessage = error.message || 'Ошибка регистрации';
+            this.notificationService.error('Ошибка', errorMessage);
+            return of(AuthActions.registerFailure({ error: errorMessage }));
+          })
         )
       )
     );
@@ -88,9 +93,11 @@ export class AuthEffects {
             localStorage.setItem('refreshToken', refreshToken);
             return AuthActions.refreshTokenSuccess({ token, refreshToken });
           }),
-          catchError((error) =>
-            of(AuthActions.refreshTokenFailure({ error: error.message }))
-          )
+          catchError((error) => {
+            const errorMessage = error.message || 'Ошибка обновления токена';
+            this.notificationService.error('Ошибка', errorMessage);
+            return of(AuthActions.refreshTokenFailure({ error: errorMessage }));
+          })
         )
       )
     );
@@ -104,9 +111,11 @@ export class AuthEffects {
           map(() => AuthActions.forgotPasswordSuccess({
             message: 'Инструкции отправлены на email'
           })),
-          catchError((error) =>
-            of(AuthActions.forgotPasswordFailure({ error: error.message }))
-          )
+          catchError((error) => {
+            const errorMessage = error.message || 'Ошибка восстановления пароля';
+            this.notificationService.error('Ошибка', errorMessage);
+            return of(AuthActions.forgotPasswordFailure({ error: errorMessage }));
+          })
         )
       )
     );
@@ -120,9 +129,11 @@ export class AuthEffects {
           map(() => AuthActions.resetPasswordSuccess({
             message: 'Пароль успешно изменен'
           })),
-          catchError((error) =>
-            of(AuthActions.resetPasswordFailure({ error: error.message }))
-          )
+          catchError((error) => {
+            const errorMessage = error.message || 'Ошибка сброса пароля';
+            this.notificationService.error('Ошибка', errorMessage);
+            return of(AuthActions.resetPasswordFailure({ error: errorMessage }));
+          })
         )
       )
     );
@@ -133,7 +144,6 @@ export class AuthEffects {
     return this.actions$.pipe(
       ofType(AuthActions.loginSuccess),
       tap(() => {
-        this.notificationService.success('Успех', 'Вы успешно вошли в систему');
         this.router.navigate(['/dashboard']);
       })
     );
@@ -143,22 +153,7 @@ export class AuthEffects {
     return this.actions$.pipe(
       ofType(AuthActions.registerSuccess),
       tap(() => {
-        this.notificationService.success('Успех', 'Регистрация прошла успешно');
         this.router.navigate(['/dashboard']);
-      })
-    );
-  }, { dispatch: false });
-
-  // Error handling effects
-  authFailure$ = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(
-        AuthActions.loginFailure,
-        AuthActions.registerFailure,
-        AuthActions.refreshTokenFailure
-      ),
-      tap(({ error }) => {
-        this.notificationService.error('Ошибка', error);
       })
     );
   }, { dispatch: false });

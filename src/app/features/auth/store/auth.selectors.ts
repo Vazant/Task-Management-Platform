@@ -46,4 +46,10 @@ export const selectUserRole = createSelector(
 export const selectUserEmail = createSelector(
   selectUser,
   (user) => user?.email
-); 
+);
+
+// Временный селектор для success сообщений (можно расширить state позже)
+export const selectSuccess = createSelector(
+  selectAuthState,
+  (state) => state.error // Временно используем error для success
+);
