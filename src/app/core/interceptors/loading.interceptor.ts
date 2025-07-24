@@ -1,13 +1,18 @@
 import { HttpInterceptorFn } from '@angular/common/http';
+import { inject } from '@angular/core';
 import { finalize } from 'rxjs/operators';
+import { NotificationService } from '@services';
 
 export const loadingInterceptor: HttpInterceptorFn = (request, next) => {
-  // Здесь можно добавить логику для показа/скрытия спиннера
-  console.log('Loading started for:', request.url);
+  const notificationService = inject(NotificationService);
+
+  // Показываем индикатор загрузки
+  notificationService.info('Загрузка', 'Выполняется запрос...', 0);
 
   return next(request).pipe(
     finalize(() => {
-      console.log('Loading finished for:', request.url);
+      // Скрываем индикатор загрузки
+      notificationService.clearAll();
     })
   );
 };

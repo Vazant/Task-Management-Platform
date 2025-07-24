@@ -4,13 +4,13 @@ import { of } from 'rxjs';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 
 import * as TasksActions from './tasks.actions';
-import { NotificationService } from '../../../core/services/notification.service';
-import { Task } from '../../../core/models';
+import { NotificationService } from '@services';
+import { Task } from '@models';
 
 @Injectable()
 export class TasksEffects {
-  private actions$ = inject(Actions);
-  private notificationService = inject(NotificationService);
+  private readonly actions$ = inject(Actions);
+  private readonly notificationService = inject(NotificationService);
 
   // Загрузка задач
   loadTasks$ = createEffect(() =>

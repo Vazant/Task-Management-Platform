@@ -1,4 +1,4 @@
-import { Project } from '../../../core/models';
+import { Project } from '@models';
 
 export interface ProjectsState {
   entities: { [id: string]: Project };

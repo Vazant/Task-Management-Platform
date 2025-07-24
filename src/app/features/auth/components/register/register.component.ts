@@ -2,12 +2,12 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+
 
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
-import { RegisterRequest } from '../../../../core/models';
-import { ValidationUtils } from '../../../../core/utils/validation.utils';
+import { RegisterRequest } from '@models';
+import { ValidationUtils } from '@utils';
 
 @Component({
   selector: 'app-register',
@@ -21,11 +21,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
   error$!: Observable<string | null>;
   hidePassword = true;
   hideConfirmPassword = true;
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
-    private fb: FormBuilder,
-    private store: Store
+    private readonly fb: FormBuilder,
+    private readonly store: Store
   ) {
     this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
     this.error$ = this.store.select(AuthSelectors.selectError);
@@ -60,13 +60,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
     }, { validators: this.passwordMatchValidator });
   }
 
-  private passwordStrengthValidator(control: AbstractControl): { [key: string]: any } | null {
+  private passwordStrengthValidator(control: AbstractControl): { [key: string]: boolean } | null {
     const password = control.value;
     if (!password) return null;
 
     const hasLetter = /[a-zA-Z]/.test(password);
     const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[@$!%*?&]/.test(password);
+
 
     if (!hasLetter || !hasNumber) {
       return { passwordStrength: true };
@@ -75,7 +75,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  private passwordMatchValidator(group: AbstractControl): { [key: string]: any } | null {
+  private passwordMatchValidator(group: AbstractControl): { [key: string]: boolean } | null {
     const password = group.get('password');
     const confirmPassword = group.get('confirmPassword');
 
@@ -112,11 +112,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   getErrorMessage(controlName: string): string {
     const control = this.registerForm.get(controlName);
-    
+
     if (control?.hasError('required')) {
       return 'Это поле обязательно';
     }
-    
+
     if (controlName === 'username') {
       if (control?.hasError('minlength')) {
         return 'Имя пользователя должно содержать минимум 3 символа';
@@ -128,11 +128,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
         return 'Имя пользователя может содержать только буквы, цифры и подчеркивания';
       }
     }
-    
+
     if (controlName === 'email' && control?.hasError('email')) {
       return 'Введите корректный email';
     }
-    
+
     if (controlName === 'password') {
       if (control?.hasError('minlength')) {
         return 'Пароль должен содержать минимум 8 символов';
@@ -141,22 +141,22 @@ export class RegisterComponent implements OnInit, OnDestroy {
         return 'Пароль должен содержать буквы и цифры';
       }
     }
-    
+
     if (controlName === 'confirmPassword' && control?.hasError('required')) {
       return 'Подтвердите пароль';
     }
-    
+
     if (controlName === 'agreeToTerms' && control?.hasError('required')) {
       return 'Необходимо согласиться с условиями';
     }
-    
+
     return '';
   }
 
   getPasswordStrength(): string {
     const password = this.registerForm.get('password')?.value;
     if (!password) return '';
-    
+
     return ValidationUtils.getPasswordStrength(password);
   }
 
@@ -166,7 +166,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   hasPasswordMismatch(): boolean {
-    return this.registerForm.hasError('passwordMismatch') && 
+    return this.registerForm.hasError('passwordMismatch') &&
     (this.registerForm.get('confirmPassword')?.touched ?? false);
   }
-} 
+}

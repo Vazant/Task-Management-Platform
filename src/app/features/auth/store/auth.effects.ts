@@ -5,16 +5,15 @@ import { map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 import * as AuthActions from './auth.actions';
-import { AuthService } from '../../../core/services/auth.service';
-import { NotificationService } from '../../../core/services/notification.service';
-import { User } from '../../../core/models';
+import { AuthService, NotificationService } from '@services';
+
 
 @Injectable()
 export class AuthEffects {
-  private actions$ = inject(Actions);
-  private authService = inject(AuthService);
-  private notificationService = inject(NotificationService);
-  private router = inject(Router);
+  private readonly actions$ = inject(Actions);
+  private readonly authService = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly router = inject(Router);
 
   login$ = createEffect(() => {
     return this.actions$.pipe(

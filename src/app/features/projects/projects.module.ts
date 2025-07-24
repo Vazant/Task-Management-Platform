@@ -2,13 +2,11 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
-// Material Modules
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-
 // Components
 import { ProjectsComponent } from './components/projects/projects.component';
+
+// Shared Module
+import { SharedModule } from '../../shared/shared.module';
 
 // Routes
 import { projectsRoutes } from './projects.routes';
@@ -20,11 +18,7 @@ import { projectsRoutes } from './projects.routes';
   imports: [
     CommonModule,
     RouterModule.forChild(projectsRoutes),
-    
-    // Material Modules
-    MatCardModule,
-    MatButtonModule,
-    MatIconModule
+    SharedModule
   ]
 })
-export class ProjectsModule { } 
+export class ProjectsModule { }

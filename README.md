@@ -51,6 +51,53 @@
 
 ## 🏗 Архитектура
 
+### Импорты и структура
+
+#### Path Mapping
+Проект использует TypeScript path mapping для упрощения импортов:
+
+```json
+// tsconfig.json
+{
+  "paths": {
+    "@app/*": ["app/*"],
+    "@core/*": ["app/core/*"],
+    "@shared/*": ["app/shared/*"],
+    "@features/*": ["app/features/*"],
+    "@models": ["app/core/models"],
+    "@services": ["app/core/services"],
+    "@utils": ["app/core/utils"]
+  }
+}
+```
+
+#### Barrel Exports
+Централизованные точки доступа для импортов:
+
+```typescript
+// Правильно
+import { User, Task } from '@models';
+import { AuthService, NotificationService } from '@services';
+import { ValidationUtils } from '@utils';
+
+// Неправильно
+import { User } from '../../../core/models/user.model';
+import { AuthService } from '../../../core/services/auth.service';
+```
+
+#### Современные паттерны
+- **Inject() функция** вместо constructor DI
+- **Standalone компоненты** вместо NgModules
+- **Строгая типизация** без any
+- **OnPush Change Detection** для производительности
+
+#### Автоматические проверки
+```bash
+npm run check-imports  # Проверка импортов
+npm run lint          # ESLint проверка
+npm run pre-commit    # Pre-commit проверки
+```
+
 ### Структура модулей
 ```
 src/

@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { User, LoginRequest, RegisterRequest } from '../../../core/models';
+import { User, LoginRequest, RegisterRequest } from '@models';
 
 // Login Actions
 export const login = createAction(
@@ -84,4 +84,4 @@ export const resetPasswordFailure = createAction(
 );
 
 // Clear Error Action
-export const clearAuthError = createAction('[Auth] Clear Error'); 
+export const clearAuthError = createAction('[Auth] Clear Error');

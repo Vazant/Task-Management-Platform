@@ -1,6 +1,5 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 
 import { ApiService } from './services/api.service';
 import { AuthService } from './services/auth.service';
@@ -9,17 +8,14 @@ import { NotificationService } from './services/notification.service';
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule,
-    HttpClientModule
+    CommonModule
   ],
   providers: [
     ApiService,
     AuthService,
     NotificationService
   ],
-  exports: [
-    HttpClientModule
-  ]
+  exports: []
 })
 export class CoreModule {
   constructor(@Optional() @SkipSelf() parentModule: CoreModule) {

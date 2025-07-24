@@ -105,8 +105,7 @@ export const projectsReducer = createReducer(
       entities,
       ids,
       loading: false,
-      error: null,
-      selectedProjectId: state.selectedProjectId === projectId ? null : state.selectedProjectId
+      error: null
     };
   }),
 

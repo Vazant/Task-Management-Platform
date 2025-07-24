@@ -1,16 +1,15 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ApiResponse, PaginatedResponse } from '../models';
+import { ApiResponse, PaginatedResponse } from '@models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:3000/api'; // Замените на ваш API URL
-
-  constructor(private http: HttpClient) {}
+  private readonly baseUrl = 'http://localhost:3000/api'; // Замените на ваш API URL
+  private readonly http = inject(HttpClient);
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
@@ -18,7 +17,7 @@ export class ApiService {
     });
   }
 
-  get<T>(endpoint: string, params?: any): Observable<ApiResponse<T>> {
+  get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Observable<ApiResponse<T>> {
     let httpParams = new HttpParams();
     if (params) {
       Object.keys(params).forEach(key => {
@@ -34,7 +33,7 @@ export class ApiService {
     );
   }
 
-  getPaginated<T>(endpoint: string, page: number = 1, limit: number = 10, params?: any): Observable<PaginatedResponse<T>> {
+  getPaginated<T>(endpoint: string, page = 1, limit = 10, params?: Record<string, string | number | boolean>): Observable<PaginatedResponse<T>> {
     let httpParams = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
@@ -53,7 +52,7 @@ export class ApiService {
     );
   }
 
-  post<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
+  post<T>(endpoint: string, data: unknown): Observable<ApiResponse<T>> {
     return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(
@@ -61,7 +60,7 @@ export class ApiService {
     );
   }
 
-  put<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
+  put<T>(endpoint: string, data: unknown): Observable<ApiResponse<T>> {
     return this.http.put<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(
@@ -69,7 +68,7 @@ export class ApiService {
     );
   }
 
-  patch<T>(endpoint: string, data: any): Observable<ApiResponse<T>> {
+  patch<T>(endpoint: string, data: unknown): Observable<ApiResponse<T>> {
     return this.http.patch<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(
@@ -85,25 +84,36 @@ export class ApiService {
     );
   }
 
-  private handleError(error: any): Observable<never> {
+  private handleError(error: unknown): Observable<never> {
     console.error('API Error:', error);
 
     let errorMessage = 'Произошла ошибка при выполнении запроса';
 
-    if (error.error?.message) {
-      errorMessage = error.error.message;
-    } else if (error.message) {
-      errorMessage = error.message;
-    } else if (error.status === 0) {
-      errorMessage = 'Нет соединения с сервером';
-    } else if (error.status === 401) {
-      errorMessage = 'Необходима авторизация';
-    } else if (error.status === 403) {
-      errorMessage = 'Доступ запрещен';
-    } else if (error.status === 404) {
-      errorMessage = 'Ресурс не найден';
-    } else if (error.status === 500) {
-      errorMessage = 'Внутренняя ошибка сервера';
+        // Type guard для проверки типа ошибки
+    if (error && typeof error === 'object') {
+      const errorObj = error as Record<string, unknown>;
+
+      if (errorObj['error'] && typeof errorObj['error'] === 'object') {
+        const errorData = errorObj['error'] as Record<string, unknown>;
+        if (typeof errorData['message'] === 'string') {
+          errorMessage = errorData['message'];
+        }
+      } else if (typeof errorObj['message'] === 'string') {
+        errorMessage = errorObj['message'];
+      } else if (typeof errorObj['status'] === 'number') {
+        const status = errorObj['status'];
+        if (status === 0) {
+          errorMessage = 'Нет соединения с сервером';
+        } else if (status === 401) {
+          errorMessage = 'Необходима авторизация';
+        } else if (status === 403) {
+          errorMessage = 'Доступ запрещен';
+        } else if (status === 404) {
+          errorMessage = 'Ресурс не найден';
+        } else if (status === 500) {
+          errorMessage = 'Внутренняя ошибка сервера';
+        }
+      }
     }
 
     return throwError(() => ({ message: errorMessage }));

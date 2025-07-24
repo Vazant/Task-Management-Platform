@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 export interface Notification {
   id: string;
@@ -14,7 +14,7 @@ export interface Notification {
   providedIn: 'root'
 })
 export class NotificationService {
-  private notificationsSubject = new BehaviorSubject<Notification[]>([]);
+  private readonly notificationsSubject = new BehaviorSubject<Notification[]>([]);
   public notifications$ = this.notificationsSubject.asObservable();
 
   private generateId(): string {
@@ -35,7 +35,7 @@ export class NotificationService {
     if (notification.duration !== 0) {
       setTimeout(() => {
         this.removeNotification(newNotification.id);
-      }, notification.duration || 5000);
+      }, notification.duration ?? 5000);
     }
   }
 
@@ -70,4 +70,4 @@ export class NotificationService {
   getNotifications(): Notification[] {
     return this.notificationsSubject.value;
   }
-} 
+}

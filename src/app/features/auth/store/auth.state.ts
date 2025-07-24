@@ -1,4 +1,4 @@
-import { User } from '../../../core/models';
+import { User } from '@models';
 
 export interface AuthState {
   user: User | null;
@@ -9,4 +9,3 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
- 

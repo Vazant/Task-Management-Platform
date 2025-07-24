@@ -2,18 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError, switchMap } from 'rxjs/operators';
+import { map, mergeMap, catchError } from 'rxjs/operators';
 
 import * as ProjectsActions from './projects.actions';
-import * as AuthSelectors from '../../auth/store/auth.selectors';
-import { NotificationService } from '../../../core/services/notification.service';
-import { Project } from '../../../core/models';
+import { NotificationService } from '@services';
+import { Project } from '@models';
 
 @Injectable()
 export class ProjectsEffects {
-  private actions$ = inject(Actions);
-  private store = inject(Store);
-  private notificationService = inject(NotificationService);
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+  private readonly notificationService = inject(NotificationService);
 
   // Загрузка проектов
   loadProjects$ = createEffect(() =>

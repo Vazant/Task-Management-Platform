@@ -4,13 +4,13 @@ import { of } from 'rxjs';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 
 import * as TimeTrackingActions from './time-tracking.actions';
-import { NotificationService } from '../../../core/services/notification.service';
-import { TimeEntry } from '../../../core/models';
+import { NotificationService } from '@services';
+import { TimeEntry } from '@models';
 
 @Injectable()
 export class TimeTrackingEffects {
-  private actions$ = inject(Actions);
-  private notificationService = inject(NotificationService);
+  private readonly actions$ = inject(Actions);
+  private readonly notificationService = inject(NotificationService);
 
   // Загрузка записей времени
   loadTimeEntries$ = createEffect(() =>

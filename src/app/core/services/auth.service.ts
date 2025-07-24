@@ -1,16 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable, map } from 'rxjs';
-import { ApiService } from './api.service';
-import { User, LoginRequest, LoginResponse, RegisterRequest } from '../models';
+import { ApiService } from '@services';
+import { User, LoginRequest, LoginResponse, RegisterRequest } from '@models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
+  private readonly currentUserSubject = new BehaviorSubject<User | null>(null);
+  public readonly currentUser$ = this.currentUserSubject.asObservable();
+  private readonly apiService = inject(ApiService);
 
-  constructor(private apiService: ApiService) {
+  constructor() {
     this.loadUserFromStorage();
   }
 
@@ -78,14 +79,14 @@ export class AuthService {
     );
   }
 
-  forgotPassword(email: string): Observable<any> {
-    return this.apiService.post('/auth/forgot-password', { email }).pipe(
+  forgotPassword(email: string): Observable<{ message: string }> {
+    return this.apiService.post<{ message: string }>('/auth/forgot-password', { email }).pipe(
       map(response => response.data)
     );
   }
 
-  resetPassword(token: string, password: string): Observable<any> {
-    return this.apiService.post('/auth/reset-password', { token, password }).pipe(
+  resetPassword(token: string, password: string): Observable<{ message: string }> {
+    return this.apiService.post<{ message: string }>('/auth/reset-password', { token, password }).pipe(
       map(response => response.data)
     );
   }

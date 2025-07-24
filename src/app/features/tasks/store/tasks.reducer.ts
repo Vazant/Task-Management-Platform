@@ -1,6 +1,6 @@
 import { createReducer, on } from '@ngrx/store';
 import { TasksState } from './tasks.state';
-import { TaskFilters, TaskSortOption } from '../../../core/models';
+import { TaskFilters } from '@models';
 import * as TasksActions from './tasks.actions';
 
 const initialFilters: TaskFilters = {

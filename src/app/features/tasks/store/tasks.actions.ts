@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Task, TaskFilters, TaskSortOption } from '../../../core/models';
+import { Task, TaskFilters, TaskSortOption } from '@models';
 
 // Load Tasks
 export const loadTasks = createAction('[Tasks] Load Tasks');

@@ -1,4 +1,4 @@
-import { Task, TaskFilters, TaskSortOption } from '../../../core/models';
+import { Task, TaskFilters, TaskSortOption } from '@models';
 
 export interface TasksState {
   entities: { [id: string]: Task };

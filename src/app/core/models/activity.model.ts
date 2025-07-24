@@ -4,7 +4,7 @@ export interface Activity {
   userId: string; // ref: User
   projectId: string; // ref: Project
   taskId?: string; // ref: Task
-  data: any; // дополнительные данные
+  data: Record<string, unknown>; // дополнительные данные
   createdAt: Date;
 }
 
@@ -16,4 +16,4 @@ export interface TimeEntry {
   endTime?: Date;
   duration: number; // в минутах
   description?: string;
-} 
+}

@@ -8,16 +8,13 @@ import { TasksEffects } from './features/tasks/store/tasks.effects';
 import { TimeTrackingEffects } from './features/time-tracking/store/time-tracking.effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { provideAnimations } from '@angular/platform-browser/animations';
+
 
 import { routes } from './app.routes';
 import { projectsReducer } from './features/projects/store/projects.reducer';
 import { tasksReducer } from './features/tasks/store/tasks.reducer';
 import { timeTrackingReducer } from './features/time-tracking/store/time-tracking.reducer';
 import { authReducer } from './features/auth/store/auth.reducer';
-
-// Core Module
-import { CoreModule } from './core/core.module';
 
 // Interceptors
 import { authInterceptor } from './core/interceptors/auth.interceptor';
@@ -26,6 +23,9 @@ import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 
 // Material Design
 import { provideNativeDateAdapter } from '@angular/material/core';
+
+// Core Module
+import { CoreModule } from './core/core.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -50,6 +50,7 @@ export const appConfig: ApplicationConfig = {
       trace: false,
       traceLimit: 75,
     }),
+    // Core Module
     importProvidersFrom(CoreModule),
   ],
 };

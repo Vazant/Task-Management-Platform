@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { TimeEntry } from '../../../core/models';
+import { TimeEntry } from '@models';
 
 // Load Time Entries
 export const loadTimeEntries = createAction('[Time Tracking] Load Time Entries');

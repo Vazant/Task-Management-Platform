@@ -1,4 +1,4 @@
-import { TimeEntry } from '../../../core/models';
+import { TimeEntry } from '@models';
 
 export interface TimeTrackingState {
   entities: { [id: string]: TimeEntry };
@@ -17,4 +17,4 @@ export const initialState: TimeTrackingState = {
   loading: false,
   error: null,
   activeTimer: null
-}; 
+};

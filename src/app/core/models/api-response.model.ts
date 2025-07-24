@@ -19,8 +19,10 @@ export interface LoginRequest {
   password: string;
 }
 
+import { User } from './user.model';
+
 export interface LoginResponse {
-  user: any;
+  user: User;
   token: string;
   refreshToken: string;
 }
@@ -30,4 +32,4 @@ export interface RegisterRequest {
   username: string;
   password: string;
   confirmPassword: string;
-} 
+}

@@ -14,7 +14,7 @@ export class DateUtils {
   }
 
   static getTimeSpent(startTime: Date, endTime?: Date): number {
-    const end = endTime || new Date();
+    const end = endTime ?? new Date();
     return Math.floor((end.getTime() - startTime.getTime()) / (1000 * 60));
   }
 
@@ -27,4 +27,4 @@ export class DateUtils {
     const diffTime = dueDate.getTime() - now.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   }
-} 
+}

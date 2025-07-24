@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { NotificationService, Notification } from '../../../core/services/notification.service';
+import { NotificationService, Notification } from '@services';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+
 
 @Component({
   selector: 'app-notification-toast',
@@ -131,9 +131,9 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class NotificationToastComponent implements OnInit, OnDestroy {
   notifications$: Observable<Notification[]>;
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
-  constructor(private notificationService: NotificationService) {
+  constructor(private readonly notificationService: NotificationService) {
     this.notifications$ = this.notificationService.notifications$;
   }
 
@@ -147,4 +147,4 @@ export class NotificationToastComponent implements OnInit, OnDestroy {
   removeNotification(id: string): void {
     this.notificationService.removeNotification(id);
   }
-} 
+}
