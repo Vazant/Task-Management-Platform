@@ -1,9 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 
-
+import { MaterialModule } from '@shared/material.module';
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
 import { RegisterRequest } from '@models';
@@ -11,9 +13,11 @@ import { ValidationUtils } from '@utils';
 
 @Component({
   selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MaterialModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   registerForm!: FormGroup;
@@ -23,10 +27,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   hideConfirmPassword = true;
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly store: Store
-  ) {
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject(Store);
+
+  constructor() {
     this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
     this.error$ = this.store.select(AuthSelectors.selectError);
   }

@@ -47,6 +47,18 @@
                   "maximumError": "8kB"
                 }
               ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                },
+                "fonts": true
+              },
+              "aot": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
               "outputHashing": "all"
             },
             "development": {

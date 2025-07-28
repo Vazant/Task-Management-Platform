@@ -1,14 +1,16 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { NotificationService, Notification } from '@services';
 import { Observable, Subject } from 'rxjs';
 
-
 @Component({
   selector: 'app-notification-toast',
+  standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="notification-container">
       <div
-        *ngFor="let notification of notifications$ | async"
+        *ngFor="let notification of notifications$ | async; trackBy: trackByNotificationId"
         class="notification-toast"
         [class]="'notification-' + notification.type"
         [@slideInOut]
@@ -126,18 +128,16 @@ import { Observable, Subject } from 'rxjs';
   `],
   animations: [
     // Здесь можно добавить анимации если нужно
-  ],
-  standalone: false
+  ]
 })
-export class NotificationToastComponent implements OnInit, OnDestroy {
+export class NotificationToastComponent implements OnDestroy {
   notifications$: Observable<Notification[]>;
   private readonly destroy$ = new Subject<void>();
+  private readonly notificationService = inject(NotificationService);
 
-  constructor(private readonly notificationService: NotificationService) {
+  constructor() {
     this.notifications$ = this.notificationService.notifications$;
   }
-
-  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -146,5 +146,9 @@ export class NotificationToastComponent implements OnInit, OnDestroy {
 
   removeNotification(id: string): void {
     this.notificationService.removeNotification(id);
+  }
+
+  trackByNotificationId(_index: number, notification: Notification): string {
+    return notification.id;
   }
 }

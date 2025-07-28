@@ -12,13 +12,12 @@ import { SharedModule } from '../../shared/shared.module';
 import { tasksRoutes } from './tasks.routes';
 
 @NgModule({
-  declarations: [
-    TasksComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild(tasksRoutes),
-    SharedModule
+    SharedModule,
+    TasksComponent
   ]
 })
 export class TasksModule { }

@@ -1,17 +1,21 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 
-
+import { MaterialModule } from '@shared/material.module';
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
 
 @Component({
   selector: 'app-forgot-password',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MaterialModule],
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
-  standalone: false
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ForgotPasswordComponent implements OnInit, OnDestroy {
   forgotPasswordForm!: FormGroup;
@@ -21,10 +25,10 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   emailSent = false;
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly store: Store
-  ) {
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject(Store);
+
+  constructor() {
     this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
     this.error$ = this.store.select(AuthSelectors.selectError);
     this.success$ = this.store.select(AuthSelectors.selectSuccess);

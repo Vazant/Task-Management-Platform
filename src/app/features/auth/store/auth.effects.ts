@@ -34,7 +34,7 @@ export class AuthEffects {
             });
           }),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка входа в систему';
+            const errorMessage = error.message ?? 'Ошибка входа в систему';
             this.notificationService.error('Ошибка', errorMessage);
             return of(AuthActions.loginFailure({ error: errorMessage }));
           })
@@ -62,7 +62,7 @@ export class AuthEffects {
             });
           }),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка регистрации';
+            const errorMessage = error.message ?? 'Ошибка регистрации';
             this.notificationService.error('Ошибка', errorMessage);
             return of(AuthActions.registerFailure({ error: errorMessage }));
           })
@@ -93,7 +93,7 @@ export class AuthEffects {
             return AuthActions.refreshTokenSuccess({ token, refreshToken });
           }),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка обновления токена';
+            const errorMessage = error.message ?? 'Ошибка обновления токена';
             this.notificationService.error('Ошибка', errorMessage);
             return of(AuthActions.refreshTokenFailure({ error: errorMessage }));
           })
@@ -111,7 +111,7 @@ export class AuthEffects {
             message: 'Инструкции отправлены на email'
           })),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка восстановления пароля';
+            const errorMessage = error.message ?? 'Ошибка восстановления пароля';
             this.notificationService.error('Ошибка', errorMessage);
             return of(AuthActions.forgotPasswordFailure({ error: errorMessage }));
           })
@@ -129,7 +129,7 @@ export class AuthEffects {
             message: 'Пароль успешно изменен'
           })),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка сброса пароля';
+            const errorMessage = error.message ?? 'Ошибка сброса пароля';
             this.notificationService.error('Ошибка', errorMessage);
             return of(AuthActions.resetPasswordFailure({ error: errorMessage }));
           })

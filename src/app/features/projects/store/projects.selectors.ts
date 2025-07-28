@@ -41,7 +41,7 @@ export const selectSelectedProject = createSelector(
 
 export const selectProjectById = (projectId: string) => createSelector(
   selectProjectsEntities,
-  (entities) => entities[projectId] || null
+  (entities) => entities[projectId] ?? null
 );
 
 export const selectProjectsByOwner = (ownerId: string) => createSelector(

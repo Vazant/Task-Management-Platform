@@ -14,6 +14,10 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": "./src",
     "paths": {
       "@app/*": ["app/*"],
@@ -33,7 +37,12 @@
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "typeCheckHostBindings": true,
-    "strictTemplates": true
+    "strictTemplates": true,
+    "strictAttributeTypes": true,
+    "strictLiteralTypes": true,
+    "strictPropertyInitialization": true,
+    "strictInputTypes": true,
+    "strictOutputEventTypes": true
   },
   "files": [],
   "references": [

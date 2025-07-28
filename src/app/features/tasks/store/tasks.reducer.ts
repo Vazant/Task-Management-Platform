@@ -106,7 +106,8 @@ export const tasksReducer = createReducer(
   })),
 
   on(TasksActions.deleteTaskSuccess, (state, { taskId }) => {
-    const { [taskId]: removed, ...entities } = state.entities;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [taskId]: _removed, ...entities } = state.entities;
     const ids = state.ids.filter(id => id !== taskId);
 
     return {

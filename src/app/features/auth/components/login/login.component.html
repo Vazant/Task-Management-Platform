@@ -52,9 +52,9 @@
           color="primary" 
           type="submit" 
           class="login-button"
-          [disabled]="loginForm.invalid || (loading$ | async)">
-          <mat-spinner diameter="20" *ngIf="loading$ | async"></mat-spinner>
-          <span *ngIf="!(loading$ | async)">Войти</span>
+          [disabled]="loginForm.invalid || (loading$ | async) === true">
+          <mat-spinner diameter="20" *ngIf="(loading$ | async) === true"></mat-spinner>
+          <span *ngIf="(loading$ | async) === false">Войти</span>
         </button>
       </form>
     </mat-card-content>

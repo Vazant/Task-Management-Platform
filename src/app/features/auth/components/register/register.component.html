@@ -100,9 +100,9 @@
           color="primary" 
           type="submit" 
           class="register-button"
-          [disabled]="registerForm.invalid || (loading$ | async)">
-          <mat-spinner diameter="20" *ngIf="loading$ | async"></mat-spinner>
-          <span *ngIf="!(loading$ | async)">Создать аккаунт</span>
+          [disabled]="registerForm.invalid || (loading$ | async) === true">
+          <mat-spinner diameter="20" *ngIf="(loading$ | async) === true"></mat-spinner>
+          <span *ngIf="(loading$ | async) === false">Создать аккаунт</span>
         </button>
       </form>
     </mat-card-content>

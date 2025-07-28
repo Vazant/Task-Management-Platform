@@ -5,12 +5,11 @@ import { MaterialModule } from './material.module';
 import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
 
 @NgModule({
-  declarations: [
-    NotificationToastComponent,
-  ],
+  declarations: [],
   imports: [
     CommonModule,
-    MaterialModule
+    MaterialModule,
+    NotificationToastComponent
   ],
   exports: [
     NotificationToastComponent,

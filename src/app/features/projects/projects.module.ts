@@ -12,13 +12,12 @@ import { SharedModule } from '../../shared/shared.module';
 import { projectsRoutes } from './projects.routes';
 
 @NgModule({
-  declarations: [
-    ProjectsComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild(projectsRoutes),
-    SharedModule
+    SharedModule,
+    ProjectsComponent
   ]
 })
 export class ProjectsModule { }

@@ -1,4 +1,4 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection, importProvidersFrom } from '@angular/core';
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
@@ -8,7 +8,6 @@ import { TasksEffects } from './features/tasks/store/tasks.effects';
 import { TimeTrackingEffects } from './features/time-tracking/store/time-tracking.effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-
 
 import { routes } from './app.routes';
 import { projectsReducer } from './features/projects/store/projects.reducer';
@@ -21,11 +20,13 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 
+// Core Services
+import { ApiService } from './core/services/api.service';
+import { AuthService } from './core/services/auth.service';
+import { NotificationService } from './core/services/notification.service';
+
 // Material Design
 import { provideNativeDateAdapter } from '@angular/material/core';
-
-// Core Module
-import { CoreModule } from './core/core.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -50,7 +51,9 @@ export const appConfig: ApplicationConfig = {
       trace: false,
       traceLimit: 75,
     }),
-    // Core Module
-    importProvidersFrom(CoreModule),
+    // Core Services
+    ApiService,
+    AuthService,
+    NotificationService
   ],
 };

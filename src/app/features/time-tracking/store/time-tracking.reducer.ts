@@ -112,6 +112,7 @@ export const timeTrackingReducer = createReducer(
   })),
 
   on(TimeTrackingActions.deleteTimeEntrySuccess, (state, { timeEntryId }) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { [timeEntryId]: _, ...entities } = state.entities;
     const ids = state.ids.filter(id => id !== timeEntryId);
 

@@ -12,13 +12,12 @@ import { SharedModule } from '../../shared/shared.module';
 import { timeTrackingRoutes } from './time-tracking.routes';
 
 @NgModule({
-  declarations: [
-    TimeTrackingComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     RouterModule.forChild(timeTrackingRoutes),
-    SharedModule
+    SharedModule,
+    TimeTrackingComponent
   ]
 })
 export class TimeTrackingModule { }

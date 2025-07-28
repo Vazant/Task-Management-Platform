@@ -60,6 +60,12 @@
         }
     },
     {
+      "files": ["**/store/*.effects.ts"],
+      "rules": {
+        "@typescript-eslint/prefer-nullish-coalescing": "off"
+      }
+    },
+    {
       "files": ["*.html"],
       "extends": [
         "plugin:@angular-eslint/template/recommended",

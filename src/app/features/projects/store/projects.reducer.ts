@@ -97,7 +97,8 @@ export const projectsReducer = createReducer(
   })),
 
   on(ProjectsActions.deleteProjectSuccess, (state, { projectId }) => {
-    const { [projectId]: removed, ...entities } = state.entities;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [projectId]: _removed, ...entities } = state.entities;
     const ids = state.ids.filter(id => id !== projectId);
 
     return {

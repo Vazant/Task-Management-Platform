@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
+import { authGuard } from '@core/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -9,32 +9,32 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadChildren: () => import('./features/dashboard/dashboard.module').then(m => m.DashboardModule),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'projects',
     loadChildren: () => import('./features/projects/projects.module').then(m => m.ProjectsModule),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'tasks',
     loadChildren: () => import('./features/tasks/tasks.module').then(m => m.TasksModule),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'time-tracking',
     loadChildren: () => import('./features/time-tracking/time-tracking.module').then(m => m.TimeTrackingModule),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'analytics',
     loadChildren: () => import('./features/analytics/analytics.module').then(m => m.AnalyticsModule),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: 'settings',
     loadChildren: () => import('./features/settings/settings.module').then(m => m.SettingsModule),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
   },
   {
     path: '',
