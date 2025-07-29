@@ -2,6 +2,7 @@ export interface Project {
   id: string;
   name: string;
   description: string;
+  status: 'active' | 'archived' | 'completed' | 'on-hold';
   ownerId: string; // ref: User
   members: string[]; // ref: User[]
   settings: ProjectSettings;
@@ -14,4 +15,4 @@ export interface ProjectSettings {
   defaultTaskPriority: 'low' | 'medium' | 'high' | 'urgent';
   autoAssignTasks: boolean;
   requireTimeTracking: boolean;
-} 
+}

@@ -6,4 +6,4 @@ export const projectsRoutes: Routes = [
     path: '',
     component: ProjectsComponent
   }
-]; 
+];

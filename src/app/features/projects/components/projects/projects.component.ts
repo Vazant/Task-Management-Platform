@@ -2,17 +2,18 @@ import { Component, OnInit, inject, OnDestroy, HostListener } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '@services';
-import { User } from '@models';
+import { User, Project } from '@models';
+import { ProjectAction } from '../../models';
 import { Subscription } from 'rxjs';
 import { LayoutComponent } from '../../../../shared/components/layout';
-import { LucideAngularModule, FolderOpen, Plus, Users, Calendar } from 'lucide-angular';
+import { ProjectListComponent } from '../project-list/project-list.component';
 
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss'],
   standalone: true,
-  imports: [CommonModule, LayoutComponent, LucideAngularModule]
+  imports: [CommonModule, LayoutComponent, ProjectListComponent]
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
@@ -23,16 +24,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   private authSubscription?: Subscription;
   private userSubscription?: Subscription;
 
-
-
   // Mobile menu state
   isMobileMenuOpen = false;
-
-  // Lucide icons
-  readonly FolderOpen = FolderOpen;
-  readonly Plus = Plus;
-  readonly Users = Users;
-  readonly Calendar = Calendar;
 
   ngOnInit(): void {
     this.authSubscription = this.authService.isAuthenticated$.subscribe(isAuth => {
@@ -72,5 +65,16 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     if (!target.closest('.nav') && this.isMobileMenuOpen) {
       this.isMobileMenuOpen = false;
     }
+  }
+
+  onProjectSelected(project: Project): void {
+    console.log('Project selected:', project);
+    // TODO: Переход на страницу проекта
+    // this.router.navigate(['/projects', project.id]);
+  }
+
+  onProjectAction(action: ProjectAction): void {
+    console.log('Project action:', action);
+    // TODO: Обработка действий с проектом
   }
 }

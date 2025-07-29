@@ -28,6 +28,7 @@ export class ProjectsEffects {
             id: '1',
             name: 'Веб-сайт компании',
             description: 'Разработка корпоративного сайта',
+            status: 'active' as const,
             ownerId: 'user1',
             members: ['user1', 'user2'],
             settings: {
@@ -43,6 +44,7 @@ export class ProjectsEffects {
             id: '2',
             name: 'Мобильное приложение',
             description: 'iOS и Android приложение',
+            status: 'active' as const,
             ownerId: 'user1',
             members: ['user1', 'user3'],
             settings: {
@@ -81,6 +83,7 @@ export class ProjectsEffects {
           id: Date.now().toString(),
           name: project.name ?? '',
           description: project.description ?? '',
+          status: project.status ?? 'active',
           ownerId: project.ownerId ?? '',
           members: project.members ?? [],
           settings: project.settings ?? {
@@ -120,6 +123,7 @@ export class ProjectsEffects {
           ...project,
           name: project.name ?? '',
           description: project.description ?? '',
+          status: project.status ?? 'active',
           ownerId: project.ownerId ?? '',
           members: project.members ?? [],
           settings: project.settings ?? {

@@ -13,6 +13,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import { projectsReducer } from './features/projects/store/projects.reducer';
+import { projectListReducer } from './features/projects/store/project-list.reducer';
+import { ProjectListEffects } from './features/projects/store/project-list.effects';
 import { tasksReducer } from './features/tasks/store/tasks.reducer';
 import { timeTrackingReducer } from './features/time-tracking/store/time-tracking.reducer';
 import { authReducer } from './features/auth/store/auth.reducer';
@@ -65,7 +67,23 @@ import {
   Link,
   Calendar,
   Move,
-  Clock
+  Clock,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Archive,
+  Copy,
+  Share2,
+  Pause,
+  Search,
+  Filter,
+  SortAsc,
+  SortDesc,
+  Grid,
+  List,
+  MoreHorizontal,
+  Globe,
+  Smartphone
 } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
@@ -81,10 +99,11 @@ export const appConfig: ApplicationConfig = {
     provideStore({
       auth: authReducer,
       projects: projectsReducer,
+      projectList: projectListReducer,
       tasks: tasksReducer,
       timeTracking: timeTrackingReducer,
     }),
-    provideEffects([AuthEffects, ProjectsEffects, TasksEffects, TimeTrackingEffects]),
+    provideEffects([AuthEffects, ProjectsEffects, ProjectListEffects, TasksEffects, TimeTrackingEffects]),
     provideStoreDevtools({
       maxAge: 25,
       logOnly: false,
@@ -130,7 +149,23 @@ export const appConfig: ApplicationConfig = {
       Link,
       Calendar,
       Move,
-      Clock
+      Clock,
+      MoreVertical,
+      Edit,
+      Trash2,
+      Archive,
+      Copy,
+      Share2,
+      Pause,
+      Search,
+      Filter,
+      SortAsc,
+      SortDesc,
+      Grid,
+      List,
+      MoreHorizontal,
+      Globe,
+      Smartphone
     })),
   ],
 };
