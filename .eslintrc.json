@@ -3,7 +3,8 @@
   "ignorePatterns": [
     "projects/**/*",
     "dist/**/*",
-    "node_modules/**/*"
+    "node_modules/**/*",
+    "src/app/features/settings/components/user-profile-settings/user-profile-settings.component.html"
   ],
   "overrides": [
     {

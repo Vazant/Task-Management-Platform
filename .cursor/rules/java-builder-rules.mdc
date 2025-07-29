@@ -1,0 +1,229 @@
+---
+description: 
+globs: **/*.java
+alwaysApply: false
+---
+
+## Что такое @JiltBuilder
+
+`@JiltBuilder` - это кастомная аннотация, которая автоматически генерирует Builder классы для Java классов. Аналогично Lombok `@Builder`, но с кастомной логикой.
+
+## Как работает @JiltBuilder
+
+### 1. Генерация Builder классов
+Когда класс помечен аннотацией `@JiltBuilder`, генерируется соответствующий Builder класс в папке `target/generated-sources/annotations/`.
+
+**Пример:**
+```java
+@JiltBuilder
+public class Customer {
+    private String firstName;
+    private String lastName;
+    private String email;
+    // ...
+}
+```
+
+Генерируется: `CustomerBuilder.java`
+
+### 2. Структура Builder класса
+Builder класс имеет следующую структуру:
+- Статический метод `customer()` для создания экземпляра builder
+- Методы для каждого поля: `firstName()`, `lastName()`, `email()`
+- Метод `build()` для создания финального объекта
+
+### 3. Использование Builder Pattern
+
+#### ❌ Неправильно (старый способ):
+```java
+Customer customer = new Customer("John", "Doe", "john@example.com", "+1234567890", "123 Main St", "New York", "NY", "10001", "USA");
+```
+
+#### ✅ Правильно (с Builder):
+```java
+Customer customer = CustomerBuilder.customer()
+    .firstName("John")
+    .lastName("Doe")
+    .email("john@example.com")
+    .phone("+1234567890")
+    .address("123 Main St")
+    .city("New York")
+    .state("NY")
+    .zip("10001")
+    .country("USA")
+    .build();
+```
+
+## Правила использования
+
+### 1. Импорты
+Всегда добавлять импорт для Builder класса:
+```java
+import com.vazant.logix.orders.domain.customer.CustomerBuilder;
+import com.vazant.logix.orders.domain.organization.OrganizationBuilder;
+import com.vazant.logix.orders.domain.product.ProductBuilder;
+// и т.д.
+```
+
+### 2. Создание объектов
+- **НЕ использовать** `new Entity()` для классов с `@JiltBuilder`
+- **ВСЕГДА использовать** соответствующий Builder класс
+- **Всегда вызывать** `.build()` в конце цепочки
+
+### 3. Названия методов Builder
+Методы Builder соответствуют названиям полей класса:
+- `firstName` → `.firstName()`
+- `lastName` → `.lastName()`
+- `email` → `.email()`
+- `phoneNumber` → `.phoneNumber()` (не `.phone()`!)
+- `warehouseId` → `.warehouseId()` (не `.warehouse()`!)
+
+### 4. Вложенные объекты
+Для вложенных объектов также использовать их Builder:
+```java
+Product product = ProductBuilder.product()
+    .name("Test Product")
+    .organization(OrganizationBuilder.organization()
+        .name("Test Org")
+        .email("test@org.com")
+        .address("Test Address")
+        .phoneNumber("+1234567890")
+        .build())
+    .dimensions(DimensionsBuilder.dimensions()
+        .width(BigDecimal.valueOf(10.0))
+        .height(BigDecimal.valueOf(5.0))
+        .length(BigDecimal.valueOf(2.0))
+        .weight(BigDecimal.valueOf(0.5))
+        .build())
+    .build();
+```
+
+### 5. Обязательные поля
+Все поля, помеченные как `@NotNull` или `@NotBlank`, должны быть заполнены в Builder.
+
+## Список классов с @JiltBuilder в проекте
+
+### Domain Entities:
+1. **Customer** → `CustomerBuilder.customer()`
+2. **Organization** → `OrganizationBuilder.organization()`
+3. **Person** → `PersonBuilder.person()`
+4. **Money** → `MoneyBuilder.money()`
+5. **UserResponsibility** → `UserResponsibilityBuilder.userResponsibility()`
+6. **User** → `UserBuilder.user()`
+7. **UserGroup** → `UserGroupBuilder.userGroup()`
+8. **Dimensions** → `DimensionsBuilder.dimensions()`
+9. **ProductPrice** → `ProductPriceBuilder.productPrice()`
+10. **Product** → `ProductBuilder.product()`
+11. **Order** → `OrderBuilder.order()`
+12. **Item** → `ItemBuilder.item()`
+13. **Category** → `CategoryBuilder.category()`
+14. **Image** → `ImageBuilder.image()`
+
+## Частые ошибки и их исправления
+
+### 1. Неправильные названия методов
+```java
+// ❌ Неправильно
+.phone("+1234567890")  // для Organization
+.warehouse("warehouse-123")  // для Order
+
+// ✅ Правильно
+.phoneNumber("+1234567890")  // для Organization
+.warehouseId("warehouse-123")  // для Order
+```
+
+### 2. Отсутствие .build()
+```java
+// ❌ Неправильно
+Customer customer = CustomerBuilder.customer()
+    .firstName("John")
+    .lastName("Doe");
+
+// ✅ Правильно
+Customer customer = CustomerBuilder.customer()
+    .firstName("John")
+    .lastName("Doe")
+    .build();
+```
+
+### 3. Использование конструкторов
+```java
+// ❌ Неправильно
+Customer customer = new Customer("John", "Doe", "john@example.com", ...);
+
+// ✅ Правильно
+Customer customer = CustomerBuilder.customer()
+    .firstName("John")
+    .lastName("Doe")
+    .email("john@example.com")
+    .build();
+```
+
+## Проверка правильности
+
+### 1. Компиляция
+Если Builder используется неправильно, компилятор выдаст ошибки:
+- `cannot find symbol: method methodName()`
+- `constructor Entity cannot be applied to given types`
+
+### 2. IDE поддержка
+- Builder классы генерируются в `target/generated-sources/annotations/`
+- IDE должна автоматически предлагать методы Builder
+- Автодополнение должно работать для всех методов
+
+## Рекомендации
+
+1. **Всегда используйте Builder** для классов с `@JiltBuilder`
+2. **Проверяйте названия методов** - они должны точно соответствовать полям
+3. **Не забывайте .build()** в конце цепочки
+4. **Используйте вложенные Builder** для сложных объектов
+5. **Добавляйте импорты** для всех используемых Builder классов
+
+## Примеры для всех основных классов
+
+```java
+// Customer
+Customer customer = CustomerBuilder.customer()
+    .firstName("John")
+    .lastName("Doe")
+    .email("john@example.com")
+    .phone("+1234567890")
+    .address("123 Main St")
+    .city("New York")
+    .state("NY")
+    .zip("10001")
+    .country("USA")
+    .build();
+
+// Organization
+Organization org = OrganizationBuilder.organization()
+    .name("Test Organization")
+    .email("test@org.com")
+    .address("Test Address")
+    .phoneNumber("+1234567890")
+    .build();
+
+// Product
+Product product = ProductBuilder.product()
+    .name("Test Product")
+    .description("Test description")
+    .skuCode("SKU-001")
+    .stockQuantity(100)
+    .categoryId(UUID.randomUUID())
+    .imageId(UUID.randomUUID())
+    .organization(org)
+    .build();
+
+// Order
+Order order = OrderBuilder.order()
+    .customer(customer)
+    .organization(org)
+    .warehouseId("warehouse-123")
+    .total(MoneyBuilder.money()
+        .amount(new BigDecimal("100.00"))
+        .currency(Currency.USD)
+        .build())
+    .description("Test order")
+    .build();
+
+``` 

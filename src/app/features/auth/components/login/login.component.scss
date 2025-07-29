@@ -94,15 +94,15 @@
   .login-container {
     padding: 16px;
   }
-  
+
   .login-card {
     max-width: 100%;
   }
-  
+
   .login-card mat-card-content {
     padding: 16px;
   }
-  
+
   .login-card mat-card-actions {
     padding: 12px 16px 16px;
     flex-direction: column;
@@ -130,4 +130,4 @@
 
 ::ng-deep .mat-raised-button.mat-primary:hover {
   background-color: #5a6fd8;
-} 
+}

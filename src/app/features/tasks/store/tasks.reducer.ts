@@ -3,6 +3,8 @@ import { TasksState } from './tasks.state';
 import { TaskFilters } from '@models';
 import * as TasksActions from './tasks.actions';
 
+
+
 const initialFilters: TaskFilters = {
   status: 'all',
   priority: 'all',
@@ -106,7 +108,8 @@ export const tasksReducer = createReducer(
   })),
 
   on(TasksActions.deleteTaskSuccess, (state, { taskId }) => {
-    const { [taskId]: removed, ...entities } = state.entities;
+    const entities = { ...state.entities };
+    delete entities[taskId];
     const ids = state.ids.filter(id => id !== taskId);
 
     return {

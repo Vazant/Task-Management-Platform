@@ -1,0 +1,239 @@
+<div class="profile-settings">
+  <!-- Индикатор загрузки -->
+  <div class="loading-overlay" *ngIf="isLoading()">
+    <i-lucide class="icon-center" [img]="Loader2" [size]="40"></i-lucide>
+    <p>Загрузка профиля...</p>
+  </div>
+
+  <!-- Skeleton загрузчик -->
+  <div class="skeleton-container" *ngIf="isLoading() && !profile()">
+    <mat-card class="profile-info-card skeleton-card">
+      <div class="skeleton-header">
+        <div class="skeleton-avatar"></div>
+        <div class="skeleton-info">
+          <div class="skeleton-name"></div>
+          <div class="skeleton-username"></div>
+          <div class="skeleton-email"></div>
+        </div>
+      </div>
+      <div class="skeleton-stats">
+        <div class="skeleton-stat"></div>
+        <div class="skeleton-stat"></div>
+        <div class="skeleton-stat"></div>
+      </div>
+    </mat-card>
+
+    <mat-card class="profile-form-card skeleton-card">
+      <mat-card-header>
+        <div class="skeleton-title"></div>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="skeleton-form">
+          <div class="skeleton-field"></div>
+          <div class="skeleton-field"></div>
+          <div class="skeleton-field"></div>
+          <div class="skeleton-field"></div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Блок ошибки -->
+  <div class="error-container" *ngIf="hasError() && !isLoading()">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <div class="error-content">
+          <i-lucide class="error-icon" [img]="AlertCircle" [size]="48"></i-lucide>
+          <h2>Ошибка загрузки профиля</h2>
+          <p>{{ error() }}</p>
+          <div class="error-actions">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="retryLoadProfile()"
+              [disabled]="isLoading()">
+              <i-lucide class="icon-center" [img]="RefreshCw" [size]="16"></i-lucide>
+              Повторить попытку
+            </button>
+            <button
+              mat-stroked-button
+              (click)="clearError()">
+              Закрыть
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Основной контент (показывается только при успешной загрузке) -->
+  <ng-container *ngIf="!isLoading() && !hasError() && profile()">
+    <!-- Карточка с информацией о профиле -->
+    <mat-card class="profile-info-card">
+      <div class="profile-header">
+        <div class="avatar-section">
+          <div class="avatar-container">
+            <img
+              [src]="avatarPreview() || profile()?.avatar || 'assets/images/default-avatar.png'"
+              [alt]="displayName()"
+              class="avatar-image"
+              (error)="onAvatarError($event)">
+
+            <div class="avatar-overlay" *ngIf="isAvatarLoading()">
+              <i-lucide class="icon-center" [img]="Loader2" [size]="24"></i-lucide>
+            </div>
+          </div>
+
+          <button
+            mat-mini-fab
+            color="primary"
+            class="avatar-upload-btn"
+            (click)="fileInput.click()"
+            [disabled]="isAvatarLoading()">
+            <i-lucide [img]="Camera" [size]="20"></i-lucide>
+          </button>
+
+          <input
+            #fileInput
+            type="file"
+            accept="image/*"
+            (change)="onAvatarChange($event)"
+            style="display: none;">
+        </div>
+
+        <div class="profile-details">
+          <h1 class="display-name">{{ displayName() }}</h1>
+          <p class="username">@{{ profile()?.username }}</p>
+          <p class="email">{{ profile()?.email }}</p>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="stat-item">
+          <span class="stat-label">Последний вход</span>
+          <span class="stat-value">{{ lastLoginFormatted() }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Дата регистрации</span>
+          <span class="stat-value">{{ createdAtFormatted() }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Роль</span>
+          <span class="stat-value">{{ profile()?.role || 'Пользователь' }}</span>
+        </div>
+      </div>
+    </mat-card>
+
+    <!-- Карточка с формой -->
+    <mat-card class="profile-form-card">
+      <mat-card-header>
+        <mat-card-title>
+          <i-lucide [img]="User" [size]="24"></i-lucide>
+          Редактировать профиль
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Имя пользователя *</mat-label>
+              <input
+                matInput
+                formControlName="username"
+                placeholder="Введите имя пользователя">
+              <mat-error *ngIf="usernameControl?.hasError('required')">
+                Имя пользователя обязательно
+              </mat-error>
+              <mat-error *ngIf="usernameControl?.hasError('minlength')">
+                Минимум 3 символа
+              </mat-error>
+              <mat-error *ngIf="usernameControl?.hasError('maxlength')">
+                Максимум 20 символов
+              </mat-error>
+              <mat-error *ngIf="usernameControl?.hasError('pattern')">
+                Только буквы, цифры и подчеркивания
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Email *</mat-label>
+              <input
+                matInput
+                type="email"
+                formControlName="email"
+                placeholder="Введите email">
+              <mat-error *ngIf="emailControl?.hasError('required')">
+                Email обязателен
+              </mat-error>
+              <mat-error *ngIf="emailControl?.hasError('email')">
+                Введите корректный email
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Имя</mat-label>
+              <input
+                matInput
+                formControlName="firstName"
+                placeholder="Введите имя">
+              <mat-error *ngIf="firstNameControl?.hasError('minlength')">
+                Минимум 2 символа
+              </mat-error>
+              <mat-error *ngIf="firstNameControl?.hasError('maxlength')">
+                Максимум 50 символов
+              </mat-error>
+              <mat-error *ngIf="firstNameControl?.hasError('pattern')">
+                Только буквы, пробелы и дефисы
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Фамилия</mat-label>
+              <input
+                matInput
+                formControlName="lastName"
+                placeholder="Введите фамилию">
+              <mat-error *ngIf="lastNameControl?.hasError('minlength')">
+                Минимум 2 символа
+              </mat-error>
+              <mat-error *ngIf="lastNameControl?.hasError('maxlength')">
+                Максимум 50 символов
+              </mat-error>
+              <mat-error *ngIf="lastNameControl?.hasError('pattern')">
+                Только буквы, пробелы и дефисы
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="form-actions">
+            <button
+              type="button"
+              mat-stroked-button
+              (click)="onReset()"
+              [disabled]="isFormSubmitting() || isLoading()"
+              class="reset-btn">
+              <i-lucide [img]="RefreshCw" [size]="16"></i-lucide>
+              Сбросить
+            </button>
+
+            <button
+              type="submit"
+              mat-raised-button
+              color="primary"
+              [disabled]="profileForm.invalid || isFormSubmitting() || isLoading()"
+              class="save-btn">
+              <i-lucide class="icon-center" [img]="Loader2" [size]="16" *ngIf="isFormSubmitting()"></i-lucide>
+              <i-lucide [img]="Save" [size]="16" *ngIf="!isFormSubmitting()"></i-lucide>
+              <span>{{ isFormSubmitting() ? 'Сохранение...' : 'Сохранить' }}</span>
+            </button>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </ng-container>
+</div>

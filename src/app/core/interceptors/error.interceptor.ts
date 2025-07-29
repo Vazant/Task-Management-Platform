@@ -2,6 +2,8 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 
+
+
 export const errorInterceptor: HttpInterceptorFn = (request, next) => {
   return next(request).pipe(
     catchError(error => {

@@ -7,6 +7,8 @@ import * as TimeTrackingActions from './time-tracking.actions';
 import { NotificationService } from '@services';
 import { TimeEntry } from '@models';
 
+
+
 @Injectable()
 export class TimeTrackingEffects {
   private readonly actions$ = inject(Actions);
@@ -43,7 +45,10 @@ export class TimeTrackingEffects {
         return of(mockTimeEntries).pipe(
           map(timeEntries => TimeTrackingActions.loadTimeEntriesSuccess({ timeEntries })),
           catchError(error => {
-            this.notificationService.error('Ошибка', 'Не удалось загрузить записи времени');
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', 'Не удалось загрузить записи времени');
+            }
             return of(TimeTrackingActions.loadTimeEntriesFailure({ error: error.message }));
           })
         );
@@ -60,11 +65,11 @@ export class TimeTrackingEffects {
         const newTimeEntry: TimeEntry = {
           ...timeEntry,
           id: Date.now().toString(),
-          taskId: timeEntry.taskId || '',
-          userId: timeEntry.userId || '',
-          startTime: timeEntry.startTime || new Date(),
+          taskId: timeEntry.taskId ?? '',
+          userId: timeEntry.userId ?? '',
+          startTime: timeEntry.startTime ?? new Date(),
           endTime: timeEntry.endTime,
-          duration: timeEntry.duration || 0,
+          duration: timeEntry.duration ?? 0,
           description: timeEntry.description
         };
 
@@ -74,7 +79,10 @@ export class TimeTrackingEffects {
             return TimeTrackingActions.createTimeEntrySuccess({ timeEntry: createdEntry });
           }),
           catchError(error => {
-            this.notificationService.error('Ошибка', 'Не удалось создать запись времени');
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', 'Не удалось создать запись времени');
+            }
             return of(TimeTrackingActions.createTimeEntryFailure({ error: error.message }));
           })
         );
@@ -90,11 +98,11 @@ export class TimeTrackingEffects {
         // Здесь будет реальный API вызов
         const updatedTimeEntry: TimeEntry = {
           ...timeEntry,
-          taskId: timeEntry.taskId || '',
-          userId: timeEntry.userId || '',
-          startTime: timeEntry.startTime || new Date(),
+          taskId: timeEntry.taskId ?? '',
+          userId: timeEntry.userId ?? '',
+          startTime: timeEntry.startTime ?? new Date(),
           endTime: timeEntry.endTime,
-          duration: timeEntry.duration || 0,
+          duration: timeEntry.duration ?? 0,
           description: timeEntry.description
         };
 
@@ -104,7 +112,10 @@ export class TimeTrackingEffects {
             return TimeTrackingActions.updateTimeEntrySuccess({ timeEntry: entry });
           }),
           catchError(error => {
-            this.notificationService.error('Ошибка', 'Не удалось обновить запись времени');
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', 'Не удалось обновить запись времени');
+            }
             return of(TimeTrackingActions.updateTimeEntryFailure({ error: error.message }));
           })
         );
@@ -124,7 +135,10 @@ export class TimeTrackingEffects {
             return TimeTrackingActions.deleteTimeEntrySuccess({ timeEntryId: id });
           }),
           catchError(error => {
-            this.notificationService.error('Ошибка', 'Не удалось удалить запись времени');
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', 'Не удалось удалить запись времени');
+            }
             return of(TimeTrackingActions.deleteTimeEntryFailure({ error: error.message }));
           })
         );

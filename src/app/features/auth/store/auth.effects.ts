@@ -1,11 +1,13 @@
 import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError, tap } from 'rxjs/operators';
+import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 
 import * as AuthActions from './auth.actions';
 import { AuthService, NotificationService } from '@services';
+
+
 
 
 @Injectable()
@@ -18,7 +20,7 @@ export class AuthEffects {
   login$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.login),
-      mergeMap(({ credentials }) =>
+      switchMap(({ credentials }) =>
         this.authService.login(credentials).pipe(
           map((response) => {
             this.authService.setUser(
@@ -34,8 +36,11 @@ export class AuthEffects {
             });
           }),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка входа в систему';
-            this.notificationService.error('Ошибка', errorMessage);
+            const errorMessage = error.message ?? 'Ошибка входа в систему';
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', errorMessage);
+            }
             return of(AuthActions.loginFailure({ error: errorMessage }));
           })
         )
@@ -46,7 +51,7 @@ export class AuthEffects {
   register$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.register),
-      mergeMap(({ userData }) =>
+      switchMap(({ userData }) =>
         this.authService.register(userData).pipe(
           map((response) => {
             this.authService.setUser(
@@ -62,8 +67,11 @@ export class AuthEffects {
             });
           }),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка регистрации';
-            this.notificationService.error('Ошибка', errorMessage);
+            const errorMessage = error.message ?? 'Ошибка регистрации';
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', errorMessage);
+            }
             return of(AuthActions.registerFailure({ error: errorMessage }));
           })
         )
@@ -85,7 +93,7 @@ export class AuthEffects {
   refreshToken$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.refreshToken),
-      mergeMap(() =>
+      switchMap(() =>
         this.authService.refreshToken().pipe(
           map(({ token, refreshToken }) => {
             localStorage.setItem('token', token);
@@ -93,8 +101,11 @@ export class AuthEffects {
             return AuthActions.refreshTokenSuccess({ token, refreshToken });
           }),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка обновления токена';
-            this.notificationService.error('Ошибка', errorMessage);
+            const errorMessage = error.message ?? 'Ошибка обновления токена';
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', errorMessage);
+            }
             return of(AuthActions.refreshTokenFailure({ error: errorMessage }));
           })
         )
@@ -105,14 +116,17 @@ export class AuthEffects {
   forgotPassword$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.forgotPassword),
-      mergeMap(({ email }) =>
+      switchMap(({ email }) =>
         this.authService.forgotPassword(email).pipe(
           map(() => AuthActions.forgotPasswordSuccess({
             message: 'Инструкции отправлены на email'
           })),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка восстановления пароля';
-            this.notificationService.error('Ошибка', errorMessage);
+            const errorMessage = error.message ?? 'Ошибка восстановления пароля';
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', errorMessage);
+            }
             return of(AuthActions.forgotPasswordFailure({ error: errorMessage }));
           })
         )
@@ -123,13 +137,13 @@ export class AuthEffects {
   resetPassword$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.resetPassword),
-      mergeMap(({ token, password }) =>
+      switchMap(({ token, password }) =>
         this.authService.resetPassword(token, password).pipe(
           map(() => AuthActions.resetPasswordSuccess({
             message: 'Пароль успешно изменен'
           })),
           catchError((error) => {
-            const errorMessage = error.message || 'Ошибка сброса пароля';
+            const errorMessage = error.message ?? 'Ошибка сброса пароля';
             this.notificationService.error('Ошибка', errorMessage);
             return of(AuthActions.resetPasswordFailure({ error: errorMessage }));
           })

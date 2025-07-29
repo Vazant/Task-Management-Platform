@@ -97,7 +97,8 @@ export const projectsReducer = createReducer(
   })),
 
   on(ProjectsActions.deleteProjectSuccess, (state, { projectId }) => {
-    const { [projectId]: removed, ...entities } = state.entities;
+    const entities = { ...state.entities };
+    delete entities[projectId];
     const ids = state.ids.filter(id => id !== projectId);
 
     return {

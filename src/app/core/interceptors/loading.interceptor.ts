@@ -6,13 +6,22 @@ import { NotificationService } from '@services';
 export const loadingInterceptor: HttpInterceptorFn = (request, next) => {
   const notificationService = inject(NotificationService);
 
-  // Показываем индикатор загрузки
-  notificationService.info('Загрузка', 'Выполняется запрос...', 0);
+  // Показываем индикатор загрузки только для определенных запросов
+  // Исключаем запросы к профилю и другим критичным данным
+  const shouldShowLoading = !request.url.includes('/auth/refresh') &&
+                           !request.url.includes('/profile') &&
+                           !request.url.includes('/user/current');
+
+  if (shouldShowLoading) {
+    notificationService.info('Загрузка', 'Выполняется запрос...', 0);
+  }
 
   return next(request).pipe(
     finalize(() => {
       // Скрываем индикатор загрузки
-      notificationService.clearAll();
+      if (shouldShowLoading) {
+        notificationService.clearAll();
+      }
     })
   );
 };

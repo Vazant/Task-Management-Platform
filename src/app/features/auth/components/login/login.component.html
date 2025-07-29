@@ -1,67 +1,72 @@
 <div class="login-container">
-  <mat-card class="login-card">
-    <mat-card-header>
-      <mat-card-title>Вход в систему</mat-card-title>
-      <mat-card-subtitle>TaskBoard Pro</mat-card-subtitle>
-    </mat-card-header>
+  <div class="login-card">
+    <div class="login-header">
+      <h1>Вход в систему</h1>
+      <p>Войдите в свой аккаунт для продолжения работы</p>
+    </div>
 
-    <mat-card-content>
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Email</mat-label>
-          <input 
-            matInput 
-            type="email" 
-            formControlName="email" 
-            placeholder="Введите ваш email"
-            autocomplete="email">
-          <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
-            Email обязателен
-          </mat-error>
-          <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
-            Введите корректный email
-          </mat-error>
-        </mat-form-field>
+    <mat-card class="login-form-card">
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Email</mat-label>
+            <input
+              matInput
+              type="email"
+              formControlName="email"
+              placeholder="Введите ваш email"
+              autocomplete="email">
+            <mat-error *ngIf="isFieldInvalid('email')">
+              {{ getErrorMessage('email') }}
+            </mat-error>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Пароль</mat-label>
-          <input 
-            matInput 
-            type="password" 
-            formControlName="password" 
-            placeholder="Введите пароль"
-            autocomplete="current-password">
-          <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
-            Пароль обязателен
-          </mat-error>
-          <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
-            Минимум 8 символов
-          </mat-error>
-        </mat-form-field>
+          <mat-form-field appearance="outline" class="form-field">
+            <mat-label>Пароль</mat-label>
+            <input
+              matInput
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              placeholder="Введите ваш пароль"
+              autocomplete="current-password">
+            <button
+              mat-icon-button
+              matSuffix
+              (click)="hidePassword = !hidePassword"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hidePassword"
+              type="button">
+              <i-lucide [img]="hidePassword ? EyeOff : Eye" [size]="20"></i-lucide>
+            </button>
+            <mat-error *ngIf="isFieldInvalid('password')">
+              {{ getErrorMessage('password') }}
+            </mat-error>
+          </mat-form-field>
 
-        <mat-checkbox formControlName="rememberMe" class="remember-me">
-          Запомнить меня
-        </mat-checkbox>
+          <div class="form-options">
+            <mat-checkbox formControlName="rememberMe" class="remember-me">
+              Запомнить меня
+            </mat-checkbox>
+            <a routerLink="/auth/forgot-password" class="forgot-password">
+              Забыли пароль?
+            </a>
+          </div>
 
-        <div class="error-message" *ngIf="error$ | async as error">
-          <mat-error>{{ error }}</mat-error>
-        </div>
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="login-button"
+            [disabled]="loginForm.invalid || (loading$ | async)">
+            <i-lucide class="icon-center" [img]="Loader2" [size]="20" *ngIf="loading$ | async"></i-lucide>
+            <span *ngIf="(loading$ | async) === false">Войти</span>
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
 
-        <button 
-          mat-raised-button 
-          color="primary" 
-          type="submit" 
-          class="login-button"
-          [disabled]="loginForm.invalid || (loading$ | async)">
-          <mat-spinner diameter="20" *ngIf="loading$ | async"></mat-spinner>
-          <span *ngIf="!(loading$ | async)">Войти</span>
-        </button>
-      </form>
-    </mat-card-content>
-
-    <mat-card-actions>
-      <a mat-button routerLink="/auth/forgot-password">Забыли пароль?</a>
-      <a mat-button routerLink="/auth/register">Регистрация</a>
-    </mat-card-actions>
-  </mat-card>
-</div> 
+    <div class="login-footer">
+      <p>Нет аккаунта? <a routerLink="/auth/register">Зарегистрироваться</a></p>
+    </div>
+  </div>
+</div>

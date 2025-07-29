@@ -1,19 +1,35 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { LucideAngularModule, Mail, CheckCircle, Loader2 } from 'lucide-angular';
 
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
-
 @Component({
   selector: 'app-forgot-password',
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.scss'],
-  standalone: false
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    LucideAngularModule
+  ]
 })
 export class ForgotPasswordComponent implements OnInit, OnDestroy {
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject(Store);
+
   forgotPasswordForm!: FormGroup;
   loading$!: Observable<boolean>;
   error$!: Observable<string | null>;
@@ -21,10 +37,14 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   emailSent = false;
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly store: Store
-  ) {
+  // Lucide icons
+  readonly Mail = Mail;
+  readonly CheckCircle = CheckCircle;
+  readonly Loader2 = Loader2;
+
+
+
+  constructor() {
     this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
     this.error$ = this.store.select(AuthSelectors.selectError);
     this.success$ = this.store.select(AuthSelectors.selectSuccess);

@@ -8,6 +8,8 @@ import * as ProjectsActions from './projects.actions';
 import { NotificationService } from '@services';
 import { Project } from '@models';
 
+
+
 @Injectable()
 export class ProjectsEffects {
   private readonly actions$ = inject(Actions);
@@ -57,7 +59,10 @@ export class ProjectsEffects {
         return of(mockProjects).pipe(
           map(projects => ProjectsActions.loadProjectsSuccess({ projects })),
           catchError(error => {
-            this.notificationService.error('Ошибка', 'Не удалось загрузить проекты');
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', 'Не удалось загрузить проекты');
+            }
             return of(ProjectsActions.loadProjectsFailure({ error: error.message }));
           })
         );
@@ -74,11 +79,11 @@ export class ProjectsEffects {
         const newProject: Project = {
           ...project,
           id: Date.now().toString(),
-          name: project.name || '',
-          description: project.description || '',
-          ownerId: project.ownerId || '',
-          members: project.members || [],
-          settings: project.settings || {
+          name: project.name ?? '',
+          description: project.description ?? '',
+          ownerId: project.ownerId ?? '',
+          members: project.members ?? [],
+          settings: project.settings ?? {
             allowGuestAccess: false,
             defaultTaskPriority: 'medium',
             autoAssignTasks: false,
@@ -94,7 +99,10 @@ export class ProjectsEffects {
             return ProjectsActions.createProjectSuccess({ project: createdProject });
           }),
           catchError(error => {
-            this.notificationService.error('Ошибка', 'Не удалось создать проект');
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', 'Не удалось создать проект');
+            }
             return of(ProjectsActions.createProjectFailure({ error: error.message }));
           })
         );
@@ -110,17 +118,17 @@ export class ProjectsEffects {
         // Здесь будет реальный API вызов
         const updatedProject: Project = {
           ...project,
-          name: project.name || '',
-          description: project.description || '',
-          ownerId: project.ownerId || '',
-          members: project.members || [],
-          settings: project.settings || {
+          name: project.name ?? '',
+          description: project.description ?? '',
+          ownerId: project.ownerId ?? '',
+          members: project.members ?? [],
+          settings: project.settings ?? {
             allowGuestAccess: false,
             defaultTaskPriority: 'medium',
             autoAssignTasks: false,
             requireTimeTracking: false
           },
-          createdAt: project.createdAt || new Date(),
+          createdAt: project.createdAt ?? new Date(),
           updatedAt: new Date()
         };
 
@@ -130,7 +138,10 @@ export class ProjectsEffects {
             return ProjectsActions.updateProjectSuccess({ project });
           }),
           catchError(error => {
-            this.notificationService.error('Ошибка', 'Не удалось обновить проект');
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', 'Не удалось обновить проект');
+            }
             return of(ProjectsActions.updateProjectFailure({ error: error.message }));
           })
         );
@@ -150,7 +161,10 @@ export class ProjectsEffects {
             return ProjectsActions.deleteProjectSuccess({ projectId: id });
           }),
           catchError(error => {
-            this.notificationService.error('Ошибка', 'Не удалось удалить проект');
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.error('Ошибка', 'Не удалось удалить проект');
+            }
             return of(ProjectsActions.deleteProjectFailure({ error: error.message }));
           })
         );

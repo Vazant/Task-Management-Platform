@@ -2,19 +2,21 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { MaterialModule } from './material.module';
-import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
+import { UserMenuComponent } from './components/user-menu/user-menu.component';
+import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
 
 @NgModule({
-  declarations: [
-    NotificationToastComponent,
-  ],
+  declarations: [],
   imports: [
     CommonModule,
-    MaterialModule
+    MaterialModule,
+    UserMenuComponent,
+    PageNotFoundComponent
   ],
   exports: [
-    NotificationToastComponent,
-    MaterialModule
+    MaterialModule,
+    UserMenuComponent,
+    PageNotFoundComponent
   ],
 })
 export class SharedModule {}

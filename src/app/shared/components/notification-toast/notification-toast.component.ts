@@ -1,6 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { NotificationService, Notification } from '@services';
 import { Observable, Subject } from 'rxjs';
+import { trigger, state, style, transition, animate } from '@angular/animations';
+import { AsyncPipe, NgFor, NgClass } from '@angular/common';
+
 
 
 @Component({
@@ -8,9 +11,9 @@ import { Observable, Subject } from 'rxjs';
   template: `
     <div class="notification-container">
       <div
-        *ngFor="let notification of notifications$ | async"
+        *ngFor="let notification of notifications$ | async; trackBy: trackByNotification"
         class="notification-toast"
-        [class]="'notification-' + notification.type"
+        [ngClass]="'notification-' + notification.type"
         [@slideInOut]
       >
         <div class="notification-header">
@@ -43,7 +46,6 @@ import { Observable, Subject } from 'rxjs';
       margin-bottom: 10px;
       padding: 16px;
       border-left: 4px solid;
-      animation: slideIn 0.3s ease-out;
     }
 
     .notification-success {
@@ -101,43 +103,32 @@ import { Observable, Subject } from 'rxjs';
       color: #666;
       line-height: 1.4;
     }
-
-    @keyframes slideIn {
-      from {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-      to {
-        transform: translateX(0);
-        opacity: 1;
-      }
-    }
-
-    @keyframes slideOut {
-      from {
-        transform: translateX(0);
-        opacity: 1;
-      }
-      to {
-        transform: translateX(100%);
-        opacity: 0;
-      }
-    }
   `],
   animations: [
-    // Здесь можно добавить анимации если нужно
+    trigger('slideInOut', [
+      state('void', style({
+        transform: 'translateX(100%)',
+        opacity: 0
+      })),
+      state('*', style({
+        transform: 'translateX(0)',
+        opacity: 1
+      })),
+      transition('void => *', [
+        animate('300ms ease-out')
+      ]),
+      transition('* => void', [
+        animate('300ms ease-in')
+      ])
+    ])
   ],
-  standalone: false
+  imports: [AsyncPipe, NgFor, NgClass],
+  standalone: true
 })
-export class NotificationToastComponent implements OnInit, OnDestroy {
-  notifications$: Observable<Notification[]>;
+export class NotificationToastComponent implements OnDestroy {
+  private readonly notificationService = inject(NotificationService);
+  notifications$: Observable<Notification[]> = this.notificationService.notifications$;
   private readonly destroy$ = new Subject<void>();
-
-  constructor(private readonly notificationService: NotificationService) {
-    this.notifications$ = this.notificationService.notifications$;
-  }
-
-  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this.destroy$.next();
@@ -146,5 +137,9 @@ export class NotificationToastComponent implements OnInit, OnDestroy {
 
   removeNotification(id: string): void {
     this.notificationService.removeNotification(id);
+  }
+
+  trackByNotification(index: number, notification: Notification): string {
+    return notification.id;
   }
 }

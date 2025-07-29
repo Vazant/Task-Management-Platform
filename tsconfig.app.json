@@ -6,6 +6,9 @@
     "outDir": "./out-tsc/app",
     "types": []
   },
+  "angularCompilerOptions": {
+    "enableBlockType": true
+  },
   "include": [
     "src/**/*.ts"
   ],

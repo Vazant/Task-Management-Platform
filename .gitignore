@@ -1,4 +1,10 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# ===========================================
+# Task Management Platform - .gitignore
+# ===========================================
+
+# ===========================================
+# ANGULAR / FRONTEND
+# ===========================================
 
 # Compiled output
 /dist
@@ -6,7 +12,7 @@
 /out-tsc
 /bazel-out
 
-# Node
+# Node.js
 /node_modules
 npm-debug.log*
 yarn-debug.log*
@@ -14,17 +20,105 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# IDEs and editors
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
+# Angular specific
+.angular/
+.angular/cache/
+.angular/cache/**/*
+.angular/cache/**/**/*
 
-# Visual Studio Code
-.vscode/*
+# TypeScript cache
+*.tsbuildinfo
+
+# Testing
+/coverage
+/.nyc_output
+*.lcov
+
+# e2e
+/e2e/*.js
+/e2e/*.map
+
+# Performance
+.angular/cache
+
+# ===========================================
+# JAVA / SPRING BOOT / BACKEND
+# ===========================================
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Virtual machine crash logs
+hs_err_pid*
+replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+# Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
@@ -37,69 +131,50 @@ lerna-debug.log*
 # Built Visual Studio Code Extensions
 *.vsix
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
+# ===========================================
+# DATABASE
+# ===========================================
 
-# System files
-.DS_Store
-Thumbs.db
+# H2 Database
+*.db
+*.h2.db
 
-# Logs
-logs
-*.log
+# SQLite
+*.sqlite
+*.sqlite3
 
-# Runtime data
-pids
-*.pid
-*.seed
-*.pid.lock
+# PostgreSQL
+*.sql
 
-# Coverage directory used by tools like istanbul
-coverage/
-*.lcov
+# ===========================================
+# ENVIRONMENT & CONFIGURATION
+# ===========================================
 
-# nyc test coverage
-.nyc_output
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
 
-# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
-.grunt
+# Application properties (sensitive data)
+src/main/resources/application-prod.properties
+src/main/resources/application-staging.properties
+src/main/resources/application-local.properties
 
-# Bower dependency directory (https://bower.io/)
-bower_components
+# ===========================================
+# DEVELOPMENT TOOLS
+# ===========================================
 
-# node-waf configuration
-.lock-wscript
+# ESLint cache
+.eslintcache
 
-# Compiled binary addons (https://nodejs.org/api/addons.html)
-build/Release
-
-# Dependency directories
-node_modules/
-jspm_packages/
-
-# TypeScript cache
-*.tsbuildinfo
+# Stylelint cache
+.stylelintcache
 
 # Optional npm cache directory
 .npm
-
-# Optional eslint cache
-.eslintcache
-
-# Optional stylelint cache
-.stylelintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
 
 # Optional REPL history
 .node_repl_history
@@ -110,24 +185,40 @@ jspm_packages/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+# Yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
 
-# parcel-bundler cache (https://parceljs.org/)
+# Parcel bundler cache
 .cache
 .parcel-cache
 
+# FuseBox cache
+.fusebox/
+
+# Microbundle cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# ===========================================
+# BUILD & DEPLOYMENT
+# ===========================================
+
+# Build outputs
+build/
+dist/
+out/
+
 # Next.js build output
 .next
-out
 
-# Nuxt.js build / generate output
+# Nuxt.js build output
 .nuxt
-dist
 
 # Gatsby files
 .cache/
@@ -138,90 +229,87 @@ public
 .storybook-out
 storybook-static
 
-# Temporary folders
-tmp/
-temp/
+# Serverless directories
+.serverless
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+# ===========================================
+# OPERATING SYSTEM
+# ===========================================
 
-# OS generated files
+# macOS
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+
+# Windows
 Thumbs.db
+Thumbs.db:encryptable
+ehthumbs_vista.db
+*.tmp
+*.temp
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
 
-# Angular specific
-.angular/
-.angular/cache/
-.angular/cache/**/*
-.angular/cache/**/**/*
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
 
-# Testing
-/coverage
-/.nyc_output
+# ===========================================
+# TEMPORARY FILES
+# ===========================================
 
-# e2e
-/e2e/*.js
-/e2e/*.map
+# Temporary folders
+tmp/
+temp/
+.tmp/
 
-# Performance
-.angular/cache
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
 
-# Misc
-.sass-cache/
-connect.lock
+# Logs
+logs
+*.log
+
+# Coverage directory used by tools like istanbul
 coverage/
-libpeerconnection.log
-npm-debug.log
-testem.log
-typings/
+*.lcov
 
-# Optional npm cache directory
-.npm
+# nyc test coverage
+.nyc_output
 
-# Optional eslint cache
-.eslintcache
+# ===========================================
+# DEVELOPMENT FRAMEWORKS
+# ===========================================
 
-# Output of 'npm pack'
-*.tgz
+# Grunt intermediate storage
+.grunt
 
-# Yarn Integrity file
-.yarn-integrity
+# Bower dependency directory
+bower_components
 
-# dotenv environment variables file
-.env
-.env.test
-.env.production
+# node-waf configuration
+.lock-wscript
 
-# parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
+# Compiled binary addons
+build/Release
 
-# next.js build output
-.next
-
-# nuxt.js build output
-.nuxt
-
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless
-
-# FuseBox cache
-.fusebox/
+# Dependency directories
+jspm_packages/
 
 # DynamoDB Local files
 .dynamodb/
@@ -232,9 +320,59 @@ typings/
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
-# yarn v2
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
+# ===========================================
+# SECURITY & SENSITIVE DATA
+# ===========================================
+
+# Keystore files
+*.jks
+*.keystore
+*.p12
+*.pfx
+
+# Certificate files
+*.crt
+*.pem
+*.key
+
+# SSH keys
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+
+# ===========================================
+# DOCUMENTATION & REPORTS
+# ===========================================
+
+# Generated documentation
+docs/generated/
+api-docs/
+
+# Test reports
+test-reports/
+reports/
+
+# ===========================================
+# CUSTOM PROJECT SPECIFIC
+# ===========================================
+
+# Project specific ignores
+# Add any project-specific files or directories here
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Archive files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.tar
+*.zip
+
+# ===========================================
+# END OF .gitignore
+# ===========================================

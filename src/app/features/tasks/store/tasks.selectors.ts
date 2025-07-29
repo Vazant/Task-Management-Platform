@@ -1,6 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { TasksState } from './tasks.state';
 
+
+
 export const selectTasksState = createFeatureSelector<TasksState>('tasks');
 
 export const selectAllTasks = createSelector(
@@ -72,9 +74,10 @@ export const selectSortedTasks = createSelector(
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'updated':
           return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-        case 'priority':
+        case 'priority': {
           const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
           return priorityOrder[b.priority] - priorityOrder[a.priority];
+        }
         case 'dueDate':
           if (!a.dueDate && !b.dueDate) return 0;
           if (!a.dueDate) return 1;

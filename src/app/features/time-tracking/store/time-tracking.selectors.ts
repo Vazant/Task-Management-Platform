@@ -1,6 +1,8 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { TimeTrackingState } from './time-tracking.state';
 
+
+
 export const selectTimeTrackingState = createFeatureSelector<TimeTrackingState>('timeTracking');
 
 export const selectAllTimeEntries = createSelector(
@@ -40,7 +42,7 @@ export const selectIsTimerActive = createSelector(
 
 export const selectActiveTaskId = createSelector(
   selectActiveTimer,
-  (activeTimer) => activeTimer?.taskId || null
+  (activeTimer) => activeTimer?.taskId ?? null
 );
 
 // Время по задаче

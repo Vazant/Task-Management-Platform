@@ -1,73 +1,104 @@
-<div class="dashboard-container">
-  <div class="dashboard-header">
-    <h1>Welcome to TaskBoard Pro</h1>
-    <p>Your project management dashboard</p>
-  </div>
+<app-layout [showHeader]="true" [showFooter]="true">
+  <div class="dashboard-container">
 
-  <div class="dashboard-stats">
-    <div class="stat-card">
-      <div class="stat-icon">📊</div>
-      <div class="stat-content">
-        <h3>Total Projects</h3>
+  <!-- Основной контент -->
+  <main class="dashboard-main">
+    <!-- Приветствие -->
+    <section class="welcome-section">
+      <div class="welcome-content">
+        <h1 class="welcome-title">Добро пожаловать, {{ currentUser?.username || 'Пользователь' }}!</h1>
+        <p class="welcome-subtitle">Управляйте своими проектами и задачами эффективно</p>
+      </div>
+    </section>
+
+    <!-- Статистика в стиле feature-card -->
+    <section class="dashboard-stats">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i-lucide [img]="ChartColumn" [size]="32"></i-lucide>
+        </div>
+        <h3>Всего проектов</h3>
         <p class="stat-number">0</p>
+        <span class="stat-change positive">+0% с прошлой недели</span>
       </div>
-    </div>
 
-    <div class="stat-card">
-      <div class="stat-icon">📝</div>
-      <div class="stat-content">
-        <h3>Active Tasks</h3>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i-lucide [img]="CheckSquare" [size]="32"></i-lucide>
+        </div>
+        <h3>Активные задачи</h3>
         <p class="stat-number">0</p>
+        <span class="stat-change neutral">Без изменений</span>
       </div>
-    </div>
 
-    <div class="stat-card">
-      <div class="stat-icon">⏱️</div>
-      <div class="stat-content">
-        <h3>Time Tracked</h3>
-        <p class="stat-number">0h</p>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i-lucide [img]="Clock" [size]="32"></i-lucide>
+        </div>
+        <h3>Отслежено времени</h3>
+        <p class="stat-number">0ч</p>
+        <span class="stat-change positive">+0% с прошлой недели</span>
       </div>
-    </div>
 
-    <div class="stat-card">
-      <div class="stat-icon">✅</div>
-      <div class="stat-content">
-        <h3>Completed</h3>
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i-lucide [img]="CheckCircle" [size]="32"></i-lucide>
+        </div>
+        <h3>Завершено</h3>
         <p class="stat-number">0</p>
+        <span class="stat-change positive">+0% с прошлой недели</span>
       </div>
-    </div>
-  </div>
+    </section>
 
-  <div class="dashboard-content">
-    <div class="quick-actions">
-      <h2>Quick Actions</h2>
-      <div class="action-buttons">
-        <button class="action-btn primary" routerLink="/projects">
-          <span class="btn-icon">➕</span>
-          Create Project
-        </button>
-        <button class="action-btn secondary" routerLink="/tasks">
-          <span class="btn-icon">📝</span>
-          Add Task
-        </button>
-        <button class="action-btn secondary" routerLink="/time-tracking">
-          <span class="btn-icon">⏱️</span>
-          Start Timer
-        </button>
+    <!-- Быстрые действия и активность -->
+    <section class="dashboard-content">
+      <div class="quick-actions">
+        <h2>Быстрые действия</h2>
+        <div class="action-buttons">
+          <a routerLink="/projects" class="action-btn primary">
+            <i-lucide [img]="Plus" [size]="20"></i-lucide>
+            Создать проект
+          </a>
+          <a routerLink="/tasks" class="action-btn secondary">
+            <i-lucide [img]="FileText" [size]="20"></i-lucide>
+            Добавить задачу
+          </a>
+          <a routerLink="/time-tracking" class="action-btn secondary">
+            <i-lucide [img]="Play" [size]="20"></i-lucide>
+            Запустить таймер
+          </a>
+          <a routerLink="/analytics" class="action-btn secondary">
+            <i-lucide [img]="TrendingUp" [size]="20"></i-lucide>
+            Посмотреть отчеты
+          </a>
+        </div>
       </div>
-    </div>
 
-    <div class="recent-activity">
-      <h2>Recent Activity</h2>
-      <div class="activity-list">
-        <div class="activity-item">
-          <div class="activity-icon">📋</div>
-          <div class="activity-content">
-            <p>No recent activity</p>
-            <span class="activity-time">Get started by creating your first project!</span>
+      <div class="recent-activity">
+        <h2>Последняя активность</h2>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-icon">
+              <i-lucide [img]="PartyPopper" [size]="20"></i-lucide>
+            </div>
+            <div class="activity-content">
+              <p>Добро пожаловать в TaskBoard Pro!</p>
+              <span class="activity-time">Начните работу, создав свой первый проект</span>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">
+              <i-lucide [img]="ClipboardList" [size]="20"></i-lucide>
+            </div>
+            <div class="activity-content">
+              <p>Нет недавней активности</p>
+              <span class="activity-time">Ваши действия появятся здесь</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </section>
+
+  </main>
 </div>
+</app-layout>

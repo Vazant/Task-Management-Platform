@@ -1,0 +1,11 @@
+com\taskboard\api\controller\AuthController.class
+com\taskboard\api\dto\LoginResponse.class
+com\taskboard\api\model\UserRole.class
+com\taskboard\api\dto\RegisterRequest.class
+com\taskboard\api\service\AuthService.class
+com\taskboard\api\dto\ApiResponse.class
+com\taskboard\api\TaskboardApiApplication.class
+com\taskboard\api\model\User.class
+com\taskboard\api\dto\LoginRequest.class
+com\taskboard\api\service\JwtService.class
+com\taskboard\api\repository\UserRepository.class

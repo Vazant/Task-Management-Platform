@@ -1,11 +1,66 @@
-<div class="settings-container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>Настройки</mat-card-title>
-      <mat-card-subtitle>Управление настройками аккаунта</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <p>Настройки будут добавлены в следующей версии</p>
-    </mat-card-content>
-  </mat-card>
-</div> 
+<app-layout [showHeader]="true" [showFooter]="true">
+  <div class="settings-container">
+    <div class="settings-header">
+      <h1>Настройки</h1>
+      <p>Управление настройками аккаунта и приложения</p>
+    </div>
+
+    <mat-card class="settings-card">
+      <div class="settings-container">
+        <!-- Навигация по вкладкам -->
+        <div class="settings-navigation">
+          <div class="nav-container">
+            <div class="nav-tabs" #navTabs>
+              <a
+                *ngFor="let tab of settingsTabs; trackBy: trackByRoute"
+                [routerLink]="['/settings', tab.route]"
+                routerLinkActive="active"
+                class="nav-tab">
+                <i-lucide [img]="tab.icon" [size]="20"></i-lucide>
+                <span>{{ tab.label }}</span>
+              </a>
+            </div>
+
+            <!-- Кнопки прокрутки -->
+            <div class="scroll-controls" *ngIf="canScrollLeft || canScrollRight">
+              <button
+                class="scroll-btn scroll-left"
+                *ngIf="canScrollLeft"
+                (click)="scrollLeft()"
+                type="button"
+                aria-label="Прокрутить влево">
+                <i-lucide [img]="ChevronLeft" [size]="18"></i-lucide>
+              </button>
+              <button
+                class="scroll-btn scroll-right"
+                *ngIf="canScrollRight"
+                (click)="scrollRight()"
+                type="button"
+                aria-label="Прокрутить вправо">
+                <i-lucide [img]="ChevronRight" [size]="18"></i-lucide>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Контент вкладок -->
+        <div class="settings-content">
+          <div class="tab-content">
+            <div class="tab-header">
+              <div class="tab-icon">
+                <i-lucide [img]="getCurrentTabIcon()" [size]="24"></i-lucide>
+              </div>
+              <div class="tab-info">
+                <h2>{{ getCurrentTabLabel() }}</h2>
+                <p>{{ getCurrentTabDescription() }}</p>
+              </div>
+            </div>
+
+            <!-- Роутер для отображения содержимого вкладок -->
+            <router-outlet></router-outlet>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+</app-layout>

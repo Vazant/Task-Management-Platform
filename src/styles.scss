@@ -39,6 +39,135 @@ button {
   font-family: inherit;
 }
 
+/* Правильное выравнивание иконок Material Design */
+button.mat-button .mat-icon,
+a.mat-button .mat-icon,
+a.mat-raised-button .mat-icon,
+a.mat-flat-button .mat-icon,
+a.mat-stroked-button .mat-icon,
+button.mat-raised-button .mat-icon,
+button.mat-flat-button .mat-icon,
+button.mat-stroked-button .mat-icon,
+button.mat-mini-fab .mat-icon,
+button.mat-fab .mat-icon {
+  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Правильное выравнивание иконок Lucide */
+i-lucide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Глобальные стили для центрирования иконок */
+.icon-center {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+}
+
+/* Анимация для спиннера */
+.icon-center[img="Loader2"] {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Стили для уведомлений */
+.success-snackbar {
+  background: #28a745 !important;
+  color: white !important;
+
+  .mat-simple-snackbar-action {
+    color: white !important;
+  }
+}
+
+.error-snackbar {
+  background: #dc3545 !important;
+  color: white !important;
+
+  .mat-simple-snackbar-action {
+    color: white !important;
+  }
+}
+
+.warning-snackbar {
+  background: #ffc107 !important;
+  color: #212529 !important;
+
+  .mat-simple-snackbar-action {
+    color: #212529 !important;
+  }
+}
+
+.info-snackbar {
+  background: #17a2b8 !important;
+  color: white !important;
+
+  .mat-simple-snackbar-action {
+    color: white !important;
+  }
+}
+
+/* Анимации для snackbar */
+.mat-snack-bar-container {
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+@keyframes slideInFromTop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Стили для кнопки retry в snackbar */
+.mat-simple-snackbar-action {
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/* Иконки в кнопках */
+button i-lucide,
+a i-lucide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Иконки в навигации */
+.nav-tab i-lucide,
+.tab-icon i-lucide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
 /* Material Design customizations */
 .mat-mdc-card {
   border-radius: 12px !important;

@@ -4,6 +4,8 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ApiResponse, PaginatedResponse } from '@models';
 
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -17,10 +19,16 @@ export class ApiService {
     });
   }
 
+  private getFileHeaders(): HttpHeaders {
+    return new HttpHeaders({
+      // 'Content-Type': 'multipart/form-data' // This header is often handled by the browser
+    });
+  }
+
   get<T>(endpoint: string, params?: Record<string, string | number | boolean>): Observable<ApiResponse<T>> {
     let httpParams = new HttpParams();
     if (params) {
-      Object.keys(params).forEach(key => {
+      Object.keys(params).forEach((key: string) => {
         httpParams = httpParams.set(key, params[key]);
       });
     }
@@ -39,7 +47,7 @@ export class ApiService {
       .set('limit', limit.toString());
 
     if (params) {
-      Object.keys(params).forEach(key => {
+      Object.keys(params).forEach((key: string) => {
         httpParams = httpParams.set(key, params[key]);
       });
     }
@@ -55,6 +63,14 @@ export class ApiService {
   post<T>(endpoint: string, data: unknown): Observable<ApiResponse<T>> {
     return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data, {
       headers: this.getHeaders()
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  postFile<T>(endpoint: string, formData: FormData): Observable<ApiResponse<T>> {
+    return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, formData, {
+      headers: this.getFileHeaders()
     }).pipe(
       catchError(this.handleError)
     );

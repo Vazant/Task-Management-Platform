@@ -1,24 +1,14 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
-// Components
-import { ProjectsComponent } from './components/projects/projects.component';
-
-// Shared Module
-import { SharedModule } from '../../shared/shared.module';
+import { CommonModule } from '@angular/common';
 
 // Routes
 import { projectsRoutes } from './projects.routes';
 
 @NgModule({
-  declarations: [
-    ProjectsComponent
-  ],
   imports: [
     CommonModule,
-    RouterModule.forChild(projectsRoutes),
-    SharedModule
+    RouterModule.forChild(projectsRoutes)
   ]
 })
 export class ProjectsModule { }

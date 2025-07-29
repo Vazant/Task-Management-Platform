@@ -112,7 +112,8 @@ export const timeTrackingReducer = createReducer(
   })),
 
   on(TimeTrackingActions.deleteTimeEntrySuccess, (state, { timeEntryId }) => {
-    const { [timeEntryId]: _, ...entities } = state.entities;
+    const entities = { ...state.entities };
+    delete entities[timeEntryId];
     const ids = state.ids.filter(id => id !== timeEntryId);
 
     return {

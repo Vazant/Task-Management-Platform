@@ -8,6 +8,7 @@ import { TasksEffects } from './features/tasks/store/tasks.effects';
 import { TimeTrackingEffects } from './features/time-tracking/store/time-tracking.effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 
 import { routes } from './app.routes';
@@ -18,8 +19,8 @@ import { authReducer } from './features/auth/store/auth.reducer';
 
 // Interceptors
 import { authInterceptor } from './core/interceptors/auth.interceptor';
-import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
+import { errorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
 
 // Material Design
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -27,15 +28,56 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 // Core Module
 import { CoreModule } from './core/core.module';
 
+// Lucide Icons - импортируем все необходимые иконки
+import {
+  LucideAngularModule,
+  User,
+  Settings,
+  KeyRound,
+  LogOut,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  Loader2,
+  CheckCircle,
+  Camera,
+  Save,
+  RefreshCw,
+  AlertCircle,
+  Menu,
+  FolderOpen,
+  Plus,
+  Users,
+  TrendingUp,
+  ChartColumn,
+  FileText,
+  Target,
+  Play,
+  PartyPopper,
+  ClipboardList,
+  Eye,
+  EyeOff,
+  Palette,
+  Bell,
+  Shield,
+  Grid3X3,
+  Link,
+  Calendar,
+  Move,
+  Clock
+} from 'lucide-angular';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([authInterceptor, errorInterceptor, loadingInterceptor])
+      withInterceptors([authInterceptor, loadingInterceptor, errorHandlerInterceptor])
     ),
     provideNativeDateAdapter(),
+    provideAnimations(),
     provideStore({
       auth: authReducer,
       projects: projectsReducer,
@@ -52,5 +94,43 @@ export const appConfig: ApplicationConfig = {
     }),
     // Core Module
     importProvidersFrom(CoreModule),
+    // Lucide Icons - выбираем конкретные иконки для оптимизации
+    importProvidersFrom(LucideAngularModule.pick({
+      User,
+      Settings,
+      KeyRound,
+      LogOut,
+      ChevronDown,
+      ChevronLeft,
+      ChevronRight,
+      Mail,
+      Loader2,
+      CheckCircle,
+      Camera,
+      Save,
+      RefreshCw,
+      AlertCircle,
+      Menu,
+      FolderOpen,
+      Plus,
+      Users,
+      TrendingUp,
+      ChartColumn,
+      FileText,
+      Target,
+      Play,
+      PartyPopper,
+      ClipboardList,
+      Eye,
+      EyeOff,
+      Palette,
+      Bell,
+      Shield,
+      Grid3X3,
+      Link,
+      Calendar,
+      Move,
+      Clock
+    })),
   ],
 };

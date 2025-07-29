@@ -1,26 +1,18 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '@services';
+import { User } from '@models';
+import { LayoutComponent } from '../shared/components/layout';
+import { LucideAngularModule, ChartColumn, CheckSquare, Clock, TrendingUp, Menu } from 'lucide-angular';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, LayoutComponent, LucideAngularModule],
   template: `
-    <div class="home-container">
-      <!-- Header -->
-      <header class="header">
-        <div class="header-content">
-          <div class="logo">
-            <h1>TaskBoard Pro</h1>
-          </div>
-          <nav class="nav">
-            <a routerLink="/" class="nav-link active">Главная</a>
-            <a routerLink="/auth/login" class="nav-link">Войти</a>
-            <a routerLink="/auth/register" class="nav-btn">Регистрация</a>
-          </nav>
-        </div>
-      </header>
+    <app-layout [showHeader]="true" [showFooter]="true">
+      <div class="home-container">
 
       <!-- Hero Section -->
       <section class="hero">
@@ -31,8 +23,14 @@ import { CommonModule } from '@angular/common';
               Мощная платформа для командной работы, управления задачами и отслеживания прогресса
             </p>
             <div class="hero-buttons">
-              <a routerLink="/auth/register" class="btn btn-primary">Начать бесплатно</a>
-              <a routerLink="/auth/login" class="btn btn-outline">Войти в систему</a>
+              <ng-container *ngIf="!isAuthenticated; else dashboardButton">
+                <a routerLink="/auth/register" class="btn btn-primary">Начать бесплатно</a>
+                <a routerLink="/auth/login" class="btn btn-outline">Войти в систему</a>
+              </ng-container>
+              <ng-template #dashboardButton>
+                <a routerLink="/dashboard" class="btn btn-primary">Перейти к дашборду</a>
+                <button (click)="logout()" class="btn btn-outline">Выйти</button>
+              </ng-template>
             </div>
           </div>
           <div class="hero-image">
@@ -78,9 +76,7 @@ import { CommonModule } from '@angular/common';
           <div class="features-grid">
             <div class="feature-card">
               <div class="feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 11H1l8-8 8 8h-8v8z"/>
-                </svg>
+                <i-lucide [img]="ChartColumn" [size]="32"></i-lucide>
               </div>
               <h3>Управление проектами</h3>
               <p>Создавайте проекты, добавляйте участников и отслеживайте прогресс в реальном времени</p>
@@ -88,12 +84,7 @@ import { CommonModule } from '@angular/common';
 
             <div class="feature-card">
               <div class="feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <line x1="9" y1="9" x2="15" y2="9"/>
-                  <line x1="9" y1="12" x2="15" y2="12"/>
-                  <line x1="9" y1="15" x2="13" y2="15"/>
-                </svg>
+                <i-lucide [img]="CheckSquare" [size]="32"></i-lucide>
               </div>
               <h3>Kanban доска</h3>
               <p>Визуальное управление задачами с drag-and-drop функционалом</p>
@@ -101,10 +92,7 @@ import { CommonModule } from '@angular/common';
 
             <div class="feature-card">
               <div class="feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <polyline points="12,6 12,12 16,14"/>
-                </svg>
+                <i-lucide [img]="Clock" [size]="32"></i-lucide>
               </div>
               <h3>Отслеживание времени</h3>
               <p>Встроенный таймер и детальная аналитика времени работы</p>
@@ -112,10 +100,7 @@ import { CommonModule } from '@angular/common';
 
             <div class="feature-card">
               <div class="feature-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 3v18h18"/>
-                  <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
-                </svg>
+                <i-lucide [img]="TrendingUp" [size]="32"></i-lucide>
               </div>
               <h3>Аналитика и отчеты</h3>
               <p>Подробная статистика производительности и автоматические отчеты</p>
@@ -130,110 +115,22 @@ import { CommonModule } from '@angular/common';
           <div class="cta-content">
             <h2>Готовы начать?</h2>
             <p>Присоединяйтесь к тысячам команд, которые уже используют TaskBoard Pro</p>
-            <a routerLink="/auth/register" class="btn btn-primary btn-large">Создать аккаунт</a>
+            <ng-container *ngIf="!isAuthenticated; else dashboardCta">
+              <a routerLink="/auth/register" class="btn btn-primary btn-large">Создать аккаунт</a>
+            </ng-container>
+            <ng-template #dashboardCta>
+              <a routerLink="/dashboard" class="btn btn-primary btn-large">Перейти к дашборду</a>
+            </ng-template>
           </div>
         </div>
       </section>
 
-      <!-- Footer -->
-      <footer class="footer">
-        <div class="container">
-          <div class="footer-content">
-            <div class="footer-logo">
-              <h3>TaskBoard Pro</h3>
-              <p>Управление проектами стало проще</p>
-            </div>
-            <div class="footer-links">
-              <div class="footer-section">
-                <h4>Продукт</h4>
-                <a href="#">Возможности</a>
-                <a href="#">Цены</a>
-                <a href="#">Интеграции</a>
-              </div>
-              <div class="footer-section">
-                <h4>Поддержка</h4>
-                <a href="#">Документация</a>
-                <a href="#">FAQ</a>
-                <a href="#">Контакты</a>
-              </div>
-              <div class="footer-section">
-                <h4>Компания</h4>
-                <a href="#">О нас</a>
-                <a href="#">Блог</a>
-                <a href="#">Карьера</a>
-              </div>
-            </div>
-          </div>
-          <div class="footer-bottom">
-            <p>&copy; 2024 TaskBoard Pro. Все права защищены.</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+      </div>
+    </app-layout>
   `,
   styles: [`
     .home-container {
       background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-    }
-
-    /* Header */
-    .header {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-    }
-
-    .header-content {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #2c3e50;
-      margin: 0;
-    }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-    }
-
-    .nav-link {
-      text-decoration: none;
-      color: #6c757d;
-      font-weight: 500;
-      transition: color 0.3s ease;
-    }
-
-    .nav-link:hover,
-    .nav-link.active {
-      color: #3498db;
-    }
-
-    .nav-btn {
-      background: #3498db;
-      color: white;
-      padding: 0.5rem 1.5rem;
-      border-radius: 6px;
-      text-decoration: none;
-      font-weight: 500;
-      transition: background 0.3s ease;
-    }
-
-    .nav-btn:hover {
-      background: #2980b9;
     }
 
     /* Hero Section */
@@ -441,11 +338,15 @@ import { CommonModule } from '@angular/common';
       justify-content: center;
       margin: 0 auto 1.5rem;
       color: white;
+      position: relative;
     }
 
-    .feature-icon svg {
-      width: 32px;
-      height: 32px;
+    .feature-icon i-lucide {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
     }
 
     .feature-card h3 {
@@ -478,58 +379,7 @@ import { CommonModule } from '@angular/common';
       opacity: 0.9;
     }
 
-    /* Footer */
-    .footer {
-      background: #2c3e50;
-      color: white;
-      padding: 3rem 2rem 1rem;
-    }
 
-    .footer-content {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 3rem;
-      margin-bottom: 2rem;
-    }
-
-    .footer-logo h3 {
-      font-size: 1.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .footer-logo p {
-      opacity: 0.8;
-    }
-
-    .footer-links {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2rem;
-    }
-
-    .footer-section h4 {
-      margin-bottom: 1rem;
-      color: #3498db;
-    }
-
-    .footer-section a {
-      display: block;
-      color: rgba(255, 255, 255, 0.8);
-      text-decoration: none;
-      margin-bottom: 0.5rem;
-      transition: color 0.3s ease;
-    }
-
-    .footer-section a:hover {
-      color: white;
-    }
-
-    .footer-bottom {
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding-top: 1rem;
-      text-align: center;
-      opacity: 0.8;
-    }
 
     /* Responsive */
     @media (max-width: 768px) {
@@ -562,9 +412,68 @@ import { CommonModule } from '@angular/common';
       .nav {
         gap: 1rem;
       }
+
+      .nav-desktop {
+        display: none;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+      }
+
+      .mobile-menu {
+        display: block;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-content {
+        padding: 0.75rem;
+      }
+
+      .logo h1 {
+        font-size: 1.25rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
     }
   `]
 })
-export class HomeComponent {
-  // Простая главная страница без логики
+export class HomeComponent implements OnInit {
+  private readonly authService = inject(AuthService);
+
+  isAuthenticated = false;
+  currentUser: User | null = null;
+
+  // Lucide icons
+  readonly ChartColumn = ChartColumn;
+  readonly CheckSquare = CheckSquare;
+  readonly Clock = Clock;
+  readonly TrendingUp = TrendingUp;
+  readonly Menu = Menu;
+
+
+
+  ngOnInit(): void {
+    // Подписываемся на изменения состояния аутентификации
+    this.authService.isAuthenticated$.subscribe(isAuth => {
+      this.isAuthenticated = isAuth;
+    });
+
+    // Подписываемся на изменения пользователя
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser = user;
+    });
+  }
+
+  logout(): void {
+    this.authService.logout();
+  }
+
+  changePassword(): void {
+    // TODO: Реализовать смену пароля
+    // Пока просто заглушка
+  }
 }

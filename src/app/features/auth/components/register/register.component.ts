@@ -1,21 +1,39 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { LucideAngularModule, User, Mail, Eye, EyeOff, Loader2 } from 'lucide-angular';
 
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
 import { RegisterRequest } from '@models';
 import { ValidationUtils } from '@utils';
-
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
-  standalone: false
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    LucideAngularModule
+  ]
 })
 export class RegisterComponent implements OnInit, OnDestroy {
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject(Store);
+
   registerForm!: FormGroup;
   loading$!: Observable<boolean>;
   error$!: Observable<string | null>;
@@ -23,10 +41,16 @@ export class RegisterComponent implements OnInit, OnDestroy {
   hideConfirmPassword = true;
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly store: Store
-  ) {
+  // Lucide icons
+  readonly User = User;
+  readonly Mail = Mail;
+  readonly Eye = Eye;
+  readonly EyeOff = EyeOff;
+  readonly Loader2 = Loader2;
+
+
+
+  constructor() {
     this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
     this.error$ = this.store.select(AuthSelectors.selectError);
   }

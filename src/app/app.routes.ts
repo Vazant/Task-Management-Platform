@@ -1,10 +1,14 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
+import { AuthGuard, GuestGuard } from './core/guards';
+import { PageNotFoundComponent } from './shared/components/page-not-found/page-not-found.component';
+
+
 
 export const routes: Routes = [
   {
     path: 'auth',
     loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule),
+    canActivate: [GuestGuard],
   },
   {
     path: 'dashboard',
@@ -37,11 +41,16 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'profile',
+    loadChildren: () => import('./features/profile/profile.routes').then(m => m.profileRoutes),
+    canActivate: [AuthGuard],
+  },
+  {
     path: '',
     loadComponent: () => import('./home/home.component').then(m => m.HomeComponent),
   },
   {
     path: '**',
-    redirectTo: '/',
+    component: PageNotFoundComponent,
   },
 ];

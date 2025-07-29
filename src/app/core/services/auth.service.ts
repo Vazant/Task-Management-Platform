@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
+import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { ApiService } from '@services';
 import { User, LoginRequest, LoginResponse, RegisterRequest } from '@models';
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +11,8 @@ import { User, LoginRequest, LoginResponse, RegisterRequest } from '@models';
 export class AuthService {
   private readonly currentUserSubject = new BehaviorSubject<User | null>(null);
   public readonly currentUser$ = this.currentUserSubject.asObservable();
+  private readonly isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
+  public readonly isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
   private readonly apiService = inject(ApiService);
 
   constructor() {
@@ -17,26 +21,37 @@ export class AuthService {
 
   private loadUserFromStorage(): void {
     const userStr = localStorage.getItem('user');
-    if (userStr) {
+    const token = localStorage.getItem('token');
+
+    if (userStr && token) {
       try {
         const user = JSON.parse(userStr);
         this.currentUserSubject.next(user);
+        this.isAuthenticatedSubject.next(true);
       } catch (error) {
         console.error('Error parsing user from storage:', error);
         this.logout();
       }
+    } else {
+      this.isAuthenticatedSubject.next(false);
     }
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
     return this.apiService.post<LoginResponse>('/auth/login', credentials).pipe(
-      map(response => response.data)
+      map(response => response.data),
+      tap(response => {
+        this.setUser(response.user, response.token, response.refreshToken);
+      })
     );
   }
 
   register(userData: RegisterRequest): Observable<LoginResponse> {
     return this.apiService.post<LoginResponse>('/auth/register', userData).pipe(
-      map(response => response.data)
+      map(response => response.data),
+      tap(response => {
+        this.setUser(response.user, response.token, response.refreshToken);
+      })
     );
   }
 
@@ -45,6 +60,7 @@ export class AuthService {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     this.currentUserSubject.next(null);
+    this.isAuthenticatedSubject.next(false);
   }
 
   setUser(user: User, token: string, refreshToken?: string): void {
@@ -54,6 +70,7 @@ export class AuthService {
       localStorage.setItem('refreshToken', refreshToken);
     }
     this.currentUserSubject.next(user);
+    this.isAuthenticatedSubject.next(true);
   }
 
   getCurrentUser(): User | null {
@@ -61,7 +78,7 @@ export class AuthService {
   }
 
   isAuthenticated(): boolean {
-    return !!this.getCurrentUser() && !!localStorage.getItem('token');
+    return this.isAuthenticatedSubject.value;
   }
 
   isAdmin(): boolean {
@@ -75,7 +92,13 @@ export class AuthService {
       '/auth/refresh',
       { refreshToken }
     ).pipe(
-      map(response => response.data)
+      map(response => response.data),
+      tap(response => {
+        localStorage.setItem('token', response.token);
+        if (response.refreshToken) {
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }
+      })
     );
   }
 
@@ -89,5 +112,30 @@ export class AuthService {
     return this.apiService.post<{ message: string }>('/auth/reset-password', { token, password }).pipe(
       map(response => response.data)
     );
+  }
+
+  // Метод для проверки валидности токена
+  checkTokenValidity(): boolean {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return false;
+    }
+
+    try {
+      // Простая проверка JWT токена (можно расширить)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+
+      if (payload.exp < currentTime) {
+        this.logout();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error checking token validity:', error);
+      this.logout();
+      return false;
+    }
   }
 }

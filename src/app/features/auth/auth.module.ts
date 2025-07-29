@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { LucideAngularModule } from 'lucide-angular';
 
 // Components
 import { LoginComponent } from './components/login/login.component';
@@ -15,16 +16,16 @@ import { SharedModule } from '../../shared/shared.module';
 import { authRoutes } from './auth.routes';
 
 @NgModule({
-  declarations: [
-    LoginComponent,
-    RegisterComponent,
-    ForgotPasswordComponent
-  ],
+  declarations: [],
   imports: [
     CommonModule,
     ReactiveFormsModule,
     RouterModule.forChild(authRoutes),
-    SharedModule
+    SharedModule,
+    LucideAngularModule,
+    LoginComponent,
+    RegisterComponent,
+    ForgotPasswordComponent
   ]
 })
 export class AuthModule { }

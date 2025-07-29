@@ -1,4 +1,35 @@
-<div class="tasks-container">
-  <h1>Управление задачами</h1>
-  <p>Здесь будет Kanban доска и управление задачами</p>
-</div> 
+<app-layout [showHeader]="true" [showFooter]="true">
+
+<!-- Main Content -->
+<main class="dashboard-main">
+  <div class="welcome-section">
+    <h1 class="welcome-title">Задачи</h1>
+    <p class="welcome-subtitle">Реализуем в следующей версии</p>
+  </div>
+
+  <div class="placeholder-content">
+    <div class="placeholder-card">
+      <div class="placeholder-icon">
+        <i-lucide [img]="CheckSquare" [size]="64"></i-lucide>
+      </div>
+      <h2>Kanban доска</h2>
+      <p>Здесь будет функционал для управления задачами с помощью Kanban доски</p>
+      <div class="placeholder-features">
+        <div class="feature-item">
+          <i-lucide [img]="Plus" [size]="20"></i-lucide>
+          <span>Создание задач</span>
+        </div>
+        <div class="feature-item">
+          <i-lucide [img]="Move" [size]="20"></i-lucide>
+          <span>Drag & Drop</span>
+        </div>
+        <div class="feature-item">
+          <i-lucide [img]="Calendar" [size]="20"></i-lucide>
+          <span>Дедлайны</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+</app-layout>

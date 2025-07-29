@@ -1,87 +1,117 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LucideAngularModule, Loader2, Eye, EyeOff } from 'lucide-angular';
 import { Store } from '@ngrx/store';
-import { Observable, Subject } from 'rxjs';
 
-
+import { AuthService } from '@services';
+import { Subscription } from 'rxjs';
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
-import { LoginRequest } from '@models';
-
 
 @Component({
   selector: 'app-login',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatProgressSpinnerModule,
+    LucideAngularModule
+  ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  standalone: false
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit, OnDestroy {
-  loginForm!: FormGroup;
-  loading$: Observable<boolean>;
-  error$: Observable<string | null>;
-  private readonly destroy$ = new Subject<void>();
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder);
+  private readonly store = inject(Store);
 
-  constructor(
-    private readonly fb: FormBuilder,
-    private readonly store: Store
-  ) {
-    this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
-    this.error$ = this.store.select(AuthSelectors.selectError);
-  }
+  // Lucide icons для standalone компонентов
+  readonly Loader2 = Loader2;
+  readonly Eye = Eye;
+  readonly EyeOff = EyeOff;
+
+  loginForm!: FormGroup;
+  loading$ = this.store.select(AuthSelectors.selectIsLoading);
+  error$ = this.store.select(AuthSelectors.selectError);
+  hidePassword = true;
+  private readonly subscription = new Subscription();
 
   ngOnInit(): void {
     this.initForm();
-    this.clearError();
+    this.subscribeToAuthState();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.subscription.unsubscribe();
   }
 
   private initForm(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
   }
 
+  private subscribeToAuthState(): void {
+    this.subscription.add(
+      this.authService.currentUser$.subscribe(user => {
+        if (user) {
+          this.router.navigate(['/dashboard']);
+        }
+      })
+    );
+  }
+
   onSubmit(): void {
     if (this.loginForm.valid) {
-      const credentials: LoginRequest = {
-        email: this.loginForm.value.email,
-        password: this.loginForm.value.password
-      };
+      const { email, password, rememberMe } = this.loginForm.value;
+      // Отправляем только email и password, rememberMe обрабатываем отдельно
+      this.store.dispatch(AuthActions.login({ credentials: { email, password } }));
 
-      this.store.dispatch(AuthActions.login({ credentials }));
-    } else {
-      this.markFormGroupTouched();
+      // Обработка rememberMe (можно сохранить в localStorage)
+      if (rememberMe) {
+        localStorage.setItem('rememberMe', 'true');
+      } else {
+        localStorage.removeItem('rememberMe');
+      }
     }
   }
 
-  private markFormGroupTouched(): void {
-    Object.keys(this.loginForm.controls).forEach(key => {
-      const control = this.loginForm.get(key);
-      control?.markAsTouched();
-    });
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.loginForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
-  private clearError(): void {
-    this.store.dispatch(AuthActions.clearAuthError());
-  }
+  getErrorMessage(fieldName: string): string {
+    const field = this.loginForm.get(fieldName);
+    if (!field?.errors) return '';
 
-  getErrorMessage(controlName: string): string {
-    const control = this.loginForm.get(controlName);
-    if (control?.hasError('required')) {
-      return 'Это поле обязательно';
+    if (field.errors['required']) {
+      return 'Это поле обязательно для заполнения';
     }
-    if (control?.hasError('email')) {
+    if (field.errors['email']) {
       return 'Введите корректный email';
     }
-    if (control?.hasError('minlength')) {
-      return 'Минимум 8 символов';
+    if (field.errors['minlength']) {
+      return `Минимальная длина ${field.errors['minlength'].requiredLength} символов`;
     }
-    return '';
+
+    return 'Неверное значение';
   }
 }
