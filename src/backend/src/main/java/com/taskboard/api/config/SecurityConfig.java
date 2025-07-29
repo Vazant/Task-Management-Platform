@@ -14,7 +14,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,6 +30,12 @@ public class SecurityConfig {
     
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    
+    @Autowired
+    private UserDetailsService userDetailsService;
+    
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private CorsConfigurationSource corsConfigurationSource;
@@ -59,7 +65,7 @@ public class SecurityConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            .authenticationProvider(authenticationProvider())
+            .authenticationProvider(authenticationProvider(userDetailsService, passwordEncoder))
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         // Для H2 консоли
@@ -71,26 +77,24 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationProvider authenticationProvider() {
-        return new DaoAuthenticationProvider(userDetailsService());
+    public AuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
     }
 
 
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new CustomUserDetailsService();
-    }
+    // UserDetailsService is now provided by CustomUserDetailsService in the user module
+    // which is annotated with @Service and will be auto-detected
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    // PasswordEncoder is now provided by UserServiceConfig
 
     // CORS конфигурация уже определена в CorsConfig
     // Используем существующий bean corsConfigurationSource
