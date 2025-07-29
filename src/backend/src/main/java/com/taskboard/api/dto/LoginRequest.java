@@ -12,7 +12,7 @@ public class LoginRequest {
     @NotBlank(message = "Пароль обязателен")
     private String password;
 
-    public LoginRequest() {}
+    public LoginRequest() { }
 
     public LoginRequest(String email, String password) {
         this.email = email;

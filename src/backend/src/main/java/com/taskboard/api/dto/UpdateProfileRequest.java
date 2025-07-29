@@ -7,7 +7,7 @@ public class UpdateProfileRequest {
     private String lastName;
 
     // Конструкторы
-    public UpdateProfileRequest() {}
+    public UpdateProfileRequest() { }
 
     public UpdateProfileRequest(String username, String email, String firstName, String lastName) {
         this.username = username;

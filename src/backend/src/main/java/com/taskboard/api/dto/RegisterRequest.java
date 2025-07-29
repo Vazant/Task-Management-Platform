@@ -21,7 +21,7 @@ public class RegisterRequest {
     @NotBlank(message = "Подтверждение пароля обязательно")
     private String confirmPassword;
 
-    public RegisterRequest() {}
+    public RegisterRequest() { }
 
     public RegisterRequest(String username, String email, String password, String confirmPassword) {
         this.username = username;

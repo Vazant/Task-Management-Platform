@@ -19,6 +19,9 @@ import java.util.UUID;
 
 @Service
 public class ProfileService {
+    
+    private static final int MAX_FILE_SIZE_MB = 5;
+    private static final int BYTES_PER_MB = 1024 * 1024;
 
     @Autowired
     private UserRepository userRepository;
@@ -29,7 +32,7 @@ public class ProfileService {
     private static final String AVATAR_UPLOAD_DIR = "uploads/avatars/";
 
     /**
-     * Получить профиль пользователя
+     * Получить профиль пользователя.
      */
     public ProfileResponse getProfile(String username) {
         User user = userRepository.findByUsername(username)
@@ -39,7 +42,7 @@ public class ProfileService {
     }
 
     /**
-     * Обновить профиль пользователя
+     * Обновить профиль пользователя.
      */
     public ProfileResponse updateProfile(String username, UpdateProfileRequest request) {
         User user = userRepository.findByUsername(username)
@@ -77,7 +80,7 @@ public class ProfileService {
     }
 
     /**
-     * Обновить аватар пользователя
+     * Обновить аватар пользователя.
      */
     public ProfileResponse updateAvatar(String username, MultipartFile file) {
         User user = userRepository.findByUsername(username)
@@ -88,8 +91,8 @@ public class ProfileService {
             throw new RuntimeException("Файл не выбран");
         }
 
-        if (file.getSize() > 5 * 1024 * 1024) { // 5MB
-            throw new RuntimeException("Файл слишком большой. Максимальный размер: 5MB");
+        if (file.getSize() > MAX_FILE_SIZE_MB * BYTES_PER_MB) { // 5MB
+            throw new RuntimeException("Файл слишком большой. Максимальный размер: " + MAX_FILE_SIZE_MB + "MB");
         }
 
         String contentType = file.getContentType();
@@ -106,8 +109,9 @@ public class ProfileService {
 
             // Генерируем уникальное имя файла
             String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename != null ?
-                originalFilename.substring(originalFilename.lastIndexOf(".")) : ".jpg";
+            String extension = originalFilename != null 
+                ? originalFilename.substring(originalFilename.lastIndexOf(".")) 
+                : ".jpg";
             String filename = UUID.randomUUID().toString() + extension;
             Path filePath = uploadDir.resolve(filename);
 
@@ -135,7 +139,7 @@ public class ProfileService {
     }
 
     /**
-     * Удалить аватар пользователя
+     * Удалить аватар пользователя.
      */
     public ProfileResponse deleteAvatar(String username) {
         User user = userRepository.findByUsername(username)
@@ -163,7 +167,7 @@ public class ProfileService {
     }
 
     /**
-     * Изменить пароль пользователя
+     * Изменить пароль пользователя.
      */
     public void changePassword(String username, ChangePasswordRequest request) {
         User user = userRepository.findByUsername(username)

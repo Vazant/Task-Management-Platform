@@ -6,6 +6,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 
 @SpringBootApplication
 @EnableConfigurationProperties
+@SuppressWarnings("checkstyle:HideUtilityClassConstructor")
 public class TaskboardApiApplication {
 
     public static void main(String[] args) {
