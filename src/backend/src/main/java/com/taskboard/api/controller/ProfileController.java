@@ -9,7 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -21,7 +29,7 @@ public class ProfileController {
     private ProfileService profileService;
 
     /**
-     * Получить профиль текущего пользователя
+     * Получить профиль текущего пользователя.
      */
     @GetMapping
     public ResponseEntity<ApiResponse<ProfileResponse>> getProfile(Authentication authentication) {
@@ -35,7 +43,7 @@ public class ProfileController {
     }
 
     /**
-     * Обновить профиль пользователя
+     * Обновить профиль пользователя.
      */
     @PutMapping
     public ResponseEntity<ApiResponse<ProfileResponse>> updateProfile(
@@ -51,7 +59,7 @@ public class ProfileController {
     }
 
     /**
-     * Загрузить аватар пользователя
+     * Загрузить аватар пользователя.
      */
     @PostMapping(value = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<ProfileResponse>> uploadAvatar(
@@ -67,7 +75,7 @@ public class ProfileController {
     }
 
     /**
-     * Удалить аватар пользователя
+     * Удалить аватар пользователя.
      */
     @DeleteMapping("/avatar")
     public ResponseEntity<ApiResponse<ProfileResponse>> deleteAvatar(Authentication authentication) {
@@ -81,7 +89,7 @@ public class ProfileController {
     }
 
     /**
-     * Изменить пароль пользователя
+     * Изменить пароль пользователя.
      */
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<String>> changePassword(

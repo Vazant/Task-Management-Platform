@@ -1,10 +1,17 @@
 package com.taskboard.api.controller;
 
-import com.taskboard.api.dto.*;
+import com.taskboard.api.dto.ApiResponse;
+import com.taskboard.api.dto.LoginRequest;
+import com.taskboard.api.dto.LoginResponse;
+import com.taskboard.api.dto.RegisterRequest;
 import com.taskboard.api.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -76,7 +83,10 @@ public class AuthController {
             // TODO: Реализовать логику восстановления пароля
             // authService.forgotPassword(email);
 
-            return ResponseEntity.ok(new ApiResponse<>("Инструкции отправлены на email", "Инструкции отправлены", true));
+            return ResponseEntity.ok(new ApiResponse<>(
+                    "Инструкции отправлены на email",
+                    "Инструкции отправлены",
+                    true));
         } catch (Exception e) {
             return ResponseEntity.badRequest()
                     .body(new ApiResponse<>(null, e.getMessage(), false));

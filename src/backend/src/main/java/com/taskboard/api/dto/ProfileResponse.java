@@ -15,10 +15,11 @@ public class ProfileResponse {
     private LocalDateTime updatedAt;
 
     // Конструкторы
-    public ProfileResponse() {}
+    public ProfileResponse() { }
 
     public ProfileResponse(Long id, String username, String email, String firstName, String lastName,
-                          String avatar, String role, LocalDateTime lastLogin, LocalDateTime createdAt, LocalDateTime updatedAt) {
+                          String avatar, String role, LocalDateTime lastLogin,
+                          LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.username = username;
         this.email = email;

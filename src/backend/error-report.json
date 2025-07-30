@@ -1,0 +1,208 @@
+{
+  "checkstyle": [
+    {
+      "file": "TaskboardApiApplication.java",
+      "line": 7,
+      "column": 1,
+      "severity": "warning",
+      "message": "Utility classes should not have a public or default constructor",
+      "type": "HideUtilityClassConstructor"
+    },
+    {
+      "file": "AuthController.java",
+      "line": 3,
+      "column": 29,
+      "severity": "warning",
+      "message": "Using the '.*' form of import should be avoided - com.taskboard.api.dto.*",
+      "type": "AvoidStarImport"
+    },
+    {
+      "file": "AuthController.java",
+      "line": 7,
+      "column": 47,
+      "severity": "warning",
+      "message": "Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*",
+      "type": "AvoidStarImport"
+    },
+    {
+      "file": "AuthController.java",
+      "line": 76,
+      "column": 15,
+      "severity": "warning",
+      "message": "Comment matches to-do format 'TODO:'",
+      "type": "TodoComment"
+    },
+    {
+      "file": "AuthController.java",
+      "line": 79,
+      "severity": "warning",
+      "message": "Line is longer than 120 characters (found 121)",
+      "type": "LineLength"
+    },
+    {
+      "file": "AuthController.java",
+      "line": 102,
+      "column": 15,
+      "severity": "warning",
+      "message": "Comment matches to-do format 'TODO:'",
+      "type": "TodoComment"
+    },
+    {
+      "file": "ProfileController.java",
+      "line": 12,
+      "column": 47,
+      "severity": "warning",
+      "message": "Using the '.*' form of import should be avoided - org.springframework.web.bind.annotation.*",
+      "type": "AvoidStarImport"
+    },
+    {
+      "file": "ProfileController.java",
+      "lines": [23, 37, 53, 69, 83],
+      "severity": "warning",
+      "message": "First sentence should end with a period",
+      "type": "JavadocStyle"
+    },
+    {
+      "file": "JwtService.java",
+      "line": 3,
+      "column": 23,
+      "severity": "warning",
+      "message": "Using the '.*' form of import should be avoided - io.jsonwebtoken.*",
+      "type": "AvoidStarImport"
+    },
+    {
+      "file": "ProfileService.java",
+      "lines": [31, 41, 79, 137, 165, 184],
+      "severity": "warning",
+      "message": "First sentence should end with a period",
+      "type": "JavadocStyle"
+    },
+    {
+      "file": "ProfileService.java",
+      "line": 82,
+      "column": 5,
+      "severity": "warning",
+      "message": "Cyclomatic Complexity is 11 (max allowed is 10)",
+      "type": "CyclomaticComplexity"
+    },
+    {
+      "file": "ProfileService.java",
+      "line": 82,
+      "column": 5,
+      "severity": "warning",
+      "message": "NPath Complexity is 234 (max allowed is 200)",
+      "type": "NPathComplexity"
+    },
+    {
+      "file": "ProfileService.java",
+      "line": 91,
+      "severity": "warning",
+      "message": "Magic numbers: 5, 1024",
+      "type": "MagicNumber"
+    },
+    {
+      "file": "ProfileService.java",
+      "line": 109,
+      "column": 57,
+      "severity": "warning",
+      "message": "'?' should be on a new line",
+      "type": "OperatorWrap"
+    },
+    {
+      "file": "LoginResponse.java",
+      "line": 10,
+      "severity": "warning",
+      "message": "Whitespace around braces",
+      "type": "WhitespaceAround"
+    },
+    {
+      "file": "ApiResponse.java",
+      "line": 12,
+      "severity": "warning",
+      "message": "Whitespace around braces",
+      "type": "WhitespaceAround"
+    },
+    {
+      "file": "LoginRequest.java",
+      "line": 15,
+      "severity": "warning",
+      "message": "Whitespace around braces",
+      "type": "WhitespaceAround"
+    },
+    {
+      "file": "ProfileResponse.java",
+      "line": 18,
+      "severity": "warning",
+      "message": "Whitespace around braces",
+      "type": "WhitespaceAround"
+    },
+    {
+      "file": "ProfileResponse.java",
+      "line": 20,
+      "column": 12,
+      "severity": "warning",
+      "message": "More than 7 parameters (found 10)",
+      "type": "ParameterNumber"
+    },
+    {
+      "file": "ProfileResponse.java",
+      "line": 21,
+      "severity": "warning",
+      "message": "Line is longer than 120 characters (found 130)",
+      "type": "LineLength"
+    },
+    {
+      "file": "RegisterRequest.java",
+      "line": 10,
+      "severity": "warning",
+      "message": "Magic numbers: 3, 20",
+      "type": "MagicNumber"
+    },
+    {
+      "file": "RegisterRequest.java",
+      "line": 18,
+      "severity": "warning",
+      "message": "Magic number: 8",
+      "type": "MagicNumber"
+    },
+    {
+      "file": "RegisterRequest.java",
+      "line": 24,
+      "severity": "warning",
+      "message": "Whitespace around braces",
+      "type": "WhitespaceAround"
+    },
+    {
+      "file": "UpdateProfileRequest.java",
+      "line": 10,
+      "severity": "warning",
+      "message": "Whitespace around braces",
+      "type": "WhitespaceAround"
+    },
+    {
+      "file": "ChangePasswordRequest.java",
+      "line": 8,
+      "severity": "warning",
+      "message": "Whitespace around braces",
+      "type": "WhitespaceAround"
+    },
+    {
+      "file": "User.java",
+      "line": 3,
+      "column": 27,
+      "severity": "warning",
+      "message": "Using the '.*' form of import should be avoided - jakarta.persistence.*",
+      "type": "AvoidStarImport"
+    },
+    {
+      "file": "User.java",
+      "lines": [29, 34],
+      "severity": "warning",
+      "message": "Magic numbers: 3, 20, 8",
+      "type": "MagicNumber"
+    }
+  ],
+  "pmd": [],
+  "cpd": [],
+  "bugs": []
+}

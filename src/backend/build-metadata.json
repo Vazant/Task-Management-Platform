@@ -1,0 +1,24 @@
+{
+  "javaVersion": "17",
+  "springBootVersion": "3.5.4",
+  "dependencies": {
+    "org.springframework.boot:spring-boot-starter-web": "3.5.4",
+    "org.springframework.boot:spring-boot-starter-security": "3.5.4",
+    "org.springframework.boot:spring-boot-starter-data-jpa": "3.5.4",
+    "org.springframework.boot:spring-boot-starter-validation": "3.5.4",
+    "com.h2database:h2": "runtime",
+    "io.jsonwebtoken:jjwt-api": "0.12.3",
+    "io.jsonwebtoken:jjwt-impl": "0.12.3",
+    "io.jsonwebtoken:jjwt-jackson": "0.12.3",
+    "org.springframework.security:spring-security-crypto": "6.3.3",
+    "org.springframework.boot:spring-boot-devtools": "3.5.4",
+    "org.springframework.boot:spring-boot-starter-test": "3.5.4",
+    "org.springframework.security:spring-security-test": "6.3.3"
+  },
+  "plugins": {
+    "spring-boot-maven-plugin": "3.5.4",
+    "maven-pmd-plugin": "3.21.2",
+    "maven-checkstyle-plugin": "3.3.1"
+  },
+  "systemJavaVersion": "21.0.7"
+}
