@@ -1,193 +1,211 @@
-# TaskBoard Pro - Платформа управления проектами
+# Task Management Platform
 
-Полнофункциональная платформа для управления проектами с современным Angular frontend и Spring Boot backend.
+Full-stack task management platform with Angular frontend and Spring Boot backend.
 
-## 🏗️ Архитектура
+## 🏗️ Project Structure
 
 ```
-Task-Management-Platform/
-├── src/
-│   ├── app/               # Angular Frontend
-│   │   ├── features/      # Модули приложения
-│   │   ├── core/          # Общие сервисы и модели
-│   │   └── shared/        # Переиспользуемые компоненты
-│   └── backend/           # Spring Boot Backend
-│       ├── src/main/java/
-│       │   └── com/taskboard/api/
-│       │       ├── controller/ # REST API контроллеры
-│       │       ├── service/    # Бизнес-логика
-│       │       ├── model/      # JPA сущности
-│       │       └── config/     # Конфигурации
-├── package.json           # Angular зависимости
-├── angular.json           # Angular конфигурация
-└── README.md             # Документация проекта
+/
+├── .gitignore
+├── README.md
+├── package.json              # Root workspace configuration
+│
+├── docs/                     # Documentation
+│   └── DEVELOPMENT_ROADMAP.md
+│
+├── config/                   # Shared configuration files
+│   ├── .editorconfig
+│   ├── .eslintrc.json
+│   ├── .prettierrc
+│   ├── tsconfig.json
+│   ├── tsconfig.app.json
+│   └── tsconfig.spec.json
+│
+├── scripts/                  # Build and utility scripts
+│   └── check-imports.js
+│
+├── client/                   # Angular Frontend
+│   ├── package.json
+│   ├── angular.json
+│   └── src/
+│       ├── index.html
+│       ├── main.ts
+│       ├── styles.scss
+│       └── app/
+│           ├── core/         # Singleton services, guards, interceptors
+│           ├── shared/       # Reusable components, pipes, directives
+│           └── features/     # Feature modules (projects, auth, profile, etc.)
+│
+├── server/                   # Spring Boot Backend
+│   ├── package.json
+│   └── src/
+│       ├── main/
+│       │   ├── java/
+│       │   │   └── com/taskboard/
+│       │   │       ├── api/          # Controllers, services, models
+│       │   │       └── user/         # User management
+│       │   └── resources/
+│       └── test/
+│
+└── backend/                  # Legacy backend (to be migrated)
+    └── src/
+        └── main/
+            └── java/
+                └── com/taskboard/
 ```
 
-## 🚀 Быстрый старт
+## 🚀 Quick Start
 
-### Frontend (Angular)
+### Prerequisites
 
+- Node.js >= 18.0.0
+- npm >= 9.0.0
+- Java 17+ (for Spring Boot backend)
+- Maven or Gradle
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/your-username/task-management-platform.git
+   cd task-management-platform
+   ```
+
+2. **Install dependencies**
+   ```bash
+   # Install root dependencies
+   npm install
+   
+   # Install client dependencies
+   npm install --workspace=client
+   
+   # Install server dependencies (if any)
+   npm install --workspace=server
+   ```
+
+3. **Start development servers**
+   ```bash
+   # Start both frontend and backend
+   npm run dev
+   
+   # Or start individually
+   npm run dev:client    # Angular dev server (http://localhost:4200)
+   npm run dev:server    # Spring Boot server (http://localhost:8080)
+   ```
+
+## 📦 Available Scripts
+
+### Root Level (Monorepo)
+
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start both frontend and backend in development mode |
+| `npm run dev:client` | Start Angular development server |
+| `npm run dev:server` | Start Spring Boot development server |
+| `npm run build` | Build both frontend and backend |
+| `npm run test` | Run tests for both frontend and backend |
+| `npm run lint` | Run linting for both frontend and backend |
+| `npm run format` | Format all code with Prettier |
+| `npm run install:all` | Install dependencies for all workspaces |
+
+### Client (Angular)
+
+| Script | Description |
+|--------|-------------|
+| `npm run start` | Start Angular development server |
+| `npm run build` | Build Angular application for production |
+| `npm run test` | Run Angular unit tests |
+| `npm run lint` | Run ESLint on Angular code |
+| `npm run storybook` | Start Storybook development server |
+
+### Server (Spring Boot)
+
+| Script | Description |
+|--------|-------------|
+| `npm run start` | Start Spring Boot application |
+| `npm run build` | Build Spring Boot application |
+| `npm run test` | Run Spring Boot tests |
+
+## 🛠️ Development
+
+### Frontend Development
+
+The Angular application is located in the `client/` directory and follows a modular architecture:
+
+- **Core Module**: Singleton services, guards, interceptors, and core utilities
+- **Shared Module**: Reusable components, pipes, directives, and utilities
+- **Feature Modules**: Organized by business features (projects, auth, profile, etc.)
+
+### Backend Development
+
+The Spring Boot application follows Clean Architecture principles:
+
+- **Controllers**: Handle HTTP requests and responses
+- **Services**: Business logic and application services
+- **Repositories**: Data access layer
+- **Models**: Domain entities and DTOs
+
+### Configuration
+
+All configuration files are centralized in the `config/` directory:
+
+- **TypeScript**: `tsconfig.json`, `tsconfig.app.json`, `tsconfig.spec.json`
+- **ESLint**: `.eslintrc.json`
+- **Prettier**: `.prettierrc`
+- **EditorConfig**: `.editorconfig`
+
+## 🧪 Testing
+
+### Frontend Testing
 ```bash
-# Установка зависимостей
-npm install
+# Run unit tests
+npm run test --workspace=client
 
-# Запуск в режиме разработки
-npm start
+# Run tests with coverage
+npm run test --workspace=client -- --coverage
 
-# Приложение будет доступно на http://localhost:4200
+# Run e2e tests
+npm run e2e --workspace=client
 ```
 
-### Backend (Spring Boot)
-
+### Backend Testing
 ```bash
-# Переход в папку backend
-cd src/backend
-
-# Запуск приложения
-mvn spring-boot:run
-
-# API будет доступен на http://localhost:3000/api
-# H2 консоль: http://localhost:3000/api/h2-console
-```
-
-## 📋 Функциональность
-
-### ✅ Реализовано
-
-#### Frontend (Angular)
-- ✅ **Аутентификация** - регистрация, вход, восстановление пароля
-- ✅ **NgRx Store** - управление состоянием приложения
-- ✅ **Guards** - защита роутов
-- ✅ **Interceptors** - обработка HTTP запросов
-- ✅ **Material Design** - современный UI
-- ✅ **Responsive Design** - адаптивная верстка
-- ✅ **Лендинг страница** - красивая главная страница
-
-#### Backend (Spring Boot)
-- ✅ **JWT аутентификация** - безопасные токены
-- ✅ **Spring Security** - защита API
-- ✅ **JPA/Hibernate** - работа с базой данных
-- ✅ **H2 Database** - встроенная БД для разработки
-- ✅ **CORS** - настройка для Angular
-- ✅ **Валидация** - проверка входных данных
-- ✅ **BCrypt** - хеширование паролей
-
-### 🔄 API Endpoints
-
-#### Аутентификация
-- `POST /api/auth/register` - Регистрация
-- `POST /api/auth/login` - Вход
-- `POST /api/auth/refresh` - Обновление токена
-- `POST /api/auth/forgot-password` - Восстановление пароля
-- `POST /api/auth/reset-password` - Сброс пароля
-
-## 🛠️ Технологии
-
-### Frontend
-- **Angular 17** - современный фреймворк
-- **NgRx** - управление состоянием
-- **Angular Material** - UI компоненты
-- **TypeScript** - типизированный JavaScript
-- **SCSS** - стили
-
-### Backend
-- **Spring Boot 3.2** - Java фреймворк
-- **Spring Security** - безопасность
-- **Spring Data JPA** - работа с БД
-- **JWT** - токены аутентификации
-- **H2 Database** - встроенная БД
-- **Maven** - управление зависимостями
-
-## 🔐 Безопасность
-
-- **JWT токены** для аутентификации
-- **BCrypt** для хеширования паролей
-- **CORS** настроен для безопасного взаимодействия
-- **Spring Security** для защиты endpoints
-- **Валидация** всех входных данных
-
-## 📊 База данных
-
-### H2 (для разработки)
-- **URL**: `jdbc:h2:mem:taskboarddb`
-- **Username**: `sa`
-- **Password**: `password`
-- **Консоль**: `http://localhost:3000/api/h2-console`
-
-### Модели данных
-- **User** - пользователи системы
-- **Project** - проекты (готово к реализации)
-- **Task** - задачи (готово к реализации)
-- **TimeEntry** - записи времени (готово к реализации)
-
-## 🧪 Тестирование
-
-### Frontend
-```bash
-npm test
-```
-
-### Backend
-```bash
-cd src/backend
+# Run unit tests
 mvn test
+
+# Run integration tests
+mvn verify
+
+# Run tests with coverage
+mvn jacoco:report
 ```
 
-## 📦 Сборка
+## 📚 Documentation
 
-### Frontend
-```bash
-npm run build
-```
+- [Development Roadmap](docs/DEVELOPMENT_ROADMAP.md)
+- [API Documentation](docs/api/README.md)
+- [Architecture Guide](docs/architecture/README.md)
 
-### Backend
-```bash
-cd src/backend
-mvn clean package
-```
+## 🤝 Contributing
 
-## 🔧 Конфигурация
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-### Frontend
-- Порт: `4200`
-- API URL: `http://localhost:3000/api`
+## 📄 License
 
-### Backend
-- Порт: `3000`
-- Контекст: `/api`
-- JWT Secret: настраивается в `application.properties`
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🚨 Troubleshooting
+## 🆘 Support
 
-### Проблемы с портами
-Если порты заняты, измените в конфигурации:
-- Frontend: `angular.json` → `serve.port`
-- Backend: `src/backend/src/main/resources/application.properties` → `server.port`
+If you encounter any issues or have questions:
 
-### Проблемы с CORS
-Проверьте настройки CORS в `SecurityConfig.java`
+1. Check the [documentation](docs/)
+2. Search existing [issues](https://github.com/your-username/task-management-platform/issues)
+3. Create a new issue with detailed information
 
-### Проблемы с JWT
-Убедитесь, что JWT secret достаточно длинный (минимум 256 бит)
+---
 
-## 📈 Следующие шаги
-
-1. **Реализация проектов** - CRUD операции для проектов
-2. **Реализация задач** - Kanban доска, drag-and-drop
-3. **Отслеживание времени** - таймер, логирование времени
-4. **Аналитика** - графики и отчеты
-5. **Уведомления** - email и push уведомления
-6. **Файлы** - загрузка и управление файлами
-7. **Комментарии** - система комментариев к задачам
-
-## 🤝 Вклад в проект
-
-1. Fork репозитория
-2. Создайте feature branch
-3. Внесите изменения
-4. Добавьте тесты
-5. Создайте Pull Request
-
-## 📄 Лицензия
-
-MIT License - см. файл [LICENSE](LICENSE)
+**Happy Coding! 🎉**

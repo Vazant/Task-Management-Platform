@@ -3,6 +3,24 @@
 # ===========================================
 
 # ===========================================
+# IDE & EDITOR FILES
+# ===========================================
+
+# Cursor IDE
+.cursor/
+
+# IntelliJ IDEA
+.idea/
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# ===========================================
 # ANGULAR / FRONTEND
 # ===========================================
 
@@ -11,9 +29,15 @@
 /tmp
 /out-tsc
 /bazel-out
+client/dist/
+client/tmp/
+client/out-tsc/
+client/bazel-out/
 
 # Node.js
 /node_modules
+client/node_modules/
+server/node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -25,21 +49,33 @@ lerna-debug.log*
 .angular/cache/
 .angular/cache/**/*
 .angular/cache/**/**/*
+client/.angular/
+client/.angular/cache/
+client/.angular/cache/**/*
+client/.angular/cache/**/**/*
 
 # TypeScript cache
 *.tsbuildinfo
+client/*.tsbuildinfo
+server/*.tsbuildinfo
 
 # Testing
 /coverage
 /.nyc_output
 *.lcov
+client/coverage/
+client/.nyc_output/
+client/*.lcov
 
 # e2e
 /e2e/*.js
 /e2e/*.map
+client/e2e/*.js
+client/e2e/*.map
 
 # Performance
 .angular/cache
+client/.angular/cache
 
 # ===========================================
 # JAVA / SPRING BOOT / BACKEND

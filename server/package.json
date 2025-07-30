@@ -1,0 +1,20 @@
+{
+  "name": "task-management-server",
+  "version": "1.0.0",
+  "description": "Spring Boot backend for Task Management Platform",
+  "private": true,
+  "scripts": {
+    "start": "mvn spring-boot:run",
+    "build": "mvn clean package",
+    "test": "mvn test",
+    "lint": "mvn checkstyle:check",
+    "clean": "mvn clean",
+    "dev": "mvn spring-boot:run -Dspring-boot.run.profiles=dev"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+} 

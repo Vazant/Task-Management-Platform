@@ -1,0 +1,1186 @@
+// Переменные
+$header-height: 80px;
+$toolbar-height: 56px; // Фиксированная высота панели
+$border-radius: 8px;
+$transition-duration: 0.2s;
+$shadow-light: 0 2px 4px rgba(0, 0, 0, 0.1);
+$shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.15);
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Единые размеры для всех контролов
+$control-height: 40px; // Уменьшаем высоту для лучшего выравнивания
+$control-border-radius: 8px;
+$control-border-width: 1px;
+$control-font-size: 14px;
+$icon-size: 20px;
+
+// Миксины
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin card-transition {
+  transition: all $transition-duration cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@mixin control-base {
+  height: $control-height;
+  border-radius: $control-border-radius;
+  font-size: $control-font-size;
+  font-weight: 500;
+  border: $control-border-width solid #e0e0e0;
+  transition: all $transition-duration cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// Скрытый заголовок для скринридеров
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Кастомные стили для тултипов
+::ng-deep .mat-tooltip {
+  font-size: 12px !important;
+  padding: 6px 10px !important;
+  border-radius: 6px !important;
+  background: rgba(0, 0, 0, 0.9) !important;
+  color: white !important;
+  max-width: 200px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+// Основной контейнер
+.project-list-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fafafa;
+  min-height: 100vh;
+}
+
+// Единая панель инструментов
+.toolbar-container {
+  background: #f8f9fa; // Добавляем фон для визуального выделения
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: $toolbar-height; // Фиксированная высота
+
+  .toolbar-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 $spacing-lg; // Убираем вертикальные отступы
+    gap: $spacing-md;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 100%; // Занимаем всю высоту панели
+
+    // Левая группа: Поиск и фильтры
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: $spacing-md; // Единый отступ 16px
+      flex: 1;
+      min-width: 0; // Для правильного flex-shrink
+
+      // Поиск
+      .search-section {
+        flex: 1;
+        min-width: 280px;
+        max-width: 400px;
+
+        .search-form {
+          width: 100%;
+
+          .search-field {
+            width: 100%;
+
+            ::ng-deep .mat-form-field-wrapper {
+              padding-bottom: 0;
+            }
+
+            ::ng-deep .mat-form-field-outline {
+              border-radius: $control-border-radius;
+              border-color: #e0e0e0;
+              border-width: $control-border-width;
+            }
+
+            ::ng-deep .mat-form-field-outline-thick {
+              border-color: #1976d2;
+            }
+
+            ::ng-deep .mat-form-field-label {
+              color: #666;
+              font-weight: 500;
+              font-size: $control-font-size;
+            }
+
+            ::ng-deep .mat-form-field-outline-start,
+            ::ng-deep .mat-form-field-outline-end {
+              border-width: $control-border-width;
+            }
+
+            ::ng-deep .mat-form-field-outline-gap {
+              border-width: $control-border-width;
+            }
+
+            input {
+              font-size: $control-font-size;
+              color: #333;
+              height: $control-height;
+              padding: 0 12px; // Уменьшаем левый отступ с 16px до 12px
+              padding-top: 2px; // Добавляем верхний отступ для центрирования
+
+              &::placeholder {
+                color: #999;
+                font-weight: 400;
+              }
+            }
+
+            lucide-icon {
+              color: #666;
+              width: $icon-size;
+              height: $icon-size;
+              margin-top: 2px; // Опускаем иконку на 2px вниз
+            }
+          }
+        }
+      }
+
+      // Фильтры
+      .filters-section {
+        position: relative;
+        margin-left: -4px; // Сдвигаем кнопку на 4px влево для центрирования
+
+        button {
+          @include control-base;
+          position: relative;
+          padding: 0 $spacing-sm; // Добавляем горизонтальные отступы 8px
+          display: flex;
+          align-items: center;
+          gap: $spacing-sm;
+          background: white;
+          color: #333;
+          min-width: 120px;
+
+          &:hover {
+            background: #f8f9fa;
+            border-color: #1976d2;
+            color: #1976d2;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(25, 118, 210, 0.15);
+          }
+
+          &.active {
+            background: #1976d2;
+            color: white;
+            border-color: #1976d2;
+            box-shadow: 0 4px 12px rgba(25, 118, 210, 0.3);
+          }
+
+          &:focus {
+            outline: 2px solid #1976d2;
+            outline-offset: 2px;
+          }
+
+          .button-text {
+            font-weight: 500;
+          }
+
+          .dropdown-indicator {
+            transition: transform 0.2s;
+            width: 14px;
+            height: 14px;
+          }
+
+          &.active .dropdown-indicator {
+            transform: rotate(180deg);
+          }
+
+          .active-filters-indicator {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+
+            .indicator-dot {
+              display: block;
+              width: 8px;
+              height: 8px;
+              background: #ff5722;
+              border-radius: 50%;
+              border: 2px solid white;
+              box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+          }
+
+          &.has-active-filters {
+            border-color: #ff5722;
+            background: #fff3e0;
+            color: #e65100;
+
+            &:hover {
+              background: #ffe0b2;
+              border-color: #ff5722;
+              color: #e65100;
+            }
+          }
+
+          lucide-icon {
+            width: 18px;
+            height: 18px;
+          }
+        }
+
+        .filters-panel {
+          position: absolute;
+          top: calc(100% + 8px);
+          right: 0;
+          background: white;
+          border: 1px solid #e0e0e0;
+          border-radius: 16px;
+          box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+          padding: 0;
+          min-width: 360px;
+          z-index: 1000;
+          overflow: hidden;
+
+          .filters-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: $spacing-lg;
+            border-bottom: 1px solid #f0f0f0;
+            background: #fafafa;
+
+            h3 {
+              margin: 0;
+              font-size: 16px;
+              font-weight: 600;
+              color: #333;
+            }
+
+            button {
+              color: #666;
+
+              &:hover {
+                color: #1976d2;
+                background: rgba(25, 118, 210, 0.08);
+              }
+            }
+          }
+
+          .filters-form {
+            padding: $spacing-lg;
+            display: flex;
+            flex-direction: column;
+            gap: $spacing-md;
+
+            ::ng-deep .mat-form-field {
+              width: 100%;
+
+              .mat-form-field-wrapper {
+                padding-bottom: 0;
+              }
+
+              .mat-form-field-outline {
+                border-radius: $control-border-radius;
+                border-color: #e0e0e0;
+                border-width: $control-border-width;
+              }
+
+              .mat-form-field-outline-thick {
+                border-color: #1976d2;
+              }
+
+              .mat-form-field-label {
+                color: #666;
+                font-weight: 500;
+                font-size: $control-font-size;
+              }
+
+              input, .mat-select {
+                height: $control-height;
+                font-size: $control-font-size;
+              }
+            }
+
+            .date-range {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: $spacing-md;
+            }
+          }
+
+          .filters-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: $spacing-lg;
+            border-top: 1px solid #f0f0f0;
+            background: #fafafa;
+
+            button {
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              font-weight: 500;
+              height: $control-height;
+              border-radius: $control-border-radius;
+            }
+          }
+        }
+      }
+
+      // Сортировка
+      .sort-section {
+        min-width: 180px;
+        margin-left: $spacing-xl; // Увеличиваем отступ до 32px для логической группы
+
+        ::ng-deep .mat-form-field {
+          width: 100%;
+
+          .mat-form-field-wrapper {
+            padding-bottom: 0;
+          }
+
+          .mat-form-field-outline {
+            border-radius: $control-border-radius;
+            border-color: #e0e0e0;
+            border-width: $control-border-width;
+          }
+
+          .mat-form-field-outline-thick {
+            border-color: #1976d2;
+          }
+
+          .mat-form-field-label {
+            color: #666;
+            font-weight: 500;
+            font-size: $control-font-size;
+          }
+
+          .mat-select-arrow {
+            display: none; // Скрываем стандартную стрелку
+          }
+
+          .mat-select {
+            height: $control-height;
+            font-size: $control-font-size;
+          }
+
+          lucide-icon {
+            width: 16px;
+            height: 16px;
+            margin-top: 1px; // Опускаем стрелку на 1px
+          }
+        }
+      }
+    }
+
+    // Правая группа: Действия
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: $spacing-sm; // Уменьшаем отступ между элементами
+
+      // Режим просмотра
+      .view-mode-toggle {
+        display: flex;
+        border: $control-border-width solid #e0e0e0;
+        border-radius: $control-border-radius;
+        overflow: hidden;
+        background: #f8f9fa;
+        height: $control-height;
+
+        button {
+          border-radius: 0;
+          border: none;
+          background: transparent;
+          color: #666;
+          padding: 0 $spacing-sm;
+          min-width: 44px;
+          height: 100%;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+
+          &:hover {
+            background: rgba(25, 118, 210, 0.08);
+            color: #1976d2;
+          }
+
+          &.active {
+            background: #1976d2;
+            color: white;
+            box-shadow: 0 2px 8px rgba(25, 118, 210, 0.3);
+          }
+
+          &:first-child {
+            border-top-left-radius: $control-border-radius;
+            border-bottom-left-radius: $control-border-radius;
+          }
+
+          &:last-child {
+            border-top-right-radius: $control-border-radius;
+            border-bottom-right-radius: $control-border-radius;
+          }
+
+          &:focus {
+            outline: 2px solid #1976d2;
+            outline-offset: 2px;
+          }
+
+          lucide-icon {
+            width: $icon-size;
+            height: $icon-size;
+          }
+        }
+      }
+
+      // Кнопка обновления
+      button[mat-icon-button] {
+        color: #666;
+        border-radius: $control-border-radius;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: $control-height;
+        height: $control-height;
+        margin-left: $spacing-sm; // Добавляем отступ 8px слева
+
+        &:hover {
+          background: rgba(25, 118, 210, 0.08);
+          color: #1976d2;
+          transform: translateY(-1px);
+        }
+
+        &:focus {
+          outline: 2px solid #1976d2;
+          outline-offset: 2px;
+        }
+
+        lucide-icon {
+          width: $icon-size;
+          height: $icon-size;
+        }
+      }
+
+      // Кнопка создания проекта
+      .create-project-btn {
+        @include control-base;
+        padding: 0 $spacing-lg;
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(25, 118, 210, 0.25);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        gap: $spacing-sm;
+        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        border: none;
+        color: white;
+        min-width: 160px;
+        margin-left: $spacing-xl; // Увеличиваем отступ до 24px для логической группы
+        margin-right: $spacing-md; // Добавляем отступ справа 16px
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(25, 118, 210, 0.4);
+          background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        &:focus {
+          outline: 2px solid #1976d2;
+          outline-offset: 2px;
+        }
+
+        .button-text {
+          font-weight: 600;
+        }
+
+        lucide-icon {
+          width: $icon-size;
+          height: $icon-size;
+        }
+      }
+    }
+  }
+}
+
+// Информация о выбранных проектах
+.selection-info {
+  background: #e3f2fd;
+  border-bottom: 1px solid #bbdefb;
+  padding: $spacing-md;
+
+  .selection-summary {
+    @include flex-between;
+
+    span {
+      font-weight: 500;
+      color: #1976d2;
+    }
+
+    .selection-actions {
+      display: flex;
+      gap: $spacing-sm;
+    }
+  }
+}
+
+// Сообщение об ошибке
+.error-message {
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: $border-radius;
+  padding: $spacing-md;
+  margin: $spacing-md;
+  color: #c62828;
+}
+
+// Контейнер проектов
+.projects-container {
+  flex: 1;
+  padding: $spacing-md;
+  overflow-y: auto;
+  min-height: 400px;
+
+  // Режим сетки
+  &.grid-view {
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: $spacing-md;
+      align-items: start;
+    }
+  }
+
+  // Режим списка
+  &.list-view {
+    .projects-grid {
+      display: flex;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      app-project-card {
+        ::ng-deep .project-card {
+          max-width: none;
+        }
+      }
+    }
+  }
+
+  // С поддержкой выбора
+  &.with-selection {
+    .projects-grid {
+      gap: $spacing-sm;
+    }
+  }
+}
+
+// Индикатор загрузки
+.loading-container {
+  @include flex-center;
+  flex-direction: column;
+  gap: $spacing-md;
+  padding: $spacing-xl;
+  color: #666;
+
+  p {
+    margin: 0;
+    font-size: 14px;
+  }
+}
+
+// Пустое состояние
+.empty-state {
+  @include flex-center;
+  flex-direction: column;
+  padding: $spacing-xl * 2;
+  text-align: center;
+  min-height: 70vh;
+  max-width: 600px;
+  margin: 0 auto;
+
+  .empty-content {
+    width: 100%;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
+    padding: $spacing-xl * 2;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border: 1px solid #e9ecef;
+    position: relative;
+    overflow: hidden;
+
+    // Иллюстрация
+    .empty-illustration {
+      position: relative;
+      margin-bottom: $spacing-xl;
+
+      .empty-icon {
+        color: #1976d2;
+        opacity: 0.9;
+        margin-bottom: $spacing-md;
+        display: block;
+        filter: drop-shadow(0 4px 8px rgba(25, 118, 210, 0.2));
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .illustration-dots {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        gap: 8px;
+
+        .dot {
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #1976d2, #42a5f5);
+          animation: pulse 2s infinite;
+          box-shadow: 0 2px 4px rgba(25, 118, 210, 0.3);
+
+          &.dot-1 { animation-delay: 0s; }
+          &.dot-2 { animation-delay: 0.5s; }
+          &.dot-3 { animation-delay: 1s; }
+        }
+      }
+    }
+
+    // Основное сообщение
+    .empty-message {
+      margin-bottom: $spacing-xl;
+
+      h2 {
+        margin: 0 0 $spacing-md 0;
+        color: #1a1a1a;
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -0.8px;
+        background: linear-gradient(135deg, #1976d2, #42a5f5);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      p {
+        margin: 0;
+        color: #5a6c7d;
+        font-size: 18px;
+        line-height: 1.6;
+        max-width: 450px;
+        margin: 0 auto;
+        font-weight: 400;
+      }
+    }
+
+    // Основная CTA кнопка
+    .empty-cta {
+      margin-bottom: $spacing-lg;
+
+      .create-project-btn {
+        padding: 18px 36px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 16px;
+        box-shadow: 0 6px 16px rgba(25, 118, 210, 0.25);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        min-width: 220px;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        border: none;
+        color: white;
+
+        &:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 12px 24px rgba(25, 118, 210, 0.4);
+          background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        }
+
+        &:active {
+          transform: translateY(-1px);
+        }
+
+        &:focus {
+          outline: 2px solid #1976d2;
+          outline-offset: 2px;
+        }
+      }
+    }
+
+    // Дополнительные действия
+    .empty-secondary-actions {
+      margin-bottom: $spacing-xl;
+
+      .clear-filters-btn {
+        color: #5a6c7d;
+        font-size: 14px;
+        padding: 10px 20px;
+        border-radius: 12px;
+        transition: all 0.3s;
+        border: 1px solid #e0e0e0;
+        background: white;
+
+        &:hover {
+          color: #1976d2;
+          background: rgba(25, 118, 210, 0.08);
+          border-color: #1976d2;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(25, 118, 210, 0.15);
+        }
+
+        &:focus {
+          outline: 2px solid #1976d2;
+          outline-offset: 2px;
+        }
+      }
+    }
+
+    // Шаблоны проектов
+    .empty-templates {
+      border-top: 1px solid #f0f0f0;
+      padding-top: $spacing-lg;
+
+      .templates-title {
+        margin: 0 0 $spacing-md 0;
+        color: #5a6c7d;
+        font-size: 16px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -8px;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 40px;
+          height: 2px;
+          background: linear-gradient(135deg, #1976d2, #42a5f5);
+          border-radius: 1px;
+        }
+      }
+
+      .template-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: $spacing-sm;
+        margin-top: $spacing-md;
+
+        .template-card {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          padding: $spacing-lg;
+          border-radius: 16px;
+          background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+          border: 2px solid transparent;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          text-decoration: none;
+          color: inherit;
+          position: relative;
+          overflow: hidden;
+
+          &::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.1) 0%, rgba(25, 118, 210, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+          }
+
+          &:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #1976d2;
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(25, 118, 210, 0.2);
+
+            &::before {
+              opacity: 1;
+            }
+          }
+
+          &:focus {
+            outline: 2px solid #1976d2;
+            outline-offset: 2px;
+          }
+
+          lucide-icon {
+            color: #1976d2;
+            opacity: 0.9;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 1;
+          }
+
+          span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Анимация для точек
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+// Анимация плавания для иконки
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+// Индикатор загрузки дополнительных проектов
+.load-more-container {
+  @include flex-center;
+  gap: $spacing-sm;
+  padding: $spacing-lg;
+  color: #666;
+  font-size: 14px;
+
+  span {
+    margin-left: $spacing-sm;
+  }
+}
+
+// Секция "Загрузить еще"
+.load-more-section {
+  @include flex-center;
+  padding: $spacing-lg;
+
+  button {
+    @include flex-center;
+    gap: $spacing-sm;
+  }
+}
+
+// Пагинация
+.pagination-container {
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  padding: $spacing-md;
+  @include flex-center;
+}
+
+// Адаптивность
+@media (max-width: 1200px) {
+  .toolbar-container .toolbar-content {
+    padding: 0 $spacing-md;
+    gap: $spacing-md;
+
+    .toolbar-left {
+      gap: $spacing-sm;
+
+      .search-section {
+        min-width: 240px;
+        max-width: 320px;
+      }
+
+      .sort-section {
+        min-width: 160px;
+      }
+    }
+  }
+
+  .projects-container.grid-view .projects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 1024px) {
+  .toolbar-container .toolbar-content {
+    flex-direction: column;
+    align-items: stretch;
+    gap: $spacing-md;
+    height: auto;
+    padding: $spacing-md;
+
+    .toolbar-left {
+      order: 1;
+      flex-direction: column;
+      gap: $spacing-sm;
+
+      .search-section {
+        min-width: auto;
+        max-width: none;
+        width: 100%;
+      }
+
+      .filters-section {
+        align-self: flex-start;
+      }
+
+      .sort-section {
+        align-self: flex-start;
+        min-width: 200px;
+        margin-left: 0; // Убираем отступ на мобильных
+      }
+    }
+
+    .toolbar-right {
+      order: 2;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: $spacing-sm;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .toolbar-container {
+    height: auto; // Разрешаем автоматическую высоту на мобильных
+
+    .toolbar-content {
+      padding: $spacing-sm;
+
+      .toolbar-left {
+        .filters-section .filters-panel {
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 90%;
+          max-width: 400px;
+          max-height: 80vh;
+          overflow-y: auto;
+        }
+      }
+
+      .toolbar-right {
+        .view-mode-toggle {
+          order: 1;
+        }
+
+        .create-project-btn {
+          order: 2;
+          flex: 1;
+          justify-content: center;
+          margin-left: 0; // Убираем отступ на мобильных
+          margin-right: 0;
+        }
+      }
+    }
+  }
+
+  .empty-state {
+    padding: $spacing-lg;
+    min-height: 60vh;
+
+    .empty-content {
+      padding: $spacing-lg;
+
+      .empty-message {
+        h2 {
+          font-size: 28px;
+        }
+
+        p {
+          font-size: 16px;
+        }
+      }
+
+      .template-cards {
+        grid-template-columns: 1fr;
+        gap: $spacing-md;
+      }
+    }
+  }
+
+  .projects-container.grid-view .projects-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters-section .filters-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-list-header {
+    padding: $spacing-sm;
+
+    .actions-section {
+      flex-wrap: wrap;
+      gap: $spacing-xs;
+
+      .view-mode-toggle {
+        order: 2;
+      }
+    }
+  }
+
+  .projects-container {
+    padding: $spacing-sm;
+  }
+
+  .selection-info .selection-summary {
+    flex-direction: column;
+    gap: $spacing-sm;
+    align-items: flex-start;
+  }
+}
+
+// Светлая тема (принудительно)
+.project-list-container {
+  background: #fafafa !important;
+}
+
+.toolbar-container {
+  background: #f8f9fa !important;
+  border-bottom-color: #e0e0e0 !important;
+
+  .filters-panel {
+    background: white !important;
+    border-color: #e0e0e0 !important;
+  }
+}
+
+.selection-info {
+  background: #e3f2fd !important;
+  border-bottom-color: #bbdefb !important;
+
+  .selection-summary span {
+    color: #1976d2 !important;
+  }
+}
+
+.error-message {
+  background: #ffebee !important;
+  border-color: #ffcdd2 !important;
+  color: #c62828 !important;
+}
+
+.empty-state .empty-content {
+  background: white !important;
+  border-color: #e0e0e0 !important;
+
+  .empty-icon {
+    color: #1976d2 !important;
+  }
+
+  h3 {
+    color: #333 !important;
+  }
+
+  p {
+    color: #666 !important;
+  }
+}
+
+.pagination-container {
+  background: white !important;
+  border-top-color: #e0e0e0 !important;
+}
+
+// Высокий контраст
+@media (prefers-contrast: high) {
+  .toolbar-container {
+    border-bottom-width: 2px;
+  }
+
+  .selection-info {
+    border-bottom-width: 2px;
+  }
+
+  .error-message {
+    border-width: 2px;
+  }
+
+  .pagination-container {
+    border-top-width: 2px;
+  }
+}
+
+// Уменьшенное движение
+@media (prefers-reduced-motion: reduce) {
+  .project-list-container * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+// Фокус для доступности
+.toolbar-container button:focus,
+.projects-container button:focus {
+  outline: 2px solid #1976d2;
+  outline-offset: 2px;
+}
+
+// Печать
+@media print {
+  .toolbar-container,
+  .selection-info,
+  .pagination-container {
+    display: none;
+  }
+
+  .projects-container {
+    padding: 0;
+  }
+
+  .projects-grid {
+    display: block !important;
+  }
+}

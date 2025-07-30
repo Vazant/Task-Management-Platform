@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE suppressions PUBLIC
+     "-//Checkstyle//DTD SuppressionFilter Configuration 1.0//EN"
+     "https://checkstyle.org/dtds/suppressions_1_0.dtd">
+
+<suppressions>
+    <!-- Suppress specific violations for specific files/lines -->
+
+    <!-- Example: Suppress MagicNumber for specific lines where it's justified -->
+    <!-- <suppress checks="MagicNumber"
+                 files="JwtAuthenticationFilter.java"
+                 lines="46"/> -->
+
+    <!-- Example: Suppress DesignForExtension for specific classes -->
+    <!-- <suppress checks="DesignForExtension"
+                 files="SecurityConfig.java"/> -->
+
+    <!-- Example: Suppress FinalParameters for specific methods -->
+    <!-- <suppress checks="FinalParameters"
+                 files="AuthController.java"
+                 lines="19,24,35,46,68,87"/> -->
+
+    <!-- Example: Suppress TodoComment for specific lines -->
+    <!-- <suppress checks="TodoComment"
+                 files="AuthController.java"
+                 lines="76,102"/> -->
+
+    <!-- Example: Suppress AvoidStarImport for specific imports -->
+    <!-- <suppress checks="AvoidStarImport"
+                 files="AuthController.java"
+                 lines="3,7"/> -->
+
+    <!-- Example: Suppress WhitespaceAround for specific lines -->
+    <!-- <suppress checks="WhitespaceAround"
+                 files="ApiResponse.java"
+                 lines="12"/> -->
+</suppressions>

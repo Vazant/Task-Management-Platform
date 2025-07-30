@@ -1,0 +1,322 @@
+<main class="project-list-container" role="main" aria-labelledby="projects-title">
+  <h1 id="projects-title" class="sr-only">Список проектов</h1>
+
+  <!-- Единая панель инструментов -->
+  <section class="toolbar-container" role="toolbar" aria-label="Панель управления проектами">
+    <div class="toolbar-content">
+      <!-- Левая группа: Поиск и фильтры -->
+      <div class="toolbar-left">
+        <!-- Поиск -->
+        <div class="search-section" *ngIf="enableSearch">
+          <form [formGroup]="searchForm" class="search-form">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Поиск проектов</mat-label>
+              <input
+                matInput
+                formControlName="searchTerm"
+                placeholder="Введите название проекта..."
+                [matTooltip]="'Поиск по названию и описанию проекта'"
+                aria-label="Поиск проектов"
+                aria-describedby="search-description">
+              <lucide-icon name="search" matSuffix size="20" aria-hidden="true"></lucide-icon>
+            </mat-form-field>
+            <div id="search-description" class="sr-only">Поле для поиска проектов по названию и описанию</div>
+          </form>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="filters-section" *ngIf="enableFilters">
+          <button
+            mat-button
+            [class.active]="showFilters"
+            [class.has-active-filters]="hasActiveFilters()"
+            (click)="showFilters = !showFilters"
+            [matTooltip]="hasActiveFilters() ? 'Активные фильтры: ' + getActiveFiltersText() : 'Показать/скрыть фильтры'"
+            aria-label="Фильтры проектов"
+            aria-haspopup="dialog"
+            [attr.aria-expanded]="showFilters"
+            aria-describedby="filters-description">
+            <lucide-icon name="filter" size="18" aria-hidden="true"></lucide-icon>
+            <span class="button-text">Фильтры</span>
+            <div class="active-filters-indicator" *ngIf="hasActiveFilters()" aria-hidden="true">
+              <span class="indicator-dot"></span>
+            </div>
+            <lucide-icon
+              [name]="showFilters ? 'chevron-up' : 'chevron-down'"
+              size="14"
+              class="dropdown-indicator"
+              aria-hidden="true">
+            </lucide-icon>
+          </button>
+          <div id="filters-description" class="sr-only">Кнопка для открытия панели фильтров проектов</div>
+
+          <!-- Панель фильтров -->
+          <div class="filters-panel" *ngIf="showFilters" role="dialog" aria-label="Панель фильтров" aria-modal="true">
+            <div class="filters-header">
+              <h3>Фильтры проектов</h3>
+              <button
+                mat-icon-button
+                (click)="showFilters = false"
+                aria-label="Закрыть панель фильтров">
+                <lucide-icon name="x" size="18" aria-hidden="true"></lucide-icon>
+              </button>
+            </div>
+
+            <form [formGroup]="filtersForm" class="filters-form">
+              <!-- Статус -->
+              <mat-form-field appearance="outline">
+                <mat-label>Статус проекта</mat-label>
+                <mat-select formControlName="status" aria-label="Выберите статус проекта">
+                  <mat-option *ngFor="let option of statusOptions" [value]="option.value">
+                    {{ option.label }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <!-- Диапазон дат -->
+              <div formGroupName="dateRange" class="date-range">
+                <mat-form-field appearance="outline">
+                  <mat-label>Дата начала</mat-label>
+                  <input matInput type="date" formControlName="start" aria-label="Дата начала проекта">
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Дата окончания</mat-label>
+                  <input matInput type="date" formControlName="end" aria-label="Дата окончания проекта">
+                </mat-form-field>
+              </div>
+            </form>
+
+            <div class="filters-actions">
+              <button mat-button (click)="onClearFilters()" aria-label="Очистить все фильтры">
+                <lucide-icon name="refresh-cw" size="16" aria-hidden="true"></lucide-icon>
+                Очистить
+              </button>
+              <button mat-raised-button color="primary" (click)="showFilters = false" aria-label="Применить фильтры">
+                Применить
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Сортировка -->
+        <div class="sort-section" *ngIf="enableSorting">
+          <mat-form-field appearance="outline">
+            <mat-label>Сортировка</mat-label>
+            <mat-select
+              (selectionChange)="onSortChange($event.value, 'desc')"
+              aria-label="Выберите поле для сортировки проектов">
+              <mat-option *ngFor="let option of sortOptions" [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+            <lucide-icon name="chevron-down" matSuffix size="16" aria-hidden="true"></lucide-icon>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <!-- Правая группа: Действия -->
+      <div class="toolbar-right">
+        <!-- Режим просмотра -->
+        <div class="view-mode-toggle" role="group" aria-label="Режим отображения проектов">
+          <button
+            mat-icon-button
+            [class.active]="viewMode === 'grid'"
+            (click)="onViewModeChange('grid')"
+            [matTooltip]="'Отображение в виде сетки'"
+            aria-label="Режим сетки"
+            [attr.aria-pressed]="viewMode === 'grid'">
+            <lucide-icon name="grid" size="20" aria-hidden="true"></lucide-icon>
+          </button>
+          <button
+            mat-icon-button
+            [class.active]="viewMode === 'list'"
+            (click)="onViewModeChange('list')"
+            [matTooltip]="'Отображение в виде списка'"
+            aria-label="Режим списка"
+            [attr.aria-pressed]="viewMode === 'list'">
+            <lucide-icon name="list" size="20" aria-hidden="true"></lucide-icon>
+          </button>
+        </div>
+
+        <!-- Обновить (скрываем при пустом списке) -->
+        <button
+          mat-icon-button
+          (click)="onRefresh()"
+          [matTooltip]="'Обновить список проектов'"
+          aria-label="Обновить список проектов"
+          *ngIf="(projects$ | async) && (projects$ | async)!.length > 0">
+          <lucide-icon name="refresh-cw" size="20" aria-hidden="true"></lucide-icon>
+        </button>
+
+        <!-- Создать проект -->
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="projectAction.emit({ type: 'create', projectId: '' })"
+          [matTooltip]="'Создать новый проект'"
+          aria-label="Создать новый проект"
+          class="create-project-btn">
+          <lucide-icon name="plus" size="20" aria-hidden="true"></lucide-icon>
+          <span class="button-text">Создать проект</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Информация о выбранных проектах -->
+  <div class="selection-info" *ngIf="enableSelection && getSelectedCount() > 0" role="status" aria-live="polite">
+    <div class="selection-summary">
+      <span>Выбрано проектов: {{ getSelectedCount() }}</span>
+      <div class="selection-actions">
+        <button mat-button (click)="onSelectAll()" aria-label="Выбрать все проекты">Выбрать все</button>
+        <button mat-button (click)="onDeselectAll()" aria-label="Снять выбор со всех проектов">Снять выбор</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Сообщение об ошибке -->
+  <div class="error-message" *ngIf="error$ | async as error" role="alert" aria-live="assertive">
+    <mat-error>{{ error }}</mat-error>
+  </div>
+
+  <!-- Список проектов -->
+  <div
+    #scrollContainer
+    class="projects-container"
+    [class.grid-view]="viewMode === 'grid'"
+    [class.list-view]="viewMode === 'list'"
+    [class.with-selection]="enableSelection"
+    role="region"
+    aria-label="Список проектов">
+
+    <!-- Индикатор загрузки -->
+    <div class="loading-container" *ngIf="loading$ | async" role="status" aria-live="polite">
+      <mat-spinner diameter="40" aria-label="Загрузка проектов"></mat-spinner>
+      <p>Загрузка проектов...</p>
+    </div>
+
+    <!-- Пустое состояние -->
+    <div class="empty-state"
+         *ngIf="(projects$ | async) && (projects$ | async)!.length === 0 && !(loading$ | async)"
+         role="alert"
+         aria-live="polite">
+      <div class="empty-content">
+        <!-- Иллюстрация -->
+        <div class="empty-illustration">
+          <lucide-icon name="folder-open" size="80" class="empty-icon" aria-hidden="true"></lucide-icon>
+          <div class="illustration-dots">
+            <div class="dot dot-1"></div>
+            <div class="dot dot-2"></div>
+            <div class="dot dot-3"></div>
+          </div>
+        </div>
+
+        <!-- Основное сообщение -->
+        <div class="empty-message">
+          <h2>У вас пока нет проектов</h2>
+          <p>Создайте свой первый проект, чтобы начать работу с задачами и командой. Проекты помогут вам организовать работу, отслеживать прогресс и сотрудничать с командой.</p>
+        </div>
+
+        <!-- Основная CTA кнопка -->
+        <div class="empty-cta">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="projectAction.emit({ type: 'create', projectId: '' })"
+            class="create-project-btn"
+            aria-label="Создать новый проект">
+            <lucide-icon name="plus" size="20" aria-hidden="true"></lucide-icon>
+            Создать проект
+          </button>
+        </div>
+
+        <!-- Дополнительные действия -->
+        <div class="empty-secondary-actions" *ngIf="hasActiveFilters()">
+          <button
+            mat-button
+            (click)="onClearFilters()"
+            class="clear-filters-btn"
+            aria-label="Сбросить все фильтры">
+            <lucide-icon name="refresh-cw" size="16" aria-hidden="true"></lucide-icon>
+            Сбросить фильтры
+          </button>
+        </div>
+
+        <!-- Шаблоны проектов -->
+        <div class="empty-templates">
+          <p class="templates-title">Популярные шаблоны:</p>
+          <div class="template-cards">
+            <div class="template-card" (click)="createProjectWithTemplate('web')" role="button" tabindex="0" aria-label="Создать проект веб-разработки">
+              <lucide-icon name="globe" size="24" aria-hidden="true"></lucide-icon>
+              <span>Веб-разработка</span>
+            </div>
+            <div class="template-card" (click)="createProjectWithTemplate('mobile')" role="button" tabindex="0" aria-label="Создать проект мобильного приложения">
+              <lucide-icon name="smartphone" size="24" aria-hidden="true"></lucide-icon>
+              <span>Мобильное приложение</span>
+            </div>
+            <div class="template-card" (click)="createProjectWithTemplate('design')" role="button" tabindex="0" aria-label="Создать проект UI/UX дизайна">
+              <lucide-icon name="palette" size="24" aria-hidden="true"></lucide-icon>
+              <span>UI/UX дизайн</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Карточки проектов -->
+    <div class="projects-grid" *ngIf="(projects$ | async) as projects" role="list" aria-label="Список проектов">
+      <ng-container *ngIf="projects.length > 0">
+      <app-project-card
+        *ngFor="let project of projects; trackBy: trackByProjectId"
+        [project]="project"
+        [isSelected]="isProjectSelected(project.id)"
+        [isHovered]="isProjectHovered(project.id)"
+        [showActions]="enableActions"
+        [showSelection]="enableSelection"
+        [showStatus]="true"
+        [showMembers]="true"
+        [showDates]="true"
+        [loading]="false"
+        [disabled]="false"
+        role="listitem"
+        (select)="onProjectSelect($event)"
+        (action)="onProjectAction($event)"
+        (click)="onProjectClick($event)"
+        (hover)="onProjectHover($event)">
+      </app-project-card>
+      </ng-container>
+    </div>
+
+    <!-- Индикатор загрузки дополнительных проектов -->
+    <div class="load-more-container" *ngIf="isLoadingMore && ((projects$ | async)?.length || 0) > 0" role="status" aria-live="polite">
+      <mat-spinner diameter="32" aria-label="Загрузка дополнительных проектов"></mat-spinner>
+      <span>Загрузка дополнительных проектов...</span>
+    </div>
+
+    <!-- Кнопка "Загрузить еще" -->
+    <div class="load-more-section" *ngIf="hasMoreProjects$ | async as hasMoreProjects">
+      <ng-container *ngIf="hasMoreProjects && !isLoadingMore && ((projects$ | async)?.length || 0) > 0">
+      <button
+        mat-button
+        (click)="onLoadMore()"
+        [matTooltip]="'Загрузить еще проектов'"
+        aria-label="Загрузить еще проектов">
+        <lucide-icon name="more-horizontal" size="16" aria-hidden="true"></lucide-icon>
+        Загрузить еще
+      </button>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- Пагинация (альтернатива infinite scroll) -->
+  <div class="pagination-container" *ngIf="!enableInfiniteScroll" role="navigation" aria-label="Навигация по страницам">
+    <mat-paginator
+      [length]="(pagination$ | async)?.total || 0"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[6, 12, 24, 48]"
+      (page)="onPageChange($event)"
+      aria-label="Пагинация проектов">
+    </mat-paginator>
+  </div>
+</main>
