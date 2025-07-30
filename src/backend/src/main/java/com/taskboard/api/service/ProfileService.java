@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @Service
 public class ProfileService {
-    
+
     private static final int MAX_FILE_SIZE_MB = 5;
     private static final int BYTES_PER_MB = 1024 * 1024;
 
@@ -81,61 +81,16 @@ public class ProfileService {
 
     /**
      * Обновить аватар пользователя.
+     * @deprecated Используйте новый AvatarService с presigned URL
      */
+    @Deprecated
     public ProfileResponse updateAvatar(String username, MultipartFile file) {
-        User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
-
-        // Валидация файла
-        if (file.isEmpty()) {
-            throw new RuntimeException("Файл не выбран");
-        }
-
-        if (file.getSize() > MAX_FILE_SIZE_MB * BYTES_PER_MB) { // 5MB
-            throw new RuntimeException("Файл слишком большой. Максимальный размер: " + MAX_FILE_SIZE_MB + "MB");
-        }
-
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new RuntimeException("Поддерживаются только изображения");
-        }
-
-        try {
-            // Создаем директорию, если её нет
-            Path uploadDir = Paths.get(AVATAR_UPLOAD_DIR);
-            if (!Files.exists(uploadDir)) {
-                Files.createDirectories(uploadDir);
-            }
-
-            // Генерируем уникальное имя файла
-            String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename != null 
-                ? originalFilename.substring(originalFilename.lastIndexOf(".")) 
-                : ".jpg";
-            String filename = UUID.randomUUID().toString() + extension;
-            Path filePath = uploadDir.resolve(filename);
-
-            // Сохраняем файл
-            Files.copy(file.getInputStream(), filePath);
-
-            // Удаляем старый аватар, если он есть
-            if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-                Path oldAvatarPath = Paths.get(user.getAvatar());
-                if (Files.exists(oldAvatarPath)) {
-                    Files.delete(oldAvatarPath);
-                }
-            }
-
-            // Обновляем путь к аватару в базе данных
-            user.setAvatar(filePath.toString());
-            user.setUpdatedAt(LocalDateTime.now());
-
-            User savedUser = userRepository.save(user);
-            return convertToProfileResponse(savedUser);
-
-        } catch (IOException e) {
-            throw new RuntimeException("Ошибка при сохранении файла: " + e.getMessage());
-        }
+        throw new UnsupportedOperationException(
+            "Прямая загрузка файлов больше не поддерживается. " +
+            "Используйте новый AvatarService с presigned URL: " +
+            "POST /api/avatars/upload-url для получения URL загрузки, " +
+            "затем POST /api/avatars/confirm для подтверждения загрузки."
+        );
     }
 
     /**

@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from './material.module';
 import { UserMenuComponent } from './components/user-menu/user-menu.component';
 import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
+import { AvatarComponent } from './components/avatar/avatar.component';
 
 @NgModule({
   declarations: [],
@@ -11,12 +12,14 @@ import { PageNotFoundComponent } from './components/page-not-found/page-not-foun
     CommonModule,
     MaterialModule,
     UserMenuComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    AvatarComponent
   ],
   exports: [
     MaterialModule,
     UserMenuComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    AvatarComponent
   ],
 })
 export class SharedModule {}

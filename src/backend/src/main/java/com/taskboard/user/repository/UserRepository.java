@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Optional;
  */
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, String> {
-    
+
     /**
      * Find a user by username.
      *
@@ -23,7 +24,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
      * @return Optional containing the user if found
      */
     Optional<UserEntity> findByUsername(String username);
-    
+
     /**
      * Find a user by email.
      *
@@ -31,7 +32,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
      * @return Optional containing the user if found
      */
     Optional<UserEntity> findByEmail(String email);
-    
+
     /**
      * Check if a user exists by username.
      *
@@ -39,7 +40,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
      * @return true if user exists
      */
     boolean existsByUsername(String username);
-    
+
     /**
      * Check if a user exists by email.
      *
@@ -47,7 +48,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
      * @return true if user exists
      */
     boolean existsByEmail(String email);
-    
+
     /**
      * Find a user by password reset token.
      *
@@ -55,7 +56,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
      * @return Optional containing the user if found
      */
     Optional<UserEntity> findByPasswordResetToken(String token);
-    
+
     /**
      * Update last login timestamp for a user.
      *
@@ -65,7 +66,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     @Modifying
     @Query("UPDATE UserEntity u SET u.lastLogin = :lastLogin WHERE u.id = :userId")
     void updateLastLogin(@Param("userId") String userId, @Param("lastLogin") Date lastLogin);
-    
+
     /**
      * Delete users with expired password reset tokens.
      *
@@ -76,4 +77,13 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     @Query("UPDATE UserEntity u SET u.passwordResetToken = null, u.passwordResetTokenExpiry = null " +
            "WHERE u.passwordResetTokenExpiry < :currentDate")
     int clearExpiredPasswordResetTokens(@Param("currentDate") Date currentDate);
+
+    /**
+     * Find users by email or username containing the given query.
+     *
+     * @param email the email query
+     * @param username the username query
+     * @return list of matching users
+     */
+    List<UserEntity> findByEmailContainingIgnoreCaseOrUsernameContainingIgnoreCase(String email, String username);
 }

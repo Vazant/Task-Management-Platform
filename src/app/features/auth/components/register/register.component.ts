@@ -109,6 +109,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
+    console.log('Form validity:', this.registerForm.valid);
+    console.log('Form errors:', this.registerForm.errors);
+    console.log('Form value:', this.registerForm.value);
+    
     if (this.registerForm.valid) {
       const userData: RegisterRequest = {
         username: this.registerForm.value.username,
@@ -117,6 +121,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         confirmPassword: this.registerForm.value.confirmPassword,
       };
 
+      console.log('Sending userData:', userData);
       this.store.dispatch(AuthActions.register({ userData }));
     } else {
       this.markFormGroupTouched();

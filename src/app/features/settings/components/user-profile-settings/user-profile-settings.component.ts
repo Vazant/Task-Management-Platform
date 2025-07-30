@@ -15,6 +15,7 @@ import { ProfileService } from '../../services/profile.service';
 import { ProfileValidators } from '../../validators/profile.validators';
 import { DateUtils } from '../../utils/date.utils';
 import { UserProfile, UpdateProfileRequest, UpdateAvatarRequest } from '../../models/user-profile.model';
+import { AvatarService } from '../../../../core/services/avatar.service';
 
 @Component({
   selector: 'app-user-profile-settings',
@@ -37,6 +38,7 @@ import { UserProfile, UpdateProfileRequest, UpdateAvatarRequest } from '../../mo
 export class UserProfileSettingsComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly profileService = inject(ProfileService);
+  readonly avatarService = inject(AvatarService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly destroy$ = new Subject<void>();
 
@@ -161,7 +163,7 @@ export class UserProfileSettingsComponent implements OnInit, OnDestroy {
 
   onAvatarError(event: Event): void {
     const img = event.target as HTMLImageElement;
-    img.src = 'assets/images/default-avatar.png';
+    img.src = this.avatarService.getAvatarUrl(null);
   }
 
   private createAvatarPreview(file: File): void {
