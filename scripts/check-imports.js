@@ -6,16 +6,16 @@ const glob = require('glob');
 
 // Конфигурация
 const CONFIG = {
-  srcDir: 'src/app',
+  srcDir: 'client/src/app',
   maxRelativePathDepth: 3,
   forbiddenPatterns: [
     /\.\.\/\.\.\/\.\.\/\.\.\//, // ../../../
     /\.\.\/\.\.\/\.\.\//, // ../../
   ],
   barrelExports: {
-    '@models': 'src/app/core/models/index.ts',
-    '@services': 'src/app/core/services/index.ts',
-    '@utils': 'src/app/core/utils/index.ts'
+    '@models': 'client/src/app/core/models/index.ts',
+    '@services': 'client/src/app/core/services/index.ts',
+    '@utils': 'client/src/app/core/utils/index.ts'
   },
   // Исключения для стандартных импортов
   excludedImports: [
