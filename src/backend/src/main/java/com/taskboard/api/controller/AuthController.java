@@ -17,8 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -29,24 +28,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
-        try {
-            LoginResponse response = authService.login(request);
-            return ResponseEntity.ok(new ApiResponse<>(response, "Вход выполнен успешно", true));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(null, e.getMessage(), false));
-        }
+        LoginResponse response = authService.login(request);
+        return ResponseEntity.ok(new ApiResponse<>(response, "Вход выполнен успешно", true));
     }
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<LoginResponse>> register(@Valid @RequestBody RegisterRequest request) {
-        try {
-            LoginResponse response = authService.register(request);
-            return ResponseEntity.ok(new ApiResponse<>(response, "Регистрация выполнена успешно", true));
-        } catch (Exception e) {
-            return ResponseEntity.badRequest()
-                    .body(new ApiResponse<>(null, e.getMessage(), false));
-        }
+        LoginResponse response = authService.register(request);
+        return ResponseEntity.ok(new ApiResponse<>(response, "Регистрация выполнена успешно", true));
     }
 
     @PostMapping("/refresh")

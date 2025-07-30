@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -311,5 +312,147 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
+    }
+
+    // Admin operations
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDto> getAllUsers(int page, int size) {
+        log.debug("Getting all users: page={}, size={}", page, size);
+        return userRepository.findAll()
+                .stream()
+                .skip((long) page * size)
+                .limit(size)
+                .map(userMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserProfileDto getUserById(String userId) {
+        log.debug("Getting user by ID: {}", userId);
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
+        return userMapper.toProfileDto(user);
+    }
+
+    @Override
+    public UserProfileDto createUser(UserDto userDto) {
+        log.debug("Creating new user: {}", userDto.getEmail());
+
+        if (userRepository.existsByEmail(userDto.getEmail())) {
+            throw new IllegalArgumentException("User with email already exists: " + userDto.getEmail());
+        }
+
+        if (userRepository.existsByUsername(userDto.getUsername())) {
+            throw new IllegalArgumentException("User with username already exists: " + userDto.getUsername());
+        }
+
+        // Create new user entity manually since UserDto doesn't have all required fields
+        UserEntity user = new UserEntity();
+        user.setEmail(userDto.getEmail());
+        user.setUsername(userDto.getUsername());
+        user.setRole(userDto.getRole());
+        user.setAvatar(userDto.getAvatar());
+        user.setEnabled(true);
+        user.setAccountNonLocked(true);
+        user.setCreatedAt(new Date());
+
+        UserEntity savedUser = userRepository.save(user);
+        log.info("User created successfully: {}", savedUser.getEmail());
+
+        return userMapper.toProfileDto(savedUser);
+    }
+
+    @Override
+    public UserProfileDto updateUser(String userId, UserDto userDto) {
+        log.debug("Updating user: {}", userId);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
+
+        // Check if email is being changed and if it's already taken
+        if (!user.getEmail().equals(userDto.getEmail()) &&
+            userRepository.existsByEmail(userDto.getEmail())) {
+            throw new IllegalArgumentException("Email already exists: " + userDto.getEmail());
+        }
+
+        // Check if username is being changed and if it's already taken
+        if (!user.getUsername().equals(userDto.getUsername()) &&
+            userRepository.existsByUsername(userDto.getUsername())) {
+            throw new IllegalArgumentException("Username already exists: " + userDto.getUsername());
+        }
+
+        user.setEmail(userDto.getEmail());
+        user.setUsername(userDto.getUsername());
+        user.setRole(userDto.getRole());
+        user.setAvatar(userDto.getAvatar());
+        user.setUpdatedAt(new Date());
+
+        UserEntity savedUser = userRepository.save(user);
+        log.info("User updated successfully: {}", savedUser.getEmail());
+
+        return userMapper.toProfileDto(savedUser);
+    }
+
+    @Override
+    public void deleteUser(String userId) {
+        log.debug("Deleting user: {}", userId);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
+
+        userRepository.delete(user);
+        log.info("User deleted successfully: {}", user.getEmail());
+    }
+
+    @Override
+    public UserProfileDto toggleUserBlock(String userId) {
+        log.debug("Toggling user block: {}", userId);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
+
+        user.setAccountNonLocked(!user.isAccountNonLocked());
+        user.setUpdatedAt(new Date());
+
+        UserEntity savedUser = userRepository.save(user);
+        log.info("User block status toggled: {} -> {}", user.getEmail(), savedUser.isAccountNonLocked());
+
+        return userMapper.toProfileDto(savedUser);
+    }
+
+    @Override
+    public UserProfileDto updateUserRole(String userId, String role) {
+        log.debug("Updating user role: userId={}, role={}", userId, role);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + userId));
+
+        try {
+            UserRole newRole = UserRole.valueOf(role.toUpperCase());
+            user.setRole(newRole);
+            user.setUpdatedAt(new Date());
+
+            UserEntity savedUser = userRepository.save(user);
+            log.info("User role updated: {} -> {}", user.getEmail(), newRole);
+
+            return userMapper.toProfileDto(savedUser);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid role: " + role);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserDto> searchUsers(String query) {
+        log.debug("Searching users: {}", query);
+
+        return userRepository.findByEmailContainingIgnoreCaseOrUsernameContainingIgnoreCase(
+                query, query)
+                .stream()
+                .map(userMapper::toDto)
+                .toList();
     }
 }

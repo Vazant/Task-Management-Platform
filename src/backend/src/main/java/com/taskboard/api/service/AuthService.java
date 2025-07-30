@@ -4,10 +4,14 @@ import com.taskboard.api.config.CustomUserDetailsService;
 import com.taskboard.api.dto.LoginRequest;
 import com.taskboard.api.dto.LoginResponse;
 import com.taskboard.api.dto.RegisterRequest;
+import com.taskboard.api.exception.EmailAlreadyExistsException;
+import com.taskboard.api.exception.RegistrationException;
+import com.taskboard.api.exception.UsernameAlreadyExistsException;
 import com.taskboard.api.model.User;
 import com.taskboard.api.model.UserRole;
 import com.taskboard.api.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -34,6 +38,9 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private AvatarService avatarService;
+
     public LoginResponse login(LoginRequest request) {
         // Аутентификация
         authenticationManager.authenticate(
@@ -57,16 +64,16 @@ public class AuthService {
     public LoginResponse register(RegisterRequest request) {
         // Проверка паролей
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new RuntimeException("Пароли не совпадают");
+            throw new RegistrationException("Пароли не совпадают");
         }
 
         // Проверка существования пользователя
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Пользователь с таким email уже существует");
+            throw new EmailAlreadyExistsException("Пользователь с таким email уже существует");
         }
 
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Пользователь с таким именем уже существует");
+            throw new UsernameAlreadyExistsException("Пользователь с таким именем уже существует");
         }
 
         // Создание нового пользователя
@@ -77,7 +84,24 @@ public class AuthService {
         user.setRole(UserRole.USER);
         user.setCreatedAt(LocalDateTime.now());
 
-        user = userRepository.save(user);
+        try {
+            user = userRepository.save(user);
+
+            // Генерируем аватар на основе инициалов
+            String avatarUrl = avatarService.generateAvatarFromInitials(request.getUsername(), user.getId());
+            user.setAvatar(avatarUrl);
+            userRepository.save(user);
+
+        } catch (DataIntegrityViolationException ex) {
+            // Дополнительная проверка на случай race condition
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new EmailAlreadyExistsException("Пользователь с таким email уже существует", ex);
+            }
+            if (userRepository.existsByUsername(request.getUsername())) {
+                throw new UsernameAlreadyExistsException("Пользователь с таким именем уже существует", ex);
+            }
+            throw new RegistrationException("Ошибка при создании пользователя", ex);
+        }
 
         // Генерация токенов
         String token = jwtService.generateToken(user);

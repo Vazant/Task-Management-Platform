@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -76,4 +77,13 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     @Query("UPDATE UserEntity u SET u.passwordResetToken = null, u.passwordResetTokenExpiry = null " +
            "WHERE u.passwordResetTokenExpiry < :currentDate")
     int clearExpiredPasswordResetTokens(@Param("currentDate") Date currentDate);
+
+    /**
+     * Find users by email or username containing the given query.
+     *
+     * @param email the email query
+     * @param username the username query
+     * @return list of matching users
+     */
+    List<UserEntity> findByEmailContainingIgnoreCaseOrUsernameContainingIgnoreCase(String email, String username);
 }

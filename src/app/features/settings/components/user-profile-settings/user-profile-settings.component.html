@@ -74,7 +74,7 @@
         <div class="avatar-section">
           <div class="avatar-container">
             <img
-              [src]="avatarPreview() || profile()?.avatar || 'assets/images/default-avatar.png'"
+              [src]="avatarPreview() || avatarService.getAvatarUrl(profile()?.avatar)"
               [alt]="displayName()"
               class="avatar-image"
               (error)="onAvatarError($event)">
@@ -137,7 +137,7 @@
         <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Имя пользователя *</mat-label>
+              <mat-label>Имя пользователя</mat-label>
               <input
                 matInput
                 formControlName="username"
@@ -159,7 +159,7 @@
 
           <div class="form-row">
             <mat-form-field appearance="outline" class="form-field">
-              <mat-label>Email *</mat-label>
+              <mat-label>Email</mat-label>
               <input
                 matInput
                 type="email"

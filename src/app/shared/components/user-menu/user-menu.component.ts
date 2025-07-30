@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, HostListener } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { User } from '@models';
+import { AvatarComponent } from '../avatar/avatar.component';
 import {
   LucideAngularModule,
   User as UserIcon,
@@ -14,13 +15,11 @@ import {
 @Component({
   selector: 'app-user-menu',
   standalone: true,
-  imports: [CommonModule, RouterLink, LucideAngularModule],
+  imports: [CommonModule, RouterLink, LucideAngularModule, AvatarComponent],
   template: `
     <div class="user-menu" [class.open]="isOpen">
       <button class="user-button" (click)="toggleMenu()" type="button">
-        <div class="user-avatar">
-          {{ user?.username?.charAt(0)?.toUpperCase() || 'U' }}
-        </div>
+        <app-avatar [user]="user || undefined" size="small" class="user-avatar"></app-avatar>
         <span class="user-name">{{ user?.username || 'Пользователь' }}</span>
         <i-lucide [img]="ChevronDown" class="menu-arrow" [class.rotated]="isOpen" [size]="16"></i-lucide>
       </button>
@@ -72,16 +71,7 @@ import {
     }
 
     .user-avatar {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
+      flex-shrink: 0;
     }
 
     .user-name {

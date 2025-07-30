@@ -3,6 +3,8 @@ package com.taskboard.user.service;
 import com.taskboard.api.dto.*;
 import com.taskboard.user.dto.*;
 
+import java.util.List;
+
 /**
  * Service interface for user operations.
  */
@@ -121,4 +123,72 @@ public interface UserService {
      * @return true if user exists
      */
     boolean existsByUsername(String username);
+
+    // Admin operations
+
+    /**
+     * Get all users with pagination.
+     *
+     * @param page the page number
+     * @param size the page size
+     * @return list of users
+     */
+    List<UserDto> getAllUsers(int page, int size);
+
+    /**
+     * Get user by ID.
+     *
+     * @param userId the user ID
+     * @return the user profile
+     */
+    UserProfileDto getUserById(String userId);
+
+    /**
+     * Create new user.
+     *
+     * @param userDto the user data
+     * @return the created user profile
+     */
+    UserProfileDto createUser(UserDto userDto);
+
+    /**
+     * Update user.
+     *
+     * @param userId the user ID
+     * @param userDto the user data
+     * @return the updated user profile
+     */
+    UserProfileDto updateUser(String userId, UserDto userDto);
+
+    /**
+     * Delete user.
+     *
+     * @param userId the user ID
+     */
+    void deleteUser(String userId);
+
+    /**
+     * Toggle user block status.
+     *
+     * @param userId the user ID
+     * @return the updated user profile
+     */
+    UserProfileDto toggleUserBlock(String userId);
+
+    /**
+     * Update user role.
+     *
+     * @param userId the user ID
+     * @param role the new role
+     * @return the updated user profile
+     */
+    UserProfileDto updateUserRole(String userId, String role);
+
+    /**
+     * Search users by email or name.
+     *
+     * @param query the search query
+     * @return list of matching users
+     */
+    List<UserDto> searchUsers(String query);
 }

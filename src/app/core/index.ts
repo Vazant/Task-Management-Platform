@@ -7,6 +7,7 @@ export * from './guards/role.guard';
 export * from './services/api.service';
 export * from './services/auth.service';
 export * from './services/notification.service';
+export * from './services/avatar.service';
 
 // Models
 export * from './models/user.model';
@@ -17,4 +18,4 @@ export * from './models/api-response.model';
 
 // Utils
 export * from './utils/date.utils';
-export * from './utils/validation.utils'; 
+export * from './utils/validation.utils';

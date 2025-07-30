@@ -15,11 +15,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * JWT аутентификационный фильтр для проверки токенов в запросах.
  */
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -38,7 +40,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String username;
 
+        log.debug("Processing request: {} {}", request.getMethod(), request.getRequestURI());
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.debug("No Authorization header or invalid format for: {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }
@@ -47,7 +52,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             username = jwtService.extractUsername(jwt);
+            log.debug("Extracted username: {} from JWT", username);
         } catch (Exception e) {
+            log.warn("Failed to extract username from JWT: {}", e.getMessage());
             filterChain.doFilter(request, response);
             return;
         }
@@ -65,6 +72,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                log.debug("Authentication set for user: {} with authorities: {}",
+                    username, userDetails.getAuthorities());
+            } else {
+                log.warn("JWT validation failed for user: {}", username);
             }
         }
 

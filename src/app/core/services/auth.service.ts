@@ -47,6 +47,7 @@ export class AuthService {
   }
 
   register(userData: RegisterRequest): Observable<LoginResponse> {
+    console.log('Sending registration data:', userData);
     return this.apiService.post<LoginResponse>('/auth/register', userData).pipe(
       map(response => response.data),
       tap(response => {
