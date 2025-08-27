@@ -1,0 +1,15 @@
+{
+  "extends": ["../config/.eslintrc.json"],
+  "parserOptions": {
+    "project": [
+      "../config/tsconfig.json",
+      "../config/tsconfig.app.json",
+      "../config/tsconfig.spec.json"
+    ]
+  },
+  "ignorePatterns": [
+    "dist/**/*",
+    "node_modules/**/*"
+  ]
+}
+

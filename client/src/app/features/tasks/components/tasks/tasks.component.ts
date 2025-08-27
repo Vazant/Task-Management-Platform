@@ -6,22 +6,28 @@ import { User } from '@models';
 import { Subscription } from 'rxjs';
 import { LayoutComponent } from '../../../../shared/components/layout';
 import { LucideAngularModule, CheckSquare, Plus, Move, Calendar } from 'lucide-angular';
+import { Store } from '@ngrx/store';
+import { selectSortedTasks, selectTasksLoading, loadTasks } from '@store';
+import { TaskListComponent } from '../task-list/task-list.component';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
   standalone: true,
-  imports: [CommonModule, LayoutComponent, LucideAngularModule]
+  imports: [CommonModule, LayoutComponent, LucideAngularModule, TaskListComponent]
 })
 export class TasksComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly store = inject(Store);
 
   isAuthenticated = false;
   currentUser: User | null = null;
   private authSubscription?: Subscription;
   private userSubscription?: Subscription;
+  tasks$ = this.store.select(selectSortedTasks);
+  loading$ = this.store.select(selectTasksLoading);
 
 
 
@@ -42,6 +48,8 @@ export class TasksComponent implements OnInit, OnDestroy {
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
+
+    this.store.dispatch(loadTasks());
   }
 
   ngOnDestroy(): void {

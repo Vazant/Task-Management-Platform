@@ -1,0 +1,22 @@
+.task-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-weight: 600;
+}
+
+.meta {
+  display: inline-flex;
+  gap: 12px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+
+.empty {
+  color: #777;
+}
+

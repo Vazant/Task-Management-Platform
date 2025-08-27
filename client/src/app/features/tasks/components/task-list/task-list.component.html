@@ -1,0 +1,16 @@
+<mat-list>
+  <mat-list-item *ngFor="let task of tasks; trackBy: trackById">
+    <div class="task-item">
+      <span class="title">{{ task.title }}</span>
+      <span class="meta">
+        <span class="status" [attr.data-status]="task.status">{{ task.status }}</span>
+        <span class="priority" [attr.data-priority]="task.priority">{{ task.priority }}</span>
+      </span>
+    </div>
+  </mat-list-item>
+  <mat-list-item *ngIf="tasks.length === 0">
+    <div class="empty">No tasks</div>
+  </mat-list-item>
+  
+</mat-list>
+

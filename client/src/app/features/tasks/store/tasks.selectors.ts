@@ -1,24 +1,18 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { TasksState } from './tasks.state';
+import { tasksAdapter } from './tasks.reducer';
+import type { Task } from '@models';
 
 
 
 export const selectTasksState = createFeatureSelector<TasksState>('tasks');
 
-export const selectAllTasks = createSelector(
-  selectTasksState,
-  (state) => state.ids.map(id => state.entities[id]).filter(Boolean)
-);
+const { selectAll, selectEntities, selectIds, selectTotal } = tasksAdapter.getSelectors();
 
-export const selectTasksEntities = createSelector(
-  selectTasksState,
-  (state) => state.entities
-);
-
-export const selectTasksIds = createSelector(
-  selectTasksState,
-  (state) => state.ids
-);
+export const selectAllTasks = createSelector(selectTasksState, selectAll);
+export const selectTasksEntities = createSelector(selectTasksState, selectEntities);
+export const selectTasksIds = createSelector(selectTasksState, selectIds);
+export const selectTasksTotal = createSelector(selectTasksState, selectTotal);
 
 export const selectTasksLoading = createSelector(
   selectTasksState,
@@ -44,8 +38,8 @@ export const selectTasksSortBy = createSelector(
 export const selectFilteredTasks = createSelector(
   selectAllTasks,
   selectTasksFilters,
-  (tasks, filters) => {
-    return tasks.filter(task => {
+  (tasks: Task[], filters) => {
+    return tasks.filter((task: Task) => {
       if (filters.status !== 'all' && task.status !== filters.status) {
         return false;
       }
@@ -67,22 +61,22 @@ export const selectFilteredTasks = createSelector(
 export const selectSortedTasks = createSelector(
   selectFilteredTasks,
   selectTasksSortBy,
-  (tasks, sortBy) => {
-    return [...tasks].sort((a, b) => {
+  (tasks: Task[], sortBy) => {
+    return [...tasks].sort((a: Task, b: Task) => {
       switch (sortBy) {
         case 'created':
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'updated':
           return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
         case 'priority': {
-          const priorityOrder = { urgent: 4, high: 3, medium: 2, low: 1 };
+          const priorityOrder: Record<Task['priority'], number> = { urgent: 4, high: 3, medium: 2, low: 1 };
           return priorityOrder[b.priority] - priorityOrder[a.priority];
         }
         case 'dueDate':
           if (!a.dueDate && !b.dueDate) return 0;
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
-          return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+          return new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime();
         case 'title':
           return a.title.localeCompare(b.title);
         default:
@@ -95,32 +89,32 @@ export const selectSortedTasks = createSelector(
 // Задачи по статусу
 export const selectTasksByStatus = (status: string) => createSelector(
   selectAllTasks,
-  (tasks) => tasks.filter(task => task.status === status)
+  (tasks: Task[]) => tasks.filter((task: Task) => task.status === status)
 );
 
 // Задачи по проекту
 export const selectTasksByProject = (projectId: string) => createSelector(
   selectAllTasks,
-  (tasks) => tasks.filter(task => task.projectId === projectId)
+  (tasks: Task[]) => tasks.filter((task: Task) => task.projectId === projectId)
 );
 
 // Задачи по исполнителю
 export const selectTasksByAssignee = (assigneeId: string) => createSelector(
   selectAllTasks,
-  (tasks) => tasks.filter(task => task.assigneeId === assigneeId)
+  (tasks: Task[]) => tasks.filter((task: Task) => task.assigneeId === assigneeId)
 );
 
 // Статистика задач
 export const selectTasksStats = createSelector(
   selectAllTasks,
-  (tasks) => ({
+  (tasks: Task[]) => ({
     total: tasks.length,
-    backlog: tasks.filter(t => t.status === 'backlog').length,
-    inProgress: tasks.filter(t => t.status === 'in-progress').length,
-    done: tasks.filter(t => t.status === 'done').length,
-    urgent: tasks.filter(t => t.priority === 'urgent').length,
-    high: tasks.filter(t => t.priority === 'high').length,
-    medium: tasks.filter(t => t.priority === 'medium').length,
-    low: tasks.filter(t => t.priority === 'low').length,
+    backlog: tasks.filter((t: Task) => t.status === 'backlog').length,
+    inProgress: tasks.filter((t: Task) => t.status === 'in-progress').length,
+    done: tasks.filter((t: Task) => t.status === 'done').length,
+    urgent: tasks.filter((t: Task) => t.priority === 'urgent').length,
+    high: tasks.filter((t: Task) => t.priority === 'high').length,
+    medium: tasks.filter((t: Task) => t.priority === 'medium').length,
+    low: tasks.filter((t: Task) => t.priority === 'low').length,
   })
 );
