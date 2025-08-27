@@ -1,38 +1,35 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { LucideAngularModule, User, Mail, Eye, EyeOff, Loader2 } from 'lucide-angular';
+import { takeUntil } from 'rxjs/operators';
+import { LucideAngularModule, User, Mail, Eye, EyeOff, Loader2, Lock, Github } from 'lucide-angular';
 
+import { ValidationUtils } from '../../../core/utils/validation.utils';
+import { RegisterRequest } from '../../../core/models/api-response.model';
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
-import { RegisterRequest } from '@models';
-import { ValidationUtils } from '@utils';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    LucideAngularModule
-  ]
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideAngularModule]
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
+
+  readonly User = User;
+  readonly Mail = Mail;
+  readonly Eye = Eye;
+  readonly EyeOff = EyeOff;
+  readonly Loader2 = Loader2;
+  readonly Lock = Lock;
+  readonly Github = Github;
 
   registerForm!: FormGroup;
   loading$!: Observable<boolean>;
@@ -41,15 +38,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   hideConfirmPassword = true;
   private readonly destroy$ = new Subject<void>();
 
-  // Lucide icons
-  readonly User = User;
-  readonly Mail = Mail;
-  readonly Eye = Eye;
-  readonly EyeOff = EyeOff;
-  readonly Loader2 = Loader2;
-
-
-
   constructor() {
     this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
     this.error$ = this.store.select(AuthSelectors.selectError);
@@ -57,7 +45,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initForm();
-    this.clearError();
   }
 
   ngOnDestroy(): void {
@@ -73,29 +60,33 @@ export class RegisterComponent implements OnInit, OnDestroy {
         Validators.maxLength(20),
         Validators.pattern(/^[a-zA-Z0-9_]+$/)
       ]],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [
+        Validators.required,
+        Validators.email
+      ]],
       password: ['', [
         Validators.required,
         Validators.minLength(8),
-        this.passwordStrengthValidator
+        this.passwordStrengthValidator.bind(this)
       ]],
-      confirmPassword: ['', [Validators.required]],
-      agreeToTerms: [false, [Validators.requiredTrue]]
-    }, { validators: this.passwordMatchValidator });
+      confirmPassword: ['', [
+        Validators.required
+      ]],
+      agreeToTerms: [false, [
+        Validators.requiredTrue
+      ]]
+    }, {
+      validators: this.passwordMatchValidator
+    });
   }
 
   private passwordStrengthValidator(control: AbstractControl): { [key: string]: boolean } | null {
-    const password = control.value;
-    if (!password) return null;
+    if (!control.value) return null;
 
-    const hasLetter = /[a-zA-Z]/.test(password);
-    const hasNumber = /\d/.test(password);
-
-
-    if (!hasLetter || !hasNumber) {
-      return { passwordStrength: true };
+    const strength = ValidationUtils.getPasswordStrength(control.value);
+    if (strength === 'weak') {
+      return { weakPassword: true };
     }
-
     return null;
   }
 
@@ -105,23 +96,21 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
     if (!password || !confirmPassword) return null;
 
-    return password.value === confirmPassword.value ? null : { passwordMismatch: true };
+    if (password.value !== confirmPassword.value) {
+      return { passwordMismatch: true };
+    }
+    return null;
   }
 
   onSubmit(): void {
-    console.log('Form validity:', this.registerForm.valid);
-    console.log('Form errors:', this.registerForm.errors);
-    console.log('Form value:', this.registerForm.value);
-
     if (this.registerForm.valid) {
       const userData: RegisterRequest = {
         username: this.registerForm.value.username,
         email: this.registerForm.value.email,
         password: this.registerForm.value.password,
-        confirmPassword: this.registerForm.value.confirmPassword,
+        confirmPassword: this.registerForm.value.confirmPassword
       };
 
-      console.log('Sending userData:', userData);
       this.store.dispatch(AuthActions.register({ userData }));
     } else {
       this.markFormGroupTouched();
@@ -129,64 +118,81 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   private markFormGroupTouched(): void {
-    Object.keys(this.registerForm.controls).forEach((key) => {
+    Object.keys(this.registerForm.controls).forEach(key => {
       const control = this.registerForm.get(key);
       control?.markAsTouched();
     });
   }
 
-  private clearError(): void {
-    this.store.dispatch(AuthActions.clearAuthError());
-  }
-
   getErrorMessage(controlName: string): string {
     const control = this.registerForm.get(controlName);
+    if (!control || !control.errors) return '';
 
-    if (control?.hasError('required')) {
-      return 'Это поле обязательно';
+    if (control.errors['required']) {
+      return 'Это поле обязательно для заполнения';
     }
-
-    if (controlName === 'username') {
-      if (control?.hasError('minlength')) {
-        return 'Имя пользователя должно содержать минимум 3 символа';
-      }
-      if (control?.hasError('maxlength')) {
-        return 'Имя пользователя не должно превышать 20 символов';
-      }
-      if (control?.hasError('pattern')) {
-        return 'Имя пользователя может содержать только буквы, цифры и подчеркивания';
-      }
-    }
-
-    if (controlName === 'email' && control?.hasError('email')) {
+    if (control.errors['email']) {
       return 'Введите корректный email';
     }
-
-    if (controlName === 'password') {
-      if (control?.hasError('minlength')) {
-        return 'Пароль должен содержать минимум 8 символов';
+    if (control.errors['minlength']) {
+      const requiredLength = control.errors['minlength'].requiredLength;
+      if (controlName === 'username') {
+        return `Имя пользователя должно содержать минимум ${requiredLength} символа`;
       }
-      if (control?.hasError('passwordStrength')) {
-        return 'Пароль должен содержать буквы и цифры';
+      return `Минимальная длина ${requiredLength} символов`;
+    }
+    if (control.errors['maxlength']) {
+      const requiredLength = control.errors['maxlength'].requiredLength;
+      return `Максимальная длина ${requiredLength} символов`;
+    }
+    if (control.errors['pattern']) {
+      if (controlName === 'username') {
+        return 'Имя пользователя может содержать только буквы, цифры и знак подчеркивания';
       }
+      return 'Неверный формат';
+    }
+    if (control.errors['weakPassword']) {
+      return 'Пароль слишком слабый. Используйте буквы, цифры и специальные символы';
+    }
+    if (control.errors['requiredTrue']) {
+      return 'Необходимо согласиться с условиями использования';
     }
 
-    if (controlName === 'confirmPassword' && control?.hasError('required')) {
-      return 'Подтвердите пароль';
-    }
-
-    if (controlName === 'agreeToTerms' && control?.hasError('required')) {
-      return 'Необходимо согласиться с условиями';
-    }
-
-    return '';
+    return 'Неверное значение';
   }
 
   getPasswordStrength(): string {
     const password = this.registerForm.get('password')?.value;
     if (!password) return '';
+    
+    const strength = ValidationUtils.getPasswordStrength(password);
+    return strength;
+  }
 
-    return ValidationUtils.getPasswordStrength(password);
+  getPasswordStrengthPercentage(): number {
+    const password = this.registerForm.get('password')?.value;
+    if (!password) return 0;
+    
+    const strength = ValidationUtils.getPasswordStrength(password);
+    switch (strength) {
+      case 'weak': return 33;
+      case 'medium': return 66;
+      case 'strong': return 100;
+      default: return 0;
+    }
+  }
+
+  getPasswordStrengthText(): string {
+    const password = this.registerForm.get('password')?.value;
+    if (!password) return '';
+    
+    const strength = ValidationUtils.getPasswordStrength(password);
+    switch (strength) {
+      case 'weak': return 'Слабый пароль';
+      case 'medium': return 'Средний пароль';
+      case 'strong': return 'Сильный пароль';
+      default: return '';
+    }
   }
 
   isFieldInvalid(fieldName: string): boolean {
@@ -195,7 +201,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   hasPasswordMismatch(): boolean {
-    return this.registerForm.hasError('passwordMismatch') &&
-    (this.registerForm.get('confirmPassword')?.touched ?? false);
+    return this.registerForm.hasError('passwordMismatch') && 
+           this.registerForm.get('confirmPassword')?.touched;
   }
 }

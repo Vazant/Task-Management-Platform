@@ -8,6 +8,7 @@ export const initialState: AuthState = {
   refreshToken: null,
   loading: false,
   error: null,
+  success: null,
   isAuthenticated: false
 };
 
@@ -18,7 +19,8 @@ export const authReducer = createReducer(
   on(AuthActions.login, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
+    success: null
   })),
   
   on(AuthActions.loginSuccess, (state, { user, token, refreshToken }) => ({
@@ -28,6 +30,7 @@ export const authReducer = createReducer(
     refreshToken,
     loading: false,
     error: null,
+    success: null,
     isAuthenticated: true
   })),
   
@@ -35,6 +38,7 @@ export const authReducer = createReducer(
     ...state,
     loading: false,
     error,
+    success: null,
     isAuthenticated: false
   })),
   
@@ -42,7 +46,8 @@ export const authReducer = createReducer(
   on(AuthActions.register, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
+    success: null
   })),
   
   on(AuthActions.registerSuccess, (state, { user, token, refreshToken }) => ({
@@ -52,6 +57,7 @@ export const authReducer = createReducer(
     refreshToken,
     loading: false,
     error: null,
+    success: null,
     isAuthenticated: true
   })),
   
@@ -59,6 +65,7 @@ export const authReducer = createReducer(
     ...state,
     loading: false,
     error,
+    success: null,
     isAuthenticated: false
   })),
   
@@ -76,7 +83,8 @@ export const authReducer = createReducer(
   on(AuthActions.refreshToken, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
+    success: null
   })),
   
   on(AuthActions.refreshTokenSuccess, (state, { token, refreshToken }) => ({
@@ -84,13 +92,15 @@ export const authReducer = createReducer(
     token,
     refreshToken,
     loading: false,
-    error: null
+    error: null,
+    success: null
   })),
   
   on(AuthActions.refreshTokenFailure, (state, { error }) => ({
     ...state,
     loading: false,
     error,
+    success: null,
     isAuthenticated: false
   })),
   
@@ -98,43 +108,50 @@ export const authReducer = createReducer(
   on(AuthActions.forgotPassword, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
+    success: null
   })),
   
-  on(AuthActions.forgotPasswordSuccess, (state) => ({
+  on(AuthActions.forgotPasswordSuccess, (state, { message }) => ({
     ...state,
     loading: false,
-    error: null
+    error: null,
+    success: message
   })),
   
   on(AuthActions.forgotPasswordFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error
+    error,
+    success: null
   })),
   
   // Reset Password
   on(AuthActions.resetPassword, (state) => ({
     ...state,
     loading: true,
-    error: null
+    error: null,
+    success: null
   })),
   
-  on(AuthActions.resetPasswordSuccess, (state) => ({
+  on(AuthActions.resetPasswordSuccess, (state, { message }) => ({
     ...state,
     loading: false,
-    error: null
+    error: null,
+    success: message
   })),
   
   on(AuthActions.resetPasswordFailure, (state, { error }) => ({
     ...state,
     loading: false,
-    error
+    error,
+    success: null
   })),
   
   // Clear Error
   on(AuthActions.clearAuthError, (state) => ({
     ...state,
-    error: null
+    error: null,
+    success: null
   }))
 ); 

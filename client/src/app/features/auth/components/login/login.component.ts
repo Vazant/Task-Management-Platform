@@ -2,37 +2,21 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { LucideAngularModule, Loader2, Eye, EyeOff } from 'lucide-angular';
 import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
+import { LucideAngularModule, Loader2, Eye, EyeOff, Mail, Lock, Github } from 'lucide-angular';
 
-import { AuthService } from '@services';
-import { Subscription } from 'rxjs';
+import { AuthService } from '../../../core/services/auth.service';
+import { LoginRequest } from '../../../core/models/api-response.model';
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    RouterLink,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCheckboxModule,
-    MatProgressSpinnerModule,
-    LucideAngularModule
-  ],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, LucideAngularModule]
 })
 export class LoginComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
@@ -40,10 +24,12 @@ export class LoginComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
 
-  // Lucide icons для standalone компонентов
   readonly Loader2 = Loader2;
   readonly Eye = Eye;
   readonly EyeOff = EyeOff;
+  readonly Mail = Mail;
+  readonly Lock = Lock;
+  readonly Github = Github;
 
   loginForm!: FormGroup;
   loading$ = this.store.select(AuthSelectors.selectIsLoading);
@@ -70,8 +56,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   private subscribeToAuthState(): void {
     this.subscription.add(
-      this.authService.currentUser$.subscribe(user => {
-        if (user) {
+      this.store.select(AuthSelectors.selectIsAuthenticated).subscribe(isAuthenticated => {
+        if (isAuthenticated) {
           this.router.navigate(['/dashboard']);
         }
       })
@@ -80,16 +66,12 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      const { email, password, rememberMe } = this.loginForm.value;
-      // Отправляем только email и password, rememberMe обрабатываем отдельно
-      this.store.dispatch(AuthActions.login({ credentials: { email, password } }));
+      const credentials: LoginRequest = {
+        email: this.loginForm.value.email,
+        password: this.loginForm.value.password
+      };
 
-      // Обработка rememberMe (можно сохранить в localStorage)
-      if (rememberMe) {
-        localStorage.setItem('rememberMe', 'true');
-      } else {
-        localStorage.removeItem('rememberMe');
-      }
+      this.store.dispatch(AuthActions.login({ credentials }));
     }
   }
 
@@ -100,7 +82,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   getErrorMessage(fieldName: string): string {
     const field = this.loginForm.get(fieldName);
-    if (!field?.errors) return '';
+    if (!field || !field.errors) return '';
 
     if (field.errors['required']) {
       return 'Это поле обязательно для заполнения';

@@ -1,0 +1,508 @@
+// Общие стили для компонентов аутентификации
+// Основной контейнер
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+// Карточка формы
+.auth-card {
+  max-width: 400px;
+  width: 100%;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.1);
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+}
+
+// Шапка формы
+.auth-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2D3748;
+  margin: 0 0 16px 0;
+}
+
+.auth-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2D3748;
+  margin: 0;
+  line-height: 1.2;
+}
+
+// Описание
+.auth-description {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.auth-description p {
+  font-size: 16px;
+  font-weight: 400;
+  color: #4A5568;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.success-message {
+  color: #48BB78 !important;
+  font-weight: 500;
+}
+
+// Форма
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// Группа поля
+.form-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// Лейбл поля
+.form-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4A5568;
+  margin: 0;
+}
+
+// Обертка ввода
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+// Иконка в поле
+.input-icon {
+  position: absolute;
+  left: 12px;
+  color: #A0AEC0;
+  z-index: 1;
+  transition: color 0.2s ease;
+}
+
+// Поле ввода
+.form-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 12px 0 44px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 400;
+  color: #2D3748;
+  background: #FFFFFF;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.form-input::placeholder {
+  color: #A0AEC0;
+}
+
+.form-input:hover {
+  border-color: #CBD5E0;
+}
+
+.form-input:focus {
+  border-color: #667EEA;
+  outline: 2px solid #667EEA;
+  outline-offset: 2px;
+}
+
+.form-input:focus + .input-icon {
+  color: #667EEA;
+}
+
+.form-input.error {
+  border-color: #F56565;
+}
+
+.form-input:disabled {
+  background: #F7FAFC;
+  border-color: #EDF2F7;
+  color: #A0AEC0;
+  cursor: not-allowed;
+}
+
+// Кнопка показа/скрытия пароля
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #A0AEC0;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.password-toggle:hover {
+  color: #667EEA;
+  background: rgba(102, 126, 234, 0.1);
+}
+
+// Сообщения об ошибках
+.error-message {
+  font-size: 12px;
+  font-weight: 400;
+  color: #F56565;
+  margin: 0;
+  line-height: 1.4;
+}
+
+// Индикатор силы пароля
+.password-strength {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.strength-bar {
+  width: 100%;
+  height: 4px;
+  background: #E2E8F0;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+}
+
+.strength-fill.weak {
+  background: #F56565;
+}
+
+.strength-fill.medium {
+  background: #ED8936;
+}
+
+.strength-fill.strong {
+  background: #48BB78;
+}
+
+.strength-text {
+  font-size: 12px;
+  font-weight: 400;
+  color: #4A5568;
+}
+
+// Кастомный чекбокс
+.checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  cursor: pointer;
+  margin: 8px 0;
+}
+
+.checkbox-input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-custom {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #E2E8F0;
+  border-radius: 4px;
+  background: #FFFFFF;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.checkbox-input:checked ~ .checkbox-custom {
+  background: #667EEA;
+  border-color: #667EEA;
+}
+
+.checkbox-input:checked ~ .checkbox-custom::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-label {
+  font-size: 14px;
+  font-weight: 400;
+  color: #4A5568;
+  line-height: 1.4;
+}
+
+.terms-link {
+  color: #667EEA;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+  color: #5A6FD8;
+}
+
+// Опции формы
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0;
+}
+
+// Ссылка "Забыли пароль"
+.forgot-link {
+  font-size: 14px;
+  color: #667EEA;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+  color: #5A6FD8;
+}
+
+// Кнопки
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  min-height: 48px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.btn-icon {
+  transition: transform 0.2s ease;
+}
+
+.btn-icon.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// Primary кнопка
+.btn-primary {
+  background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+  color: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+// Outline кнопка
+.btn-outline {
+  background: #FFFFFF;
+  color: #667EEA;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+
+.btn-outline::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1;
+  margin: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+}
+
+.btn-outline:hover:not(:disabled) {
+  background: rgba(102, 126, 234, 0.1);
+}
+
+// Социальная аутентификация
+.social-auth {
+  margin-top: 24px;
+}
+
+.divider {
+  text-align: center;
+  margin: 16px 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #E2E8F0;
+}
+
+.divider span {
+  background: #FFFFFF;
+  padding: 0 16px;
+  color: #A0AEC0;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.social-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.social-icon {
+  color: #2D3748;
+}
+
+// Успешное состояние
+.success-content {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.success-icon {
+  margin-bottom: 16px;
+}
+
+.success-icon-svg {
+  color: #48BB78;
+}
+
+.success-text {
+  font-size: 16px;
+  font-weight: 400;
+  color: #4A5568;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+// Футер формы
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #E2E8F0;
+}
+
+.auth-footer p {
+  margin: 0;
+  font-size: 14px;
+  color: #4A5568;
+}
+
+.auth-link {
+  color: #667EEA;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+  color: #5A6FD8;
+}
+
+// Адаптивность
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 16px;
+  }
+  
+  .auth-card {
+    padding: 24px;
+  }
+  
+  .auth-header h1 {
+    font-size: 24px;
+  }
+  
+  .auth-description p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-container {
+    padding: 8px;
+  }
+  
+  .auth-card {
+    padding: 20px;
+    width: 100%;
+  }
+  
+  .form-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .checkbox-wrapper {
+    align-items: flex-start;
+  }
+  
+  .checkbox-label {
+    font-size: 13px;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .success-content {
+    padding: 16px 0;
+  }
+} 
