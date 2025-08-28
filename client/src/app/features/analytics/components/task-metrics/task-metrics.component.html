@@ -1,0 +1,155 @@
+<div class="task-metrics">
+  <!-- Metrics Overview -->
+  <div class="metrics-grid">
+    <mat-card class="metric-card" *ngFor="let metric of detailedMetrics">
+      <mat-card-content>
+        <div class="metric-header">
+          <mat-icon [style.color]="metric.color">{{ metric.icon }}</mat-icon>
+          <div class="metric-info">
+            <h3 class="metric-label">{{ metric.label }}</h3>
+            <p class="metric-value">
+              {{ metric.value }}{{ metric.unit }}
+            </p>
+          </div>
+        </div>
+        <div class="metric-trend" *ngIf="metric.trend">
+          <mat-icon 
+            [style.color]="getTrendColor(metric.trend)"
+            [matTooltip]="metric.trend + ' trend'"
+          >
+            {{ getTrendIcon(metric.trend) }}
+          </mat-icon>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Breakdown Tables -->
+  <div class="breakdown-section">
+    <!-- Status Breakdown -->
+    <mat-card class="breakdown-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>pie_chart</mat-icon>
+          Tasks by Status
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="statusBreakdown" class="breakdown-table">
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="status-item">
+                <div class="status-color" [style.background-color]="item.color"></div>
+                {{ item.status }}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="count">
+            <th mat-header-cell *matHeaderCellDef>Count</th>
+            <td mat-cell *matCellDef="let item">{{ item.count }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="percentage">
+            <th mat-header-cell *matHeaderCellDef>Percentage</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="percentage-bar">
+                <div class="percentage-fill" [style.width.%]="item.percentage" [style.background-color]="item.color"></div>
+                <span class="percentage-text">{{ item.percentage | number:'1.1-1' }}%</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['status', 'count', 'percentage']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['status', 'count', 'percentage'];"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Priority Breakdown -->
+    <mat-card class="breakdown-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>priority_high</mat-icon>
+          Tasks by Priority
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="priorityBreakdown" class="breakdown-table">
+          <ng-container matColumnDef="priority">
+            <th mat-header-cell *matHeaderCellDef>Priority</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="priority-item">
+                <div class="priority-color" [style.background-color]="item.color"></div>
+                {{ item.priority }}
+              </div>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="count">
+            <th mat-header-cell *matHeaderCellDef>Count</th>
+            <td mat-cell *matCellDef="let item">{{ item.count }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="percentage">
+            <th mat-header-cell *matHeaderCellDef>Percentage</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="percentage-bar">
+                <div class="percentage-fill" [style.width.%]="item.percentage" [style.background-color]="item.color"></div>
+                <span class="percentage-text">{{ item.percentage | number:'1.1-1' }}%</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['priority', 'count', 'percentage']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['priority', 'count', 'percentage'];"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Assignee Breakdown -->
+    <mat-card class="breakdown-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>people</mat-icon>
+          Tasks by Assignee
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="assigneeBreakdown" class="breakdown-table">
+          <ng-container matColumnDef="assignee">
+            <th mat-header-cell *matHeaderCellDef>Assignee</th>
+            <td mat-cell *matCellDef="let item">{{ item.assignee }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="count">
+            <th mat-header-cell *matHeaderCellDef>Count</th>
+            <td mat-cell *matCellDef="let item">{{ item.count }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="percentage">
+            <th mat-header-cell *matHeaderCellDef>Percentage</th>
+            <td mat-cell *matCellDef="let item">
+              <div class="percentage-bar">
+                <div class="percentage-fill" [style.width.%]="item.percentage"></div>
+                <span class="percentage-text">{{ item.percentage | number:'1.1-1' }}%</span>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['assignee', 'count', 'percentage']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['assignee', 'count', 'percentage'];"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Export Actions -->
+  <div class="export-actions">
+    <button mat-raised-button color="primary" (click)="exportMetrics()" matTooltip="Export metrics data">
+      <mat-icon>download</mat-icon>
+      Export Metrics
+    </button>
+  </div>
+</div>

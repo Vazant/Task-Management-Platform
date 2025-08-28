@@ -1,0 +1,168 @@
+<div class="export-reports">
+  <!-- Export Templates -->
+  <mat-card class="templates-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>description</mat-icon>
+        Report Templates
+      </mat-card-title>
+      <mat-card-subtitle>
+        Choose from predefined report templates or create a custom one
+      </mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="templates-grid">
+        <mat-card 
+          class="template-card" 
+          *ngFor="let template of exportTemplates"
+          [class.selected]="selectedTemplate === template.id"
+          (click)="onTemplateChange(template.id)"
+        >
+          <mat-card-content>
+            <h3>{{ template.name }}</h3>
+            <p>{{ template.description }}</p>
+            <div class="template-config">
+              <mat-chip-set>
+                <mat-chip size="small">{{ template.config.reportType | titlecase }}</mat-chip>
+                <mat-chip size="small">{{ template.config.format | uppercase }}</mat-chip>
+              </mat-chip-set>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Export Configuration -->
+  <mat-card class="config-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>settings</mat-icon>
+        Export Configuration
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="config-form">
+        <!-- Report Type -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Report Type</mat-label>
+            <mat-select [(ngModel)]="exportConfig.reportType" (selectionChange)="onReportTypeChange()">
+              <mat-option *ngFor="let type of reportTypes" [value]="type.value">
+                <mat-icon>{{ type.icon }}</mat-icon>
+                {{ type.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Export Format -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Export Format</mat-label>
+            <mat-select [(ngModel)]="exportConfig.format">
+              <mat-option *ngFor="let format of exportFormats" [value]="format.value">
+                <mat-icon>{{ format.icon }}</mat-icon>
+                {{ format.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Date Range -->
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Start Date</mat-label>
+            <input matInput [matDatepicker]="startPicker" [(ngModel)]="exportConfig.dateRange.start">
+            <mat-datepicker-toggle matIconSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>End Date</mat-label>
+            <input matInput [matDatepicker]="endPicker" [(ngModel)]="exportConfig.dateRange.end">
+            <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Include Options -->
+        <div class="form-row">
+          <mat-checkbox [(ngModel)]="exportConfig.includeCharts">
+            Include Charts
+          </mat-checkbox>
+          <mat-checkbox [(ngModel)]="exportConfig.includeRecommendations">
+            Include Recommendations
+          </mat-checkbox>
+          <mat-checkbox [(ngModel)]="exportConfig.includeRawData">
+            Include Raw Data
+          </mat-checkbox>
+        </div>
+
+        <!-- Sections Selection -->
+        <div class="form-row">
+          <h4>Include Sections</h4>
+          <div class="sections-grid">
+            <mat-checkbox 
+              *ngFor="let section of availableSections"
+              [checked]="isSectionSelected(section.value)"
+              (change)="toggleSection(section.value)"
+            >
+              <mat-icon>{{ section.icon }}</mat-icon>
+              {{ section.label }}
+            </mat-checkbox>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Export Preview -->
+  <mat-card class="preview-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>preview</mat-icon>
+        Export Preview
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="preview-content">
+        <div class="preview-item">
+          <strong>Report Type:</strong> {{ exportConfig.reportType | titlecase }}
+        </div>
+        <div class="preview-item">
+          <strong>Format:</strong> {{ exportConfig.format | uppercase }}
+        </div>
+        <div class="preview-item">
+          <strong>Date Range:</strong> 
+          {{ exportConfig.dateRange.start | date:'shortDate' }} - {{ exportConfig.dateRange.end | date:'shortDate' }}
+        </div>
+        <div class="preview-item">
+          <strong>Sections:</strong> {{ exportConfig.sections.length }} selected
+        </div>
+        <div class="preview-item">
+          <strong>Options:</strong>
+          <mat-chip-set>
+            <mat-chip size="small" *ngIf="exportConfig.includeCharts">Charts</mat-chip>
+            <mat-chip size="small" *ngIf="exportConfig.includeRecommendations">Recommendations</mat-chip>
+            <mat-chip size="small" *ngIf="exportConfig.includeRawData">Raw Data</mat-chip>
+          </mat-chip-set>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Export Actions -->
+  <div class="export-actions">
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="exportReport()" 
+      [disabled]="isExporting"
+      matTooltip="Generate and download report"
+    >
+      <mat-icon>{{ isExporting ? 'hourglass_empty' : 'download' }}</mat-icon>
+      {{ isExporting ? 'Generating Report...' : 'Export Report' }}
+    </button>
+  </div>
+</div>

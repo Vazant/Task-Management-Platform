@@ -1,0 +1,139 @@
+<div class="team-performance">
+  <!-- Team Summary -->
+  <div class="team-summary">
+    <mat-card class="summary-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>people</mat-icon>
+          Team Performance Summary
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <h4>Total Members</h4>
+            <p>{{ teamSummary.totalMembers }}</p>
+          </div>
+          <div class="summary-item">
+            <h4>Avg Completion Rate</h4>
+            <p>{{ teamSummary.avgCompletionRate | number:'1.1-1' }}%</p>
+          </div>
+          <div class="summary-item">
+            <h4>Avg Productivity</h4>
+            <p>{{ teamSummary.avgProductivity | number:'1.1-1' }}%</p>
+          </div>
+          <div class="summary-item">
+            <h4>Total Overdue</h4>
+            <p>{{ teamSummary.totalOverdue }}</p>
+          </div>
+          <div class="summary-item">
+            <h4>Top Performer</h4>
+            <p>{{ teamSummary.topPerformer }}</p>
+          </div>
+          <div class="summary-item">
+            <h4>Need Attention</h4>
+            <p>{{ teamSummary.needsAttention }}</p>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Team Performance Table -->
+  <mat-card class="performance-table-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>assessment</mat-icon>
+        Individual Performance
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="teamPerformance" class="performance-table">
+        <ng-container matColumnDef="member">
+          <th mat-header-cell *matHeaderCellDef>Team Member</th>
+          <td mat-cell *matCellDef="let member">{{ member.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="tasks">
+          <th mat-header-cell *matHeaderCellDef>Tasks</th>
+          <td mat-cell *matCellDef="let member">
+            <div class="task-info">
+              <span class="completed">{{ member.completedTasks }}</span>
+              <span class="separator">/</span>
+              <span class="total">{{ member.totalTasks }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="completion">
+          <th mat-header-cell *matHeaderCellDef>Completion Rate</th>
+          <td mat-cell *matCellDef="let member">
+            <div class="completion-bar">
+              <mat-progress-bar 
+                mode="determinate" 
+                [value]="member.completionRate"
+                [color]="member.completionRate >= 80 ? 'primary' : member.completionRate >= 60 ? 'accent' : 'warn'"
+              ></mat-progress-bar>
+              <span class="completion-text">{{ member.completionRate | number:'1.1-1' }}%</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="productivity">
+          <th mat-header-cell *matHeaderCellDef>Productivity</th>
+          <td mat-cell *matCellDef="let member">
+            <div class="productivity-score" [style.color]="getProductivityColor(member.productivity)">
+              {{ member.productivity | number:'1.1-1' }}%
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="workload">
+          <th mat-header-cell *matHeaderCellDef>Workload</th>
+          <td mat-cell *matCellDef="let member">
+            <mat-chip-set>
+              <mat-chip 
+                [style.background-color]="getWorkloadColor(member.workload)"
+                [style.color]="'white'"
+                size="small"
+              >
+                <mat-icon>{{ getWorkloadIcon(member.workload) }}</mat-icon>
+                {{ member.workload | titlecase }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let member">
+            <button mat-icon-button [matMenuTriggerFor]="menu" matTooltip="More actions">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item>
+                <mat-icon>visibility</mat-icon>
+                <span>View Details</span>
+              </button>
+              <button mat-menu-item>
+                <mat-icon>message</mat-icon>
+                <span>Send Message</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Export Actions -->
+  <div class="export-actions">
+    <button mat-raised-button color="primary" (click)="exportTeamReport()" matTooltip="Export team performance report">
+      <mat-icon>download</mat-icon>
+      Export Team Report
+    </button>
+  </div>
+</div>

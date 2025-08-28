@@ -1,0 +1,178 @@
+.team-performance {
+  .team-summary {
+    margin-bottom: 32px;
+
+    .summary-card {
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+
+      mat-card-header {
+        padding: 20px 20px 0 20px;
+
+        mat-card-title {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 18px;
+          font-weight: 600;
+          color: #1a1a1a;
+
+          mat-icon {
+            color: #1976d2;
+          }
+        }
+      }
+
+      mat-card-content {
+        padding: 20px;
+
+        .summary-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 20px;
+
+          .summary-item {
+            text-align: center;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+
+            h4 {
+              margin: 0 0 8px 0;
+              font-size: 14px;
+              font-weight: 600;
+              color: #666;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            p {
+              margin: 0;
+              font-size: 24px;
+              font-weight: 700;
+              color: #1a1a1a;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .performance-table-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    margin-bottom: 32px;
+
+    mat-card-header {
+      padding: 20px 20px 0 20px;
+
+      mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #1a1a1a;
+
+        mat-icon {
+          color: #1976d2;
+        }
+      }
+    }
+
+    mat-card-content {
+      padding: 20px;
+
+      .performance-table {
+        width: 100%;
+
+        .task-info {
+          .task-title {
+            font-weight: 500;
+            color: #1a1a1a;
+          }
+
+          .task-assignee {
+            font-size: 12px;
+            color: #666;
+          }
+        }
+
+        .completion-bar {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          mat-progress-bar {
+            flex: 1;
+          }
+
+          .completion-text {
+            font-size: 12px;
+            font-weight: 600;
+            min-width: 40px;
+            text-align: right;
+          }
+        }
+
+        .productivity-score {
+          font-weight: 600;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+
+  .export-actions {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .team-performance {
+    .team-summary {
+      .summary-card {
+        mat-card-content {
+          .summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+
+            .summary-item {
+              padding: 12px;
+
+              h4 {
+                font-size: 12px;
+              }
+
+              p {
+                font-size: 20px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

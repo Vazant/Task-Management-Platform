@@ -1,0 +1,205 @@
+<div class="task-charts">
+  <!-- Chart Controls -->
+  <div class="chart-controls">
+    <div class="control-group">
+      <mat-form-field appearance="outline">
+        <mat-label>Chart Type</mat-label>
+        <mat-select [(ngModel)]="selectedChartType" (selectionChange)="onChartTypeChange()">
+          <mat-option *ngFor="let type of chartTypes" [value]="type">
+            {{ type | titlecase }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="control-group">
+      <mat-form-field appearance="outline">
+        <mat-label>Time Range</mat-label>
+        <mat-select [(ngModel)]="selectedTimeRange" (selectionChange)="onTimeRangeChange()">
+          <mat-option *ngFor="let range of timeRanges" [value]="range">
+            {{ range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : '1 Year' }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="charts-grid">
+    <!-- Status Distribution Chart -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>pie_chart</mat-icon>
+          Task Status Distribution
+        </mat-card-title>
+        <mat-card-subtitle>
+          Distribution of tasks by their current status
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container" *ngIf="statusChartData">
+          <div class="chart-placeholder">
+            <mat-icon>pie_chart</mat-icon>
+            <h3>Status Distribution Chart</h3>
+            <p>Chart type: {{ selectedChartType | titlecase }}</p>
+            <p>Time range: {{ selectedTimeRange === '7d' ? '7 Days' : selectedTimeRange === '30d' ? '30 Days' : selectedTimeRange === '90d' ? '90 Days' : '1 Year' }}</p>
+            <div class="chart-data-preview">
+              <h4>Data Preview:</h4>
+              <ul>
+                <li *ngFor="let label of statusChartData.labels; let i = index">
+                  {{ label }}: {{ statusChartData.datasets[0].data[i] }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="chart-actions">
+          <button mat-stroked-button (click)="exportChartData('status')" matTooltip="Export chart data">
+            <mat-icon>download</mat-icon>
+            Export Data
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Priority Distribution Chart -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>priority_high</mat-icon>
+          Task Priority Distribution
+        </mat-card-title>
+        <mat-card-subtitle>
+          Distribution of tasks by priority level
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container" *ngIf="priorityChartData">
+          <div class="chart-placeholder">
+            <mat-icon>priority_high</mat-icon>
+            <h3>Priority Distribution Chart</h3>
+            <p>Chart type: {{ selectedChartType | titlecase }}</p>
+            <p>Time range: {{ selectedTimeRange === '7d' ? '7 Days' : selectedTimeRange === '30d' ? '30 Days' : selectedTimeRange === '90d' ? '90 Days' : '1 Year' }}</p>
+            <div class="chart-data-preview">
+              <h4>Data Preview:</h4>
+              <ul>
+                <li *ngFor="let label of priorityChartData.labels; let i = index">
+                  {{ label }}: {{ priorityChartData.datasets[0].data[i] }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="chart-actions">
+          <button mat-stroked-button (click)="exportChartData('priority')" matTooltip="Export chart data">
+            <mat-icon>download</mat-icon>
+            Export Data
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Assignee Distribution Chart -->
+    <mat-card class="chart-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>people</mat-icon>
+          Tasks by Assignee
+        </mat-card-title>
+        <mat-card-subtitle>
+          Distribution of tasks across team members
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container" *ngIf="assigneeChartData">
+          <div class="chart-placeholder">
+            <mat-icon>people</mat-icon>
+            <h3>Assignee Distribution Chart</h3>
+            <p>Chart type: {{ selectedChartType | titlecase }}</p>
+            <p>Time range: {{ selectedTimeRange === '7d' ? '7 Days' : selectedTimeRange === '30d' ? '30 Days' : selectedTimeRange === '90d' ? '90 Days' : '1 Year' }}</p>
+            <div class="chart-data-preview">
+              <h4>Data Preview:</h4>
+              <ul>
+                <li *ngFor="let label of assigneeChartData.labels; let i = index">
+                  {{ label }}: {{ assigneeChartData.datasets[0].data[i] }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="chart-actions">
+          <button mat-stroked-button (click)="exportChartData('assignee')" matTooltip="Export chart data">
+            <mat-icon>download</mat-icon>
+            Export Data
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Trend Chart -->
+    <mat-card class="chart-card full-width">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon>trending_up</mat-icon>
+          Task Trends
+        </mat-card-title>
+        <mat-card-subtitle>
+          Task creation and completion trends over time
+        </mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="chart-container" *ngIf="trendChartData">
+          <div class="chart-placeholder">
+            <mat-icon>trending_up</mat-icon>
+            <h3>Task Trends Chart</h3>
+            <p>Chart type: {{ selectedChartType | titlecase }}</p>
+            <p>Time range: {{ selectedTimeRange === '7d' ? '7 Days' : selectedTimeRange === '30d' ? '30 Days' : selectedTimeRange === '90d' ? '90 Days' : '1 Year' }}</p>
+            <div class="chart-data-preview">
+              <h4>Data Preview:</h4>
+              <p>Showing {{ trendChartData.labels.length }} data points</p>
+              <p>Completed tasks: {{ trendChartData.datasets[0].data.reduce((sum, val) => sum + val, 0) }}</p>
+              <p>Created tasks: {{ trendChartData.datasets[1].data.reduce((sum, val) => sum + val, 0) }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="chart-actions">
+          <button mat-stroked-button (click)="exportChartData('trend')" matTooltip="Export chart data">
+            <mat-icon>download</mat-icon>
+            Export Data
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Chart Summary -->
+  <mat-card class="summary-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>analytics</mat-icon>
+        Chart Summary
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <h4>Total Data Points</h4>
+          <p>{{ (statusChartData?.labels.length || 0) + (priorityChartData?.labels.length || 0) + (assigneeChartData?.labels.length || 0) + (trendChartData?.labels.length || 0) }}</p>
+        </div>
+        <div class="summary-item">
+          <h4>Chart Type</h4>
+          <p>{{ selectedChartType | titlecase }}</p>
+        </div>
+        <div class="summary-item">
+          <h4>Time Range</h4>
+          <p>{{ selectedTimeRange === '7d' ? '7 Days' : selectedTimeRange === '30d' ? '30 Days' : selectedTimeRange === '90d' ? '90 Days' : '1 Year' }}</p>
+        </div>
+        <div class="summary-item">
+          <h4>Last Updated</h4>
+          <p>{{ new Date() | date:'short' }}</p>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

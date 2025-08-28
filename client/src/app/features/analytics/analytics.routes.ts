@@ -1,9 +1,9 @@
 import { Routes } from '@angular/router';
-import { AnalyticsComponent } from './components/analytics/analytics.component';
+import { AnalyticsDashboardComponent } from './components/analytics-dashboard/analytics-dashboard.component';
 
 export const analyticsRoutes: Routes = [
   {
     path: '',
-    component: AnalyticsComponent
+    component: AnalyticsDashboardComponent
   }
 ]; 
