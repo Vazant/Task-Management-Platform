@@ -23,5 +23,7 @@ export class TaskFiltersComponent {
   statuses: TaskFilters['status'][] = ['all', 'backlog', 'in-progress', 'done'];
   priorities: TaskFilters['priority'][] = ['all', 'low', 'medium', 'high', 'urgent'];
   sortOptions: TaskSortOption[] = ['created', 'updated', 'priority', 'dueDate', 'title'];
+
+  trackByIndex(index: number): number { return index; }
 }
 
