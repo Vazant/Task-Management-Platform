@@ -1,0 +1,403 @@
+<div class="user-profile-container">
+  <div class="profile-header">
+    <h1>User Profile</h1>
+    <p>Manage your account settings and preferences</p>
+  </div>
+
+  <div class="profile-content" *ngIf="user$ | async as user; else loading">
+    <!-- Profile Overview Card -->
+    <mat-card class="profile-overview">
+      <mat-card-header>
+        <div class="avatar-section">
+          <mat-avatar class="profile-avatar" [src]="user.profile?.avatarUrl || avatarPreview">
+            {{ getInitials(user) }}
+          </mat-avatar>
+          <div class="avatar-actions" *ngIf="isEditing">
+            <input
+              type="file"
+              #avatarInput
+              accept="image/*"
+              (change)="onAvatarChange($event)"
+              style="display: none"
+            />
+            <button
+              mat-icon-button
+              color="primary"
+              (click)="avatarInput.click()"
+              matTooltip="Change avatar"
+            >
+              <mat-icon>photo_camera</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              color="warn"
+              (click)="onRemoveAvatar()"
+              matTooltip="Remove avatar"
+              *ngIf="user.profile?.avatarUrl || avatarPreview"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        <mat-card-title>{{ getFullName(user) }}</mat-card-title>
+        <mat-card-subtitle>{{ user.email }}</mat-card-subtitle>
+        <div class="profile-actions">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onEdit()"
+            *ngIf="!isEditing"
+          >
+            <mat-icon>edit</mat-icon>
+            Edit Profile
+          </button>
+          <div class="edit-actions" *ngIf="isEditing">
+            <button
+              mat-button
+              (click)="onCancel()"
+              [disabled]="isSaving"
+            >
+              Cancel
+            </button>
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="onSave()"
+              [disabled]="isSaving"
+            >
+              <mat-spinner diameter="16" *ngIf="isSaving"></mat-spinner>
+              <mat-icon *ngIf="!isSaving">save</mat-icon>
+              {{ isSaving ? 'Saving...' : 'Save Changes' }}
+            </button>
+          </div>
+        </div>
+      </mat-card-header>
+    </mat-card>
+
+    <!-- Profile Forms -->
+    <div class="profile-forms" *ngIf="isEditing">
+      <!-- Personal Information -->
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>Personal Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="profileForm" class="profile-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="firstName" placeholder="Enter first name">
+                <mat-error *ngIf="getFieldError(profileForm, 'firstName')">
+                  {{ getFieldError(profileForm, 'firstName') }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lastName" placeholder="Enter last name">
+                <mat-error *ngIf="getFieldError(profileForm, 'lastName')">
+                  {{ getFieldError(profileForm, 'lastName') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Email</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="Enter email">
+                <mat-error *ngIf="getFieldError(profileForm, 'email')">
+                  {{ getFieldError(profileForm, 'email') }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Phone</mat-label>
+                <input matInput formControlName="phone" placeholder="Enter phone number">
+                <mat-error *ngIf="getFieldError(profileForm, 'phone')">
+                  {{ getFieldError(profileForm, 'phone') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Location</mat-label>
+                <input matInput formControlName="location" placeholder="Enter location">
+                <mat-error *ngIf="getFieldError(profileForm, 'location')">
+                  {{ getFieldError(profileForm, 'location') }}
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Website</mat-label>
+                <input matInput formControlName="website" placeholder="https://example.com">
+                <mat-error *ngIf="getFieldError(profileForm, 'website')">
+                  {{ getFieldError(profileForm, 'website') }}
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Date of Birth</mat-label>
+                <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth">
+                <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+                <mat-datepicker #dobPicker></mat-datepicker>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Bio</mat-label>
+              <textarea matInput formControlName="bio" rows="3" placeholder="Tell us about yourself"></textarea>
+              <mat-error *ngIf="getFieldError(profileForm, 'bio')">
+                {{ getFieldError(profileForm, 'bio') }}
+              </mat-error>
+            </mat-form-field>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Preferences -->
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>Preferences</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="preferencesForm" class="preferences-form">
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Language</mat-label>
+                <mat-select formControlName="language">
+                  <mat-option value="en">English</mat-option>
+                  <mat-option value="es">Spanish</mat-option>
+                  <mat-option value="fr">French</mat-option>
+                  <mat-option value="de">German</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Timezone</mat-label>
+                <mat-select formControlName="timezone">
+                  <mat-option value="UTC">UTC</mat-option>
+                  <mat-option value="America/New_York">Eastern Time</mat-option>
+                  <mat-option value="America/Chicago">Central Time</mat-option>
+                  <mat-option value="America/Denver">Mountain Time</mat-option>
+                  <mat-option value="America/Los_Angeles">Pacific Time</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="outline">
+                <mat-label>Date Format</mat-label>
+                <mat-select formControlName="dateFormat">
+                  <mat-option value="MM/DD/YYYY">MM/DD/YYYY</mat-option>
+                  <mat-option value="DD/MM/YYYY">DD/MM/YYYY</mat-option>
+                  <mat-option value="YYYY-MM-DD">YYYY-MM-DD</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Time Format</mat-label>
+                <mat-select formControlName="timeFormat">
+                  <mat-option value="12h">12-hour</mat-option>
+                  <mat-option value="24h">24-hour</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Theme</mat-label>
+              <mat-select formControlName="theme">
+                <mat-option value="light">Light</mat-option>
+                <mat-option value="dark">Dark</mat-option>
+                <mat-option value="auto">Auto</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <mat-divider></mat-divider>
+
+            <h3>Notifications</h3>
+            <div formGroupName="notifications" class="notifications-section">
+              <div class="notification-item">
+                <mat-slide-toggle formControlName="email">
+                  Email Notifications
+                </mat-slide-toggle>
+              </div>
+              <div class="notification-item">
+                <mat-slide-toggle formControlName="push">
+                  Push Notifications
+                </mat-slide-toggle>
+              </div>
+              <div class="notification-item">
+                <mat-slide-toggle formControlName="sms">
+                  SMS Notifications
+                </mat-slide-toggle>
+              </div>
+              <div class="notification-item">
+                <mat-slide-toggle formControlName="taskReminders">
+                  Task Reminders
+                </mat-slide-toggle>
+              </div>
+              <div class="notification-item">
+                <mat-slide-toggle formControlName="projectUpdates">
+                  Project Updates
+                </mat-slide-toggle>
+              </div>
+              <div class="notification-item">
+                <mat-slide-toggle formControlName="teamMessages">
+                  Team Messages
+                </mat-slide-toggle>
+              </div>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Settings -->
+      <mat-card class="form-card">
+        <mat-card-header>
+          <mat-card-title>Settings</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <form [formGroup]="settingsForm" class="settings-form">
+            <!-- Privacy Settings -->
+            <h3>Privacy</h3>
+            <div formGroupName="privacy">
+              <mat-form-field appearance="outline">
+                <mat-label>Profile Visibility</mat-label>
+                <mat-select formControlName="profileVisibility">
+                  <mat-option value="public">Public</mat-option>
+                  <mat-option value="private">Private</mat-option>
+                  <mat-option value="team">Team Only</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <div class="privacy-options">
+                <div class="privacy-item">
+                  <mat-slide-toggle formControlName="showEmail">
+                    Show Email Address
+                  </mat-slide-toggle>
+                </div>
+                <div class="privacy-item">
+                  <mat-slide-toggle formControlName="showPhone">
+                    Show Phone Number
+                  </mat-slide-toggle>
+                </div>
+                <div class="privacy-item">
+                  <mat-slide-toggle formControlName="showLocation">
+                    Show Location
+                  </mat-slide-toggle>
+                </div>
+                <div class="privacy-item">
+                  <mat-slide-toggle formControlName="allowMessages">
+                    Allow Direct Messages
+                  </mat-slide-toggle>
+                </div>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Security Settings -->
+            <h3>Security</h3>
+            <div formGroupName="security">
+              <div class="security-item">
+                <mat-slide-toggle formControlName="twoFactorAuth" (change)="onTwoFactorToggle()">
+                  Two-Factor Authentication
+                </mat-slide-toggle>
+              </div>
+              <div class="security-item">
+                <mat-slide-toggle formControlName="loginNotifications">
+                  Login Notifications
+                </mat-slide-toggle>
+              </div>
+              <div class="form-row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Session Timeout (minutes)</mat-label>
+                  <input matInput type="number" formControlName="sessionTimeout" min="5" max="480">
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Password Expiry (days)</mat-label>
+                  <input matInput type="number" formControlName="passwordExpiry" min="30" max="365">
+                </mat-form-field>
+              </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <!-- Display Settings -->
+            <h3>Display</h3>
+            <div formGroupName="display">
+              <div class="display-item">
+                <mat-slide-toggle formControlName="compactMode">
+                  Compact Mode
+                </mat-slide-toggle>
+              </div>
+              <div class="display-item">
+                <mat-slide-toggle formControlName="showAvatars">
+                  Show Avatars
+                </mat-slide-toggle>
+              </div>
+              <div class="display-item">
+                <mat-slide-toggle formControlName="showStatus">
+                  Show Status Indicators
+                </mat-slide-toggle>
+              </div>
+              <div class="display-item">
+                <mat-slide-toggle formControlName="autoRefresh">
+                  Auto Refresh
+                </mat-slide-toggle>
+              </div>
+              <mat-form-field appearance="outline" *ngIf="settingsForm.get('display.autoRefresh')?.value">
+                <mat-label>Refresh Interval (seconds)</mat-label>
+                <input matInput type="number" formControlName="refreshInterval" min="10" max="300">
+              </mat-form-field>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Account Actions -->
+    <mat-card class="account-actions">
+      <mat-card-header>
+        <mat-card-title>Account Actions</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="action-buttons">
+          <button mat-stroked-button color="primary" (click)="onPasswordChange()">
+            <mat-icon>lock</mat-icon>
+            Change Password
+          </button>
+          <button mat-stroked-button color="accent" (click)="onExportData()">
+            <mat-icon>download</mat-icon>
+            Export Data
+          </button>
+          <button mat-stroked-button color="warn" (click)="onDeleteAccount()">
+            <mat-icon>delete_forever</mat-icon>
+            Delete Account
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Loading Template -->
+  <ng-template #loading>
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading profile...</p>
+    </div>
+  </ng-template>
+
+  <!-- Error Display -->
+  <div class="error-container" *ngIf="error$ | async as error">
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        <p>{{ error }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
