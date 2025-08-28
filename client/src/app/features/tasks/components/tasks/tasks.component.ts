@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '@services';
@@ -15,7 +15,8 @@ import { TaskListComponent } from '../task-list/task-list.component';
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
   standalone: true,
-  imports: [CommonModule, LayoutComponent, LucideAngularModule, TaskListComponent]
+  imports: [CommonModule, LayoutComponent, LucideAngularModule, TaskListComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TasksComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
