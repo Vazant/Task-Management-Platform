@@ -10,6 +10,7 @@ import { Observable, Subject, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Task, TaskStatus } from '@models';
 import { TaskCardComponent } from '../task-card/task-card.component';
+import { TaskDialogService } from '../../services/task-dialog.service';
 import * as TaskSelectors from '../../store/tasks.selectors';
 import * as TaskActions from '../../store/tasks.actions';
 
@@ -42,6 +43,7 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   
   private readonly destroy$ = new Subject<void>();
   private readonly store = inject(Store);
+  private readonly taskDialogService = inject(TaskDialogService);
 
   readonly columns: KanbanColumn[] = [
     { status: 'backlog', title: 'Backlog', tasks: [], color: 'accent' },
@@ -111,8 +113,12 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   }
 
   onTaskEdit(task: Task): void {
-    // TODO: Открыть диалог редактирования
-    // console.log('Edit task:', task);
+    this.taskDialogService.openEditDialog(task).subscribe(result => {
+      if (result) {
+        // Задача была обновлена
+        console.log('Task updated successfully');
+      }
+    });
   }
 
   onTaskDelete(task: Task): void {
@@ -136,8 +142,12 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   }
 
   onAddTask(status: TaskStatus): void {
-    // TODO: Открыть диалог создания задачи
-    // console.log('Add task to status:', status);
+    this.taskDialogService.openQuickCreateDialog(status).subscribe(result => {
+      if (result) {
+        // Задача была создана
+        console.log('Task created successfully');
+      }
+    });
   }
 
   getConnectedDropLists(): string[] {

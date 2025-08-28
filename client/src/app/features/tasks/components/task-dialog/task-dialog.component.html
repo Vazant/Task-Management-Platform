@@ -1,0 +1,147 @@
+<div class="task-dialog">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>{{ getDialogTitle() }}</h2>
+    <button mat-icon-button mat-dialog-close>
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+    <mat-dialog-content class="dialog-content">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title" placeholder="Enter task title">
+          <mat-error *ngIf="taskForm.get('title')?.hasError('required')">
+            Title is required
+          </mat-error>
+          <mat-error *ngIf="taskForm.get('title')?.hasError('minlength')">
+            Title must be at least 3 characters
+          </mat-error>
+          <mat-error *ngIf="taskForm.get('title')?.hasError('maxlength')">
+            Title cannot exceed 100 characters
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" 
+                    placeholder="Enter task description" 
+                    rows="4"></textarea>
+          <mat-error *ngIf="taskForm.get('description')?.hasError('maxlength')">
+            Description cannot exceed 1000 characters
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let option of statusOptions" 
+                       [value]="option.value">
+              {{ option.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="taskForm.get('status')?.hasError('required')">
+            Status is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Priority</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option *ngFor="let option of priorityOptions" 
+                       [value]="option.value">
+              <span class="priority-option">
+                <span class="priority-dot" [class]="option.color"></span>
+                {{ option.label }}
+              </span>
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="taskForm.get('priority')?.hasError('required')">
+            Priority is required
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Assignee</mat-label>
+          <input type="text" matInput formControlName="assignee" 
+                 placeholder="Select assignee"
+                 [matAutocomplete]="assigneeAuto">
+          <mat-autocomplete #assigneeAuto="matAutocomplete">
+            <mat-option *ngFor="let assignee of filteredAssignees$ | async" 
+                       [value]="assignee">
+              {{ assignee }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Due Date</mat-label>
+          <input matInput [matDatepicker]="dueDatePicker" 
+                 formControlName="dueDate" 
+                 placeholder="Choose a date">
+          <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #dueDatePicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Estimated Hours</mat-label>
+          <input matInput type="number" formControlName="estimatedHours" 
+                 placeholder="0.5" min="0.5" max="100" step="0.5">
+          <mat-error *ngIf="taskForm.get('estimatedHours')?.hasError('min')">
+            Estimated hours must be at least 0.5
+          </mat-error>
+          <mat-error *ngIf="taskForm.get('estimatedHours')?.hasError('max')">
+            Estimated hours cannot exceed 100
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Labels</mat-label>
+          <mat-chip-grid #chipGrid>
+            <mat-chip-row *ngFor="let label of taskForm.get('labels')?.value" 
+                         (removed)="removeLabel(label)">
+              <span class="label-chip" [style.background-color]="label.color">
+                {{ label.name }}
+              </span>
+              <button matChipRemove>
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+            <input placeholder="New label..."
+                   [matChipInputFor]="chipGrid"
+                   (matChipInputTokenEnd)="addLabel($event)">
+          </mat-chip-grid>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row" *ngIf="error">
+        <div class="error-message">
+          <mat-icon>error</mat-icon>
+          <span>{{ error }}</span>
+        </div>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="onCancel()">
+        Cancel
+      </button>
+      <button mat-raised-button color="primary" type="submit" 
+              [disabled]="taskForm.invalid || loading">
+        <mat-icon *ngIf="loading">hourglass_empty</mat-icon>
+        {{ getSubmitButtonText() }}
+      </button>
+    </mat-dialog-actions>
+  </form>
+</div>

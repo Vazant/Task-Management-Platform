@@ -1,0 +1,154 @@
+<div class="task-inline-edit">
+  <!-- View Mode -->
+  <div *ngIf="!isEditing" class="view-mode">
+    <div class="task-header">
+      <h3 class="task-title">{{ task.title }}</h3>
+      <button mat-icon-button (click)="startEdit()" class="edit-button">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+    
+    <div class="task-content">
+      <p class="task-description" *ngIf="task.description">
+        {{ task.description }}
+      </p>
+      
+      <div class="task-meta">
+        <div class="meta-item">
+          <mat-icon>schedule</mat-icon>
+          <span>{{ task.status }}</span>
+        </div>
+        
+        <div class="meta-item">
+          <mat-icon>priority_high</mat-icon>
+          <span>{{ task.priority }}</span>
+        </div>
+        
+        <div class="meta-item" *ngIf="task.assignee">
+          <mat-icon>person</mat-icon>
+          <span>{{ task.assignee }}</span>
+        </div>
+        
+        <div class="meta-item" *ngIf="task.dueDate">
+          <mat-icon>event</mat-icon>
+          <span>{{ task.dueDate | date:'shortDate' }}</span>
+        </div>
+      </div>
+      
+      <div class="task-labels" *ngIf="task.labels?.length">
+        <span class="label-chip" 
+              *ngFor="let label of task.labels"
+              [style.background-color]="label.color">
+          {{ label.name }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Mode -->
+  <div *ngIf="isEditing" class="edit-mode">
+    <form [formGroup]="taskForm" (ngSubmit)="onSave()">
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Title</mat-label>
+          <input matInput formControlName="title" placeholder="Enter task title">
+          <mat-error *ngIf="taskForm.get('title')?.hasError('required')">
+            Title is required
+          </mat-error>
+          <mat-error *ngIf="taskForm.get('title')?.hasError('minlength')">
+            Title must be at least 3 characters
+          </mat-error>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea matInput formControlName="description" 
+                    placeholder="Enter task description" 
+                    rows="3"></textarea>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let option of statusOptions" 
+                       [value]="option.value">
+              {{ option.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Priority</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option *ngFor="let option of priorityOptions" 
+                       [value]="option.value">
+              <span class="priority-option">
+                <span class="priority-dot" [class]="option.color"></span>
+                {{ option.label }}
+              </span>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row two-columns">
+        <mat-form-field appearance="outline">
+          <mat-label>Assignee</mat-label>
+          <input type="text" matInput formControlName="assignee" 
+                 placeholder="Select assignee">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Due Date</mat-label>
+          <input matInput [matDatepicker]="dueDatePicker" 
+                 formControlName="dueDate" 
+                 placeholder="Choose a date">
+          <mat-datepicker-toggle matSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+          <mat-datepicker #dueDatePicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Estimated Hours</mat-label>
+          <input matInput type="number" formControlName="estimatedHours" 
+                 placeholder="0.5" min="0.5" max="100" step="0.5">
+        </mat-form-field>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Labels</mat-label>
+          <mat-chip-grid #chipGrid>
+            <mat-chip-row *ngFor="let label of taskForm.get('labels')?.value" 
+                         (removed)="removeLabel(label)">
+              <span class="label-chip" [style.background-color]="label.color">
+                {{ label.name }}
+              </span>
+              <button matChipRemove>
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+            <input placeholder="New label..."
+                   [matChipInputFor]="chipGrid"
+                   (matChipInputTokenEnd)="addLabel($event)">
+          </mat-chip-grid>
+        </mat-form-field>
+      </div>
+
+      <div class="form-actions">
+        <button mat-button type="button" (click)="onCancel()">
+          Cancel
+        </button>
+        <button mat-raised-button color="primary" type="submit" 
+                [disabled]="taskForm.invalid">
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

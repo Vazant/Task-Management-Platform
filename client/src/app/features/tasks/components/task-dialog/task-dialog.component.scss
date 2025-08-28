@@ -1,0 +1,198 @@
+.task-dialog {
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px 0;
+  border-bottom: 1px solid #e0e0e0;
+
+  h2 {
+    margin: 0;
+    color: #333;
+    font-weight: 500;
+  }
+}
+
+.dialog-content {
+  padding: 24px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.form-row {
+  margin-bottom: 16px;
+
+  &.two-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  &.full-width {
+    width: 100%;
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.priority-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.priority-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+
+  &.accent {
+    background-color: #ff9800;
+  }
+
+  &.primary {
+    background-color: #2196f3;
+  }
+
+  &.warn {
+    background-color: #f44336;
+  }
+}
+
+.label-chip {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background-color: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 4px;
+  color: #c62828;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+mat-dialog-actions {
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  margin: 0;
+
+  button {
+    min-width: 100px;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .task-dialog {
+    min-width: 90vw;
+    max-width: 90vw;
+  }
+
+  .form-row.two-columns {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .dialog-content {
+    padding: 16px;
+  }
+
+  .dialog-header {
+    padding: 16px 16px 0;
+  }
+
+  mat-dialog-actions {
+    padding: 16px;
+  }
+}
+
+// Accessibility improvements
+@media (prefers-reduced-motion: reduce) {
+  .task-dialog,
+  .form-row,
+  .priority-dot,
+  .label-chip {
+    transition: none;
+  }
+}
+
+// High contrast mode
+@media (prefers-contrast: high) {
+  .priority-dot {
+    border: 1px solid currentColor;
+  }
+
+  .label-chip {
+    border: 1px solid currentColor;
+  }
+}
+
+// Focus styles
+.mat-mdc-form-field:focus-within {
+  .mat-mdc-form-field-focus-overlay {
+    opacity: 1;
+  }
+}
+
+button:focus-visible {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+// Loading state
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+// Form validation styles
+.mat-mdc-form-field.mat-form-field-invalid {
+  .mat-mdc-form-field-focus-overlay {
+    background-color: rgba(244, 67, 54, 0.1);
+  }
+}
+
+// Chip input styles
+.mat-mdc-chip-grid {
+  .mat-mdc-chip-row {
+    margin: 4px;
+  }
+}
+
+// Date picker styles
+.mat-datepicker-toggle {
+  color: #666;
+}
+
+// Autocomplete styles
+.mat-mdc-autocomplete-panel {
+  .mat-mdc-option {
+    padding: 8px 16px;
+    
+    &:hover {
+      background-color: #f5f5f5;
+    }
+  }
+}
