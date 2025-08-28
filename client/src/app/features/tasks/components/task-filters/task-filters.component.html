@@ -1,0 +1,23 @@
+<div class="filters">
+  <mat-form-field appearance="outline">
+    <mat-label>Status</mat-label>
+    <mat-select [ngModel]="filters.status" (ngModelChange)="filtersChange.emit({ status: $event })">
+      <mat-option *ngFor="let s of statuses" [value]="s">{{ s }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Priority</mat-label>
+    <mat-select [ngModel]="filters.priority" (ngModelChange)="filtersChange.emit({ priority: $event })">
+      <mat-option *ngFor="let p of priorities" [value]="p">{{ p }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Sort by</mat-label>
+    <mat-select [ngModel]="sortBy" (ngModelChange)="sortChange.emit($event)">
+      <mat-option *ngFor="let o of sortOptions" [value]="o">{{ o }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+

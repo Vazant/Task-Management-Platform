@@ -135,6 +135,22 @@
   padding: 2rem;
 }
 
+.projects-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 16px;
+}
+
+.sidebar {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+}
+
+.content {
+  min-width: 0;
+}
+
 .welcome-section {
   max-width: 1200px;
   margin: 0 auto 3rem;

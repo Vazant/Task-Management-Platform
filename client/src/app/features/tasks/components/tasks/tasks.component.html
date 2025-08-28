@@ -13,7 +13,13 @@
         <i-lucide [img]="CheckSquare" [size]="64"></i-lucide>
       </div>
       <h2>Список задач</h2>
-      <p>Базовый список задач с NgRx Entity</p>
+      <p>Фильтрация и сортировка с NgRx Entity</p>
+      <app-task-filters
+        [filters]="(selectTasksFilters | async) ?? {status:'all',priority:'all',assignee:'all',project:'all'}"
+        [sortBy]="(selectTasksSortBy | async) ?? 'created'"
+        (filtersChange)="onFiltersChange($event)"
+        (sortChange)="onSortChange($event)"
+      ></app-task-filters>
       <ng-container *ngIf="(loading$ | async) === false; else loadingTpl">
         <app-task-list [tasks]="(tasks$ | async) ?? []"></app-task-list>
       </ng-container>

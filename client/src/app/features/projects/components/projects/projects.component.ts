@@ -7,13 +7,14 @@ import { ProjectAction } from '../../models';
 import { Subscription } from 'rxjs';
 import { LayoutComponent } from '../../../../shared/components/layout';
 import { ProjectListComponent } from '../project-list/project-list.component';
+import { SidebarComponent } from '../navigation/sidebar.component';
 
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss'],
   standalone: true,
-  imports: [CommonModule, LayoutComponent, ProjectListComponent]
+  imports: [CommonModule, LayoutComponent, ProjectListComponent, SidebarComponent]
 })
 export class ProjectsComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);

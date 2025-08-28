@@ -1,6 +1,13 @@
 <app-layout>
-  <app-project-list
-    (projectSelected)="onProjectSelected($event)"
-    (projectAction)="onProjectAction($event)">
-  </app-project-list>
+  <div class="projects-grid">
+    <div class="sidebar">
+      <app-projects-sidebar (createProject)="onProjectAction({ type: 'create' })"></app-projects-sidebar>
+    </div>
+    <div class="content">
+      <app-project-list
+        (projectSelected)="onProjectSelected($event)"
+        (projectAction)="onProjectAction($event)">
+      </app-project-list>
+    </div>
+  </div>
 </app-layout>

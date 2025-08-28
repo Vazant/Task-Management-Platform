@@ -7,15 +7,17 @@ import { Subscription } from 'rxjs';
 import { LayoutComponent } from '../../../../shared/components/layout';
 import { LucideAngularModule, CheckSquare, Plus, Move, Calendar } from 'lucide-angular';
 import { Store } from '@ngrx/store';
-import { selectSortedTasks, selectTasksLoading, loadTasks } from '@store';
+import { selectSortedTasks, selectTasksLoading, selectTasksFilters, selectTasksSortBy, updateFilters, updateSort, loadTasks } from '@store';
+import type { TaskFilters, TaskSortOption } from '@models';
 import { TaskListComponent } from '../task-list/task-list.component';
+import { TaskFiltersComponent } from '../task-filters/task-filters.component';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
   standalone: true,
-  imports: [CommonModule, LayoutComponent, LucideAngularModule, TaskListComponent],
+  imports: [CommonModule, LayoutComponent, LucideAngularModule, TaskListComponent, TaskFiltersComponent],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TasksComponent implements OnInit, OnDestroy {
@@ -29,6 +31,8 @@ export class TasksComponent implements OnInit, OnDestroy {
   private userSubscription?: Subscription;
   tasks$ = this.store.select(selectSortedTasks);
   loading$ = this.store.select(selectTasksLoading);
+  selectTasksFilters = this.store.select(selectTasksFilters);
+  selectTasksSortBy = this.store.select(selectTasksSortBy);
 
 
 
@@ -51,6 +55,14 @@ export class TasksComponent implements OnInit, OnDestroy {
     });
 
     this.store.dispatch(loadTasks());
+  }
+
+  onFiltersChange(partial: Partial<TaskFilters>): void {
+    this.store.dispatch(updateFilters({ filters: partial }));
+  }
+
+  onSortChange(sortBy: TaskSortOption): void {
+    this.store.dispatch(updateSort({ sortBy }));
   }
 
   ngOnDestroy(): void {
