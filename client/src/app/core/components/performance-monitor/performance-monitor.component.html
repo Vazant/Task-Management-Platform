@@ -1,0 +1,196 @@
+<div class="performance-monitor">
+  <!-- Header -->
+  <div class="monitor-header">
+    <h2>Performance Monitor</h2>
+    <div class="header-actions">
+      <button mat-icon-button 
+              [color]="isMonitoring ? 'warn' : 'primary'"
+              (click)="isMonitoring ? stopMonitoring() : startMonitoring()"
+              matTooltip="{{ isMonitoring ? 'Stop' : 'Start' }} monitoring">
+        <mat-icon>{{ isMonitoring ? 'stop' : 'play_arrow' }}</mat-icon>
+      </button>
+      <button mat-icon-button 
+              (click)="clearMetrics()"
+              matTooltip="Clear metrics">
+        <mat-icon>clear_all</mat-icon>
+      </button>
+      <button mat-icon-button 
+              (click)="exportMetrics()"
+              matTooltip="Export metrics">
+        <mat-icon>download</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Performance Overview -->
+  <div class="performance-overview" *ngIf="performanceReport$ | async as report">
+    <mat-card class="overview-card">
+      <mat-card-header>
+        <mat-card-title>Performance Overview</mat-card-title>
+        <mat-card-subtitle>Real-time performance metrics</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="metrics-grid">
+          <div class="metric-item">
+            <div class="metric-value">{{ report.metrics.length }}</div>
+            <div class="metric-label">Total Operations</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-value">{{ Object.keys(report.averages).length }}</div>
+            <div class="metric-label">Unique Operations</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-value">{{ formatDuration(report.slowest[0]?.duration || 0) }}</div>
+            <div class="metric-label">Slowest Operation</div>
+          </div>
+          <div class="metric-item">
+            <div class="metric-value">{{ formatDuration(report.fastest[0]?.duration || 0) }}</div>
+            <div class="metric-label">Fastest Operation</div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Performance Table -->
+  <mat-card class="performance-table-card">
+    <mat-card-header>
+      <mat-card-title>Performance Metrics</mat-card-title>
+      <mat-card-subtitle>Detailed performance data for all operations</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="(performanceReport$ | async)?.metrics || []" 
+             class="performance-table">
+        
+        <!-- Operation Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Operation</th>
+          <td mat-cell *matCellDef="let metric">
+            <div class="operation-name">
+              <mat-icon [style.color]="getStatusColor(getPerformanceStatus(metric))"
+                       [matTooltip]="getPerformanceStatus(metric)">
+                {{ getStatusIcon(getPerformanceStatus(metric)) }}
+              </mat-icon>
+              <span>{{ metric.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Count Column -->
+        <ng-container matColumnDef="count">
+          <th mat-header-cell *matHeaderCellDef>Count</th>
+          <td mat-cell *matCellDef="let metric">
+            <mat-chip-set>
+              <mat-chip size="small" color="primary">
+                {{ (performanceReport$ | async)?.totals[metric.name] || 0 }}
+              </mat-chip>
+            </mat-chip-set>
+          </td>
+        </ng-container>
+
+        <!-- Average Column -->
+        <ng-container matColumnDef="average">
+          <th mat-header-cell *matHeaderCellDef>Average</th>
+          <td mat-cell *matCellDef="let metric">
+            <div class="average-time">
+              <span>{{ formatDuration((performanceReport$ | async)?.averages[metric.name] || 0) }}</span>
+              <mat-progress-bar 
+                [value]="Math.min(((performanceReport$ | async)?.averages[metric.name] || 0) / 1000 * 100, 100)"
+                [color]="getPerformanceStatus(metric) === 'critical' ? 'warn' : 'primary'">
+              </mat-progress-bar>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Slowest Column -->
+        <ng-container matColumnDef="slowest">
+          <th mat-header-cell *matHeaderCellDef>Slowest</th>
+          <td mat-cell *matCellDef="let metric">
+            <span class="slowest-time">{{ formatDuration(metric.duration) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Fastest Column -->
+        <ng-container matColumnDef="fastest">
+          <th mat-header-cell *matHeaderCellDef>Fastest</th>
+          <td mat-cell *matCellDef="let metric">
+            <span class="fastest-time">{{ formatDuration(metric.duration) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let metric">
+            <button mat-icon-button 
+                    (click)="performanceService.clearMetricsFor(metric.name)"
+                    matTooltip="Clear metrics for this operation">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Performance Insights -->
+  <div class="performance-insights">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          <mat-icon>insights</mat-icon>
+          Performance Insights
+        </mat-panel-title>
+        <mat-panel-description>
+          Analysis and recommendations
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <!-- Slowest Operations -->
+      <div class="insight-section">
+        <h4>Slowest Operations</h4>
+        <mat-list>
+          <mat-list-item *ngFor="let metric of getSlowestOperations((performanceReport$ | async) || { slowest: [] }); trackBy: trackByMetricName">
+            <mat-icon matListItemIcon 
+                      [style.color]="getStatusColor(getPerformanceStatus(metric))">
+              {{ getStatusIcon(getPerformanceStatus(metric)) }}
+            </mat-icon>
+            <div matListItemTitle>{{ metric.name }}</div>
+            <div matListItemLine>{{ formatDuration(metric.duration) }}</div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+
+      <!-- Most Frequent Operations -->
+      <div class="insight-section">
+        <h4>Most Frequent Operations</h4>
+        <mat-list>
+          <mat-list-item *ngFor="let operation of getMostFrequentOperations((performanceReport$ | async) || { totals: {}, averages: {} }); trackBy: trackByOperationName">
+            <mat-icon matListItemIcon>repeat</mat-icon>
+            <div matListItemTitle>{{ operation.name }}</div>
+            <div matListItemLine>{{ operation.count }} calls • {{ formatDuration(operation.average) }} avg</div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+
+      <!-- Optimization Recommendations -->
+      <div class="insight-section">
+        <h4>Optimization Recommendations</h4>
+        <mat-list>
+          <mat-list-item *ngFor="let recommendation of recommendations$ | async; let i = index">
+            <mat-icon matListItemIcon>lightbulb</mat-icon>
+            <div matListItemTitle>{{ recommendation }}</div>
+          </mat-list-item>
+          <mat-list-item *ngIf="(recommendations$ | async)?.length === 0">
+            <mat-icon matListItemIcon>check_circle</mat-icon>
+            <div matListItemTitle>No optimization recommendations at this time</div>
+            <div matListItemLine>Your application is performing well!</div>
+          </mat-list-item>
+        </mat-list>
+      </div>
+    </mat-expansion-panel>
+  </div>
+</div>

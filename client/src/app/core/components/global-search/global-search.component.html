@@ -1,0 +1,132 @@
+<div class="global-search-container">
+  <!-- Search Input -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search</mat-label>
+    <input matInput 
+           #searchInput
+           [formControl]="searchControl"
+           placeholder="Search tasks, projects, users..."
+           (input)="onSearchInput()"
+           (focus)="onSearchFocus()"
+           (blur)="onSearchBlur()">
+    <mat-icon matSuffix>search</mat-icon>
+    <mat-spinner matSuffix *ngIf="loading$ | async" diameter="20"></mat-spinner>
+    <button matSuffix 
+            mat-icon-button 
+            *ngIf="searchControl.value"
+            (click)="clearSearch()"
+            matTooltip="Clear search">
+      <mat-icon>close</mat-icon>
+    </button>
+  </mat-form-field>
+
+  <!-- Search Results Dropdown -->
+  <div class="search-dropdown" *ngIf="showResults || showHistory || showSuggestions">
+    <!-- Search Results -->
+    <div class="search-results" *ngIf="showResults">
+      <div class="results-header">
+        <h3>Search Results</h3>
+        <span class="results-count" *ngIf="(searchResults$ | async) as results">
+          {{ results.length }} results
+        </span>
+      </div>
+      
+      <mat-list class="results-list">
+        <mat-list-item *ngFor="let result of searchResults$ | async; trackBy: trackByResultId"
+                       class="result-item"
+                       (click)="onResultClick(result)">
+          <mat-icon matListItemIcon [matTooltip]="getResultTypeLabel(result.type)">
+            {{ getResultIcon(result.type) }}
+          </mat-icon>
+          
+          <div matListItemTitle class="result-title">
+            {{ result.title }}
+            <mat-chip-set class="result-type-chip">
+              <mat-chip size="small" color="primary">
+                {{ getResultTypeLabel(result.type) }}
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+          
+          <div matListItemLine class="result-subtitle">
+            {{ result.subtitle }}
+          </div>
+          
+          <div matListItemMeta class="result-score">
+            <span class="score-badge" [class.high-score]="result.score > 80">
+              {{ result.score }}%
+            </span>
+          </div>
+        </mat-list-item>
+        
+        <mat-list-item *ngIf="(searchResults$ | async)?.length === 0" class="no-results">
+          <mat-icon matListItemIcon>search_off</mat-icon>
+          <div matListItemTitle>No results found</div>
+          <div matListItemLine>Try different keywords or check your spelling</div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+
+    <!-- Search History -->
+    <div class="search-history" *ngIf="showHistory">
+      <div class="history-header">
+        <h3>Recent Searches</h3>
+        <button mat-icon-button 
+                (click)="clearHistory()"
+                matTooltip="Clear history">
+          <mat-icon>clear_all</mat-icon>
+        </button>
+      </div>
+      
+      <mat-list class="history-list">
+        <mat-list-item *ngFor="let history of searchHistory$ | async; trackBy: trackByHistoryId"
+                       class="history-item"
+                       (click)="onHistoryItemClick(history)">
+          <mat-icon matListItemIcon>history</mat-icon>
+          
+          <div matListItemTitle class="history-query">
+            {{ history.query }}
+          </div>
+          
+          <div matListItemLine class="history-meta">
+            {{ history.resultCount }} results • {{ history.timestamp | date:'short' }}
+          </div>
+        </mat-list-item>
+        
+        <mat-list-item *ngIf="(searchHistory$ | async)?.length === 0" class="no-history">
+          <mat-icon matListItemIcon>history</mat-icon>
+          <div matListItemTitle>No search history</div>
+          <div matListItemLine>Your recent searches will appear here</div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+
+    <!-- Search Suggestions -->
+    <div class="search-suggestions" *ngIf="showSuggestions">
+      <div class="suggestions-header">
+        <h3>Suggestions</h3>
+      </div>
+      
+      <mat-list class="suggestions-list">
+        <mat-list-item *ngFor="let suggestion of suggestions$ | async; trackBy: trackBySuggestionId"
+                       class="suggestion-item"
+                       (click)="onSuggestionClick(suggestion)">
+          <mat-icon matListItemIcon [matTooltip]="suggestion.type">
+            {{ getSuggestionIcon(suggestion.type) }}
+          </mat-icon>
+          
+          <div matListItemTitle class="suggestion-text">
+            {{ suggestion.text }}
+            <span class="suggestion-count" *ngIf="suggestion.count">
+              ({{ suggestion.count }})
+            </span>
+          </div>
+          
+          <div matListItemLine class="suggestion-type">
+            {{ suggestion.type | titlecase }}
+          </div>
+        </mat-list-item>
+      </mat-list>
+    </div>
+  </div>
+</div>
