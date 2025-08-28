@@ -77,5 +77,21 @@ export const updateSort = createAction(
 // Clear Filters
 export const clearFilters = createAction('[Tasks] Clear Filters');
 
+// Reorder Tasks
+export const reorderTasks = createAction(
+  '[Tasks] Reorder Tasks',
+  props<{ tasks: Task[] }>()
+);
+
+export const reorderTasksSuccess = createAction(
+  '[Tasks] Reorder Tasks Success',
+  props<{ tasks: Task[] }>()
+);
+
+export const reorderTasksFailure = createAction(
+  '[Tasks] Reorder Tasks Failure',
+  props<{ error: string }>()
+);
+
 // Clear Error
 export const clearTasksError = createAction('[Tasks] Clear Error');

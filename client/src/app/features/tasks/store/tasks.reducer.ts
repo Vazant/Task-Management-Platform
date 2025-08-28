@@ -131,6 +131,27 @@ export const tasksReducer = createReducer(
     filters: initialFilters
   })),
 
+  // Reorder Tasks
+  on(TasksActions.reorderTasks, (state) => ({
+    ...state,
+    loading: true,
+    error: null
+  })),
+
+  on(TasksActions.reorderTasksSuccess, (state, { tasks }) =>
+    tasksAdapter.setMany(tasks, {
+      ...state,
+      loading: false,
+      error: null,
+    })
+  ),
+
+  on(TasksActions.reorderTasksFailure, (state, { error }) => ({
+    ...state,
+    loading: false,
+    error
+  })),
+
   // Clear Error
   on(TasksActions.clearTasksError, (state) => ({
     ...state,

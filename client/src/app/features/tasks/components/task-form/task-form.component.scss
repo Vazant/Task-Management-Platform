@@ -1,0 +1,156 @@
+.task-form {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.form-header {
+  margin-bottom: 24px;
+  text-align: center;
+
+  h2 {
+    margin: 0;
+    color: #333;
+    font-weight: 500;
+  }
+}
+
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1;
+    min-width: 200px;
+  }
+}
+
+.labels-section {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+
+  h3 {
+    margin: 0 0 12px 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+  }
+
+  h4 {
+    margin: 16px 0 8px 0;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+  }
+}
+
+.labels-container {
+  margin-bottom: 16px;
+
+  mat-chip-set {
+    gap: 8px;
+  }
+
+  mat-chip {
+    font-size: 12px;
+    height: 24px;
+    padding: 0 8px;
+  }
+}
+
+.available-labels {
+  .label-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    button {
+      font-size: 12px;
+      padding: 4px 12px;
+      min-width: auto;
+      height: 28px;
+      border-radius: 14px;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+
+  button {
+    min-width: 100px;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .task-form {
+    padding: 16px;
+  }
+
+  .form-row {
+    flex-direction: column;
+
+    mat-form-field {
+      min-width: auto;
+    }
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+// Form validation styles
+mat-form-field.ng-invalid.ng-touched {
+  .mat-mdc-form-field-focus-overlay {
+    background-color: rgba(244, 67, 54, 0.04);
+  }
+}
+
+// Custom date picker styles
+.mat-datepicker-toggle {
+  color: #666;
+}
+
+// Custom select styles
+mat-select {
+  .mat-mdc-select-value {
+    color: #333;
+  }
+}
+
+// Custom input styles
+input, textarea {
+  &::placeholder {
+    color: #999;
+  }
+}

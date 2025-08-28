@@ -25,4 +25,24 @@
 - Comprehensive test coverage and Storybook stories
 - Material table: see `docs/angular-material-table.md`
 
+# Day 2025-08-06 — Kanban Board & Drag & Drop
+
+## Deliverables
+- ✅ Kanban board component with drag & drop between status columns
+- ✅ Task status management with visual feedback and animations
+- ✅ Real-time task reordering within columns
+- ✅ NgRx integration for task status updates and reordering
+- ✅ Comprehensive drag & drop testing and accessibility
+- ✅ Kanban board: see `docs/kanban-board.md`
+
+# Day 2025-08-07 — Task Creation & Editing
+
+## Deliverables
+- Task creation dialog with reactive forms and validation
+- Task editing functionality with inline and modal editing
+- Rich text editor for task descriptions
+- Task assignment and priority management
+- Form validation and error handling
+- Task creation: see `docs/task-forms.md`
+
 

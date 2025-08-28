@@ -1,0 +1,69 @@
+<div class="kanban-board">
+  <div class="kanban-header">
+    <h2>Kanban Board</h2>
+    <div class="kanban-stats">
+      <span class="loading-indicator" *ngIf="loading$ | async">
+        Loading tasks...
+      </span>
+    </div>
+  </div>
+
+  <div class="kanban-container">
+    <div class="kanban-columns">
+      <div 
+        *ngFor="let column of columns$ | async; trackBy: trackByColumnStatus"
+        class="kanban-column"
+        [class]="'column-' + column.status">
+        
+        <div class="column-header">
+          <div class="column-title">
+            <h3>{{ column.title }}</h3>
+            <span class="task-count">{{ column.tasks.length }}</span>
+          </div>
+          <div class="column-actions">
+            <button 
+              mat-icon-button 
+              matTooltip="Add task"
+              (click)="onAddTask(column.status)">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+
+        <div 
+          class="column-content"
+          cdkDropList
+          [id]="column.status"
+          [cdkDropListData]="column.tasks"
+          [cdkDropListConnectedTo]="getConnectedDropLists()"
+          (cdkDropListDropped)="onDrop($event)">
+          
+          <div 
+            *ngFor="let task of column.tasks; trackBy: trackByTaskId"
+            class="task-item"
+            cdkDrag
+            [cdkDragData]="task">
+            
+            <app-task-card
+              [task]="task"
+              [compact]="true"
+              (edit)="onTaskEdit($event)"
+              (delete)="onTaskDelete($event)"
+              (statusChange)="onTaskStatusChange($event)"
+              (priorityChange)="onTaskPriorityChange($event)">
+            </app-task-card>
+          </div>
+
+          <div 
+            *ngIf="column.tasks.length === 0"
+            class="empty-column">
+            <div class="empty-message">
+              <mat-icon>inbox</mat-icon>
+              <p>No tasks</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
