@@ -52,6 +52,12 @@ export const selectFilteredTasks = createSelector(
       if (filters.project !== 'all' && task.projectId !== filters.project) {
         return false;
       }
+      if (filters.query && filters.query.trim()) {
+        const q = filters.query.toLowerCase();
+        const inTitle = task.title.toLowerCase().includes(q);
+        const inDesc = task.description.toLowerCase().includes(q);
+        if (!inTitle && !inDesc) return false;
+      }
       return true;
     });
   }

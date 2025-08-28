@@ -36,6 +36,7 @@ export interface TaskFilters {
   priority: 'all' | 'low' | 'medium' | 'high' | 'urgent';
   assignee: 'all' | string;
   project: 'all' | string;
+  query?: string;
 }
 
 export type TaskSortOption = 'created' | 'updated' | 'priority' | 'dueDate' | 'title';

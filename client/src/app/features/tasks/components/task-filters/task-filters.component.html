@@ -19,5 +19,10 @@
       <mat-option *ngFor="let o of sortOptions" [value]="o">{{ o }}</mat-option>
     </mat-select>
   </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Search</mat-label>
+    <input matInput [ngModel]="filters.query" (ngModelChange)="filtersChange.emit({ query: $event })" placeholder="Search tasks" />
+  </mat-form-field>
 </div>
 
