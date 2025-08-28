@@ -182,6 +182,8 @@ mvn jacoco:report
 
 ## 📚 Documentation
 
+- [NgRx Entity](docs/ngrx-entity.md)
+- [Tasks Architecture](docs/tasks-architecture.md)
 - [Development Roadmap](docs/DEVELOPMENT_ROADMAP.md)
 - [API Documentation](docs/api/README.md)
 - [Architecture Guide](docs/architecture/README.md)

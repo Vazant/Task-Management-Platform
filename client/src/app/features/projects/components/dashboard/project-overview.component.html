@@ -1,0 +1,10 @@
+<section *ngIf="project; else empty">
+  <h2>{{ project.name }}</h2>
+  <p>{{ project.description }}</p>
+  <div class="meta">Members: {{ project.members.length }} · Status: {{ project.status }}</div>
+</section>
+<ng-template #empty>
+  <p>Select a project to see overview</p>
+</ng-template>
+
+

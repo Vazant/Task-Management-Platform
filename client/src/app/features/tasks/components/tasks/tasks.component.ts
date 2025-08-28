@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, inject, OnDestroy, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '@services';
@@ -6,22 +6,33 @@ import { User } from '@models';
 import { Subscription } from 'rxjs';
 import { LayoutComponent } from '../../../../shared/components/layout';
 import { LucideAngularModule, CheckSquare, Plus, Move, Calendar } from 'lucide-angular';
+import { Store } from '@ngrx/store';
+import { selectSortedTasks, selectTasksLoading, selectTasksFilters, selectTasksSortBy, updateFilters, updateSort, loadTasks } from '@store';
+import type { TaskFilters, TaskSortOption } from '@models';
+import { TaskListComponent } from '../task-list/task-list.component';
+import { TaskFiltersComponent } from '../task-filters/task-filters.component';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
   standalone: true,
-  imports: [CommonModule, LayoutComponent, LucideAngularModule]
+  imports: [CommonModule, LayoutComponent, LucideAngularModule, TaskListComponent, TaskFiltersComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TasksComponent implements OnInit, OnDestroy {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly store = inject(Store);
 
   isAuthenticated = false;
   currentUser: User | null = null;
   private authSubscription?: Subscription;
   private userSubscription?: Subscription;
+  tasks$ = this.store.select(selectSortedTasks);
+  loading$ = this.store.select(selectTasksLoading);
+  selectTasksFilters = this.store.select(selectTasksFilters);
+  selectTasksSortBy = this.store.select(selectTasksSortBy);
 
 
 
@@ -42,6 +53,16 @@ export class TasksComponent implements OnInit, OnDestroy {
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       this.currentUser = user;
     });
+
+    this.store.dispatch(loadTasks());
+  }
+
+  onFiltersChange(partial: Partial<TaskFilters>): void {
+    this.store.dispatch(updateFilters({ filters: partial }));
+  }
+
+  onSortChange(sortBy: TaskSortOption): void {
+    this.store.dispatch(updateSort({ sortBy }));
   }
 
   ngOnDestroy(): void {

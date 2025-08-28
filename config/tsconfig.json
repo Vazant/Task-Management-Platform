@@ -21,6 +21,7 @@
       "@shared/*": ["app/shared/*"],
       "@features/*": ["app/features/*"],
       "@store/*": ["app/store/*"],
+      "@store": ["app/store/index.ts"],
       "@models": ["app/core/models"],
       "@services": ["app/core/services"],
       "@utils": ["app/core/utils"],

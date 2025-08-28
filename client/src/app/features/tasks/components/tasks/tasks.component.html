@@ -12,22 +12,20 @@
       <div class="placeholder-icon">
         <i-lucide [img]="CheckSquare" [size]="64"></i-lucide>
       </div>
-      <h2>Kanban доска</h2>
-      <p>Здесь будет функционал для управления задачами с помощью Kanban доски</p>
-      <div class="placeholder-features">
-        <div class="feature-item">
-          <i-lucide [img]="Plus" [size]="20"></i-lucide>
-          <span>Создание задач</span>
-        </div>
-        <div class="feature-item">
-          <i-lucide [img]="Move" [size]="20"></i-lucide>
-          <span>Drag & Drop</span>
-        </div>
-        <div class="feature-item">
-          <i-lucide [img]="Calendar" [size]="20"></i-lucide>
-          <span>Дедлайны</span>
-        </div>
-      </div>
+      <h2>Список задач</h2>
+      <p>Фильтрация и сортировка с NgRx Entity</p>
+      <app-task-filters
+        [filters]="(selectTasksFilters | async) ?? {status:'all',priority:'all',assignee:'all',project:'all'}"
+        [sortBy]="(selectTasksSortBy | async) ?? 'created'"
+        (filtersChange)="onFiltersChange($event)"
+        (sortChange)="onSortChange($event)"
+      ></app-task-filters>
+      <ng-container *ngIf="(loading$ | async) === false; else loadingTpl">
+        <app-task-list [tasks]="(tasks$ | async) ?? []"></app-task-list>
+      </ng-container>
+      <ng-template #loadingTpl>
+        <p>Загрузка...</p>
+      </ng-template>
     </div>
   </div>
 </main>

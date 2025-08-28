@@ -1,5 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { TasksState } from './tasks.state';
+import { createEntityAdapter } from '@ngrx/entity';
+import type { Task } from '@models';
 import { TaskFilters } from '@models';
 import * as TasksActions from './tasks.actions';
 
@@ -12,14 +14,17 @@ const initialFilters: TaskFilters = {
   project: 'all'
 };
 
-export const initialState: TasksState = {
-  entities: {},
-  ids: [],
+export const tasksAdapter = createEntityAdapter<Task>({
+  selectId: (task) => task.id,
+  sortComparer: false,
+});
+
+export const initialState: TasksState = tasksAdapter.getInitialState({
   loading: false,
   error: null,
   filters: initialFilters,
-  sortBy: 'created'
-};
+  sortBy: 'created',
+});
 
 export const tasksReducer = createReducer(
   initialState,
@@ -31,21 +36,13 @@ export const tasksReducer = createReducer(
     error: null
   })),
 
-  on(TasksActions.loadTasksSuccess, (state, { tasks }) => {
-    const entities = tasks.reduce((acc, task) => ({
-      ...acc,
-      [task.id]: task
-    }), {});
-    const ids = tasks.map(task => task.id);
-
-    return {
+  on(TasksActions.loadTasksSuccess, (state, { tasks }) =>
+    tasksAdapter.setAll(tasks, {
       ...state,
-      entities,
-      ids,
       loading: false,
-      error: null
-    };
-  }),
+      error: null,
+    })
+  ),
 
   on(TasksActions.loadTasksFailure, (state, { error }) => ({
     ...state,
@@ -60,16 +57,13 @@ export const tasksReducer = createReducer(
     error: null
   })),
 
-  on(TasksActions.createTaskSuccess, (state, { task }) => ({
-    ...state,
-    entities: {
-      ...state.entities,
-      [task.id]: task
-    },
-    ids: [...state.ids, task.id],
-    loading: false,
-    error: null
-  })),
+  on(TasksActions.createTaskSuccess, (state, { task }) =>
+    tasksAdapter.addOne(task, {
+      ...state,
+      loading: false,
+      error: null,
+    })
+  ),
 
   on(TasksActions.createTaskFailure, (state, { error }) => ({
     ...state,
@@ -84,15 +78,13 @@ export const tasksReducer = createReducer(
     error: null
   })),
 
-  on(TasksActions.updateTaskSuccess, (state, { task }) => ({
-    ...state,
-    entities: {
-      ...state.entities,
-      [task.id]: task
-    },
-    loading: false,
-    error: null
-  })),
+  on(TasksActions.updateTaskSuccess, (state, { task }) =>
+    tasksAdapter.upsertOne(task, {
+      ...state,
+      loading: false,
+      error: null,
+    })
+  ),
 
   on(TasksActions.updateTaskFailure, (state, { error }) => ({
     ...state,
@@ -107,19 +99,13 @@ export const tasksReducer = createReducer(
     error: null
   })),
 
-  on(TasksActions.deleteTaskSuccess, (state, { taskId }) => {
-    const entities = { ...state.entities };
-    delete entities[taskId];
-    const ids = state.ids.filter(id => id !== taskId);
-
-    return {
+  on(TasksActions.deleteTaskSuccess, (state, { taskId }) =>
+    tasksAdapter.removeOne(taskId, {
       ...state,
-      entities,
-      ids,
       loading: false,
-      error: null
-    };
-  }),
+      error: null,
+    })
+  ),
 
   on(TasksActions.deleteTaskFailure, (state, { error }) => ({
     ...state,
