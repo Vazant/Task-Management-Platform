@@ -11,13 +11,23 @@ import { selectSortedTasks, selectTasksLoading, selectTasksFilters, selectTasksS
 import type { TaskFilters, TaskSortOption } from '@models';
 import { TaskListComponent } from '../task-list/task-list.component';
 import { TaskFiltersComponent } from '../task-filters/task-filters.component';
+import { TaskAdvancedFiltersComponent } from '../task-advanced-filters/task-advanced-filters.component';
+import { TaskCardComponent } from '../task-card/task-card.component';
 
 @Component({
   selector: 'app-tasks',
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss'],
   standalone: true,
-  imports: [CommonModule, LayoutComponent, LucideAngularModule, TaskListComponent, TaskFiltersComponent],
+  imports: [
+    CommonModule, 
+    LayoutComponent, 
+    LucideAngularModule, 
+    TaskListComponent, 
+    TaskFiltersComponent, 
+    TaskAdvancedFiltersComponent,
+    TaskCardComponent
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TasksComponent implements OnInit, OnDestroy {
@@ -33,8 +43,6 @@ export class TasksComponent implements OnInit, OnDestroy {
   loading$ = this.store.select(selectTasksLoading);
   selectTasksFilters = this.store.select(selectTasksFilters);
   selectTasksSortBy = this.store.select(selectTasksSortBy);
-
-
 
   // Mobile menu state
   isMobileMenuOpen = false;

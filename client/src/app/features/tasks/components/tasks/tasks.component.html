@@ -1,33 +1,98 @@
-<app-layout [showHeader]="true" [showFooter]="true">
-
-<!-- Main Content -->
-<main class="dashboard-main">
-  <div class="welcome-section">
-    <h1 class="welcome-title">Задачи</h1>
-    <p class="welcome-subtitle">Реализуем в следующей версии</p>
-  </div>
-
-  <div class="placeholder-content">
-    <div class="placeholder-card">
-      <div class="placeholder-icon">
-        <i-lucide [img]="CheckSquare" [size]="64"></i-lucide>
+<app-layout>
+  <header class="dashboard-header">
+    <div class="header-content">
+      <div class="header-left">
+        <h1 class="dashboard-title">Task Management</h1>
+        <p class="dashboard-subtitle">Organize and track your tasks efficiently</p>
       </div>
-      <h2>Список задач</h2>
-      <p>Фильтрация и сортировка с NgRx Entity</p>
-      <app-task-filters
-        [filters]="(selectTasksFilters | async) ?? {status:'all',priority:'all',assignee:'all',project:'all'}"
-        [sortBy]="(selectTasksSortBy | async) ?? 'created'"
-        (filtersChange)="onFiltersChange($event)"
-        (sortChange)="onSortChange($event)"
-      ></app-task-filters>
-      <ng-container *ngIf="(loading$ | async) === false; else loadingTpl">
+      <div class="header-right">
+        <div class="user-info" *ngIf="currentUser">
+          <span class="user-name">{{ currentUser.name }}</span>
+          <button mat-icon-button [matMenuTriggerFor]="userMenu">
+            <mat-icon>account_circle</mat-icon>
+          </button>
+        </div>
+        <button mat-icon-button class="mobile-menu-toggle" (click)="toggleMobileMenu()">
+          <mat-icon>menu</mat-icon>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="dashboard-main">
+    <div class="welcome-section">
+      <h1 class="welcome-title">Задачи</h1>
+    </div>
+
+    <div class="placeholder-content">
+      <div class="placeholder-card">
+        <div class="placeholder-icon">
+          <i-lucide [img]="CheckSquare" [size]="64"></i-lucide>
+        </div>
+        <h2>Task Management</h2>
+        <p>Advanced filtering and Material Design components</p>
+        <app-task-filters
+          [filters]="(selectTasksFilters | async) ?? {status:'all',priority:'all',assignee:'all',project:'all'}"
+          [sortBy]="(selectTasksSortBy | async) ?? 'created'"
+          (filtersChange)="onFiltersChange($event)"
+          (sortChange)="onSortChange($event)"
+        ></app-task-filters>
+        <app-task-advanced-filters
+          [filters]="(selectTasksFilters | async) ?? {status:'all',priority:'all',assignee:'all',project:'all'}"
+          (filtersChange)="onFiltersChange($event)"
+          (clearFilters)="onFiltersChange({status:'all',priority:'all',assignee:'all',project:'all',query:''})"
+        ></app-task-advanced-filters>
         <app-task-list [tasks]="(tasks$ | async) ?? []"></app-task-list>
-      </ng-container>
-      <ng-template #loadingTpl>
-        <p>Загрузка...</p>
-      </ng-template>
+      </div>
+    </div>
+  </main>
+
+  <!-- User Menu -->
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item (click)="changePassword()">
+      <mat-icon>lock</mat-icon>
+      <span>Change Password</span>
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Logout</span>
+    </button>
+  </mat-menu>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" [class.open]="isMobileMenuOpen" (click)="closeMobileMenu()">
+    <div class="mobile-menu-content" (click)="$event.stopPropagation()">
+      <div class="mobile-menu-header">
+        <h3>Menu</h3>
+        <button mat-icon-button (click)="closeMobileMenu()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <nav class="mobile-nav">
+        <a routerLink="/dashboard" routerLinkActive="active" (click)="closeMobileMenu()">
+          <mat-icon>dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <a routerLink="/tasks" routerLinkActive="active" (click)="closeMobileMenu()">
+          <mat-icon>task</mat-icon>
+          <span>Tasks</span>
+        </a>
+        <a routerLink="/projects" routerLinkActive="active" (click)="closeMobileMenu()">
+          <mat-icon>folder</mat-icon>
+          <span>Projects</span>
+        </a>
+        <a routerLink="/profile" routerLinkActive="active" (click)="closeMobileMenu()">
+          <mat-icon>person</mat-icon>
+          <span>Profile</span>
+        </a>
+      </nav>
+      <div class="mobile-menu-footer">
+        <button mat-button (click)="logout(); closeMobileMenu()">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
   </div>
-</main>
-
 </app-layout>

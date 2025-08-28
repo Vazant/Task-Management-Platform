@@ -1,0 +1,65 @@
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Advanced Filters
+      <mat-chip *ngIf="activeFiltersCount > 0" [style.margin-left.px]="8">
+        {{ activeFiltersCount }}
+      </mat-chip>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <form [formGroup]="filterForm" class="filter-form">
+    <div class="filter-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput formControlName="query" placeholder="Search tasks...">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="status">
+          <mat-option *ngFor="let status of statuses" [value]="status">
+            {{ status === 'all' ? 'All Statuses' : status }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Priority</mat-label>
+        <mat-select formControlName="priority">
+          <mat-option *ngFor="let priority of priorities" [value]="priority">
+            {{ priority === 'all' ? 'All Priorities' : priority }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="filter-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Due Date Range</mat-label>
+        <mat-date-range-input [rangePicker]="dueDatePicker">
+          <input matStartDate formControlName="dueDateFrom" placeholder="Start date">
+          <input matEndDate formControlName="dueDateTo" placeholder="End date">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="dueDatePicker"></mat-datepicker-toggle>
+        <mat-date-range-picker #dueDatePicker></mat-date-range-picker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Created Date Range</mat-label>
+        <mat-date-range-input [rangePicker]="createdDatePicker">
+          <input matStartDate formControlName="createdFrom" placeholder="Start date">
+          <input matEndDate formControlName="createdTo" placeholder="End date">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="createdDatePicker"></mat-datepicker-toggle>
+        <mat-date-range-picker #createdDatePicker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+
+    <div class="filter-actions">
+      <button mat-button (click)="onClearFilters()" [disabled]="activeFiltersCount === 0">
+        Clear All Filters
+      </button>
+    </div>
+  </form>
+</mat-expansion-panel>

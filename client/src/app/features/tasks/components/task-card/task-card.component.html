@@ -1,0 +1,88 @@
+<mat-card [class.compact]="compact">
+  <mat-card-header>
+    <mat-card-title>{{ task.title }}</mat-card-title>
+    <mat-card-subtitle *ngIf="!compact">{{ task.description }}</mat-card-subtitle>
+    <div class="card-actions">
+      <button mat-icon-button [matMenuTriggerFor]="menu">
+        <i-lucide [img]="MoreVertical" [size]="20"></i-lucide>
+      </button>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="task-meta">
+      <mat-chip-set>
+        <mat-chip [color]="getStatusColor(task.status)" selected>
+          {{ task.status }}
+        </mat-chip>
+        <mat-chip [color]="getPriorityColor(task.priority)" selected>
+          <mat-icon>{{ getPriorityIcon(task.priority) }}</mat-icon>
+          {{ task.priority }}
+        </mat-chip>
+      </mat-chip-set>
+
+      <div class="task-info">
+        <span class="info-item" *ngIf="task.assigneeId" [matTooltip]="'Assigned to'">
+          <i-lucide [img]="User" [size]="16"></i-lucide>
+          {{ task.assigneeId }}
+        </span>
+        <span class="info-item" *ngIf="task.dueDate" 
+              [matTooltip]="'Due date'" 
+              [class.overdue]="isOverdue(task.dueDate)">
+          <i-lucide [img]="Calendar" [size]="16"></i-lucide>
+          {{ formatDate(task.dueDate) }}
+        </span>
+        <span class="info-item" *ngIf="task.timeSpent > 0" [matTooltip]="'Time spent'">
+          <i-lucide [img]="Clock" [size]="16"></i-lucide>
+          {{ task.timeSpent }}h
+        </span>
+      </div>
+    </div>
+
+    <div class="task-labels" *ngIf="task.labels.length > 0 && !compact">
+      <mat-chip *ngFor="let label of task.labels" [style.background-color]="label.color">
+        {{ label.name }}
+      </mat-chip>
+    </div>
+  </mat-card-content>
+</mat-card>
+
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="edit.emit(task)">
+    <mat-icon>edit</mat-icon>
+    <span>Edit</span>
+  </button>
+  
+  <mat-divider></mat-divider>
+  
+  <button mat-menu-item [matMenuTriggerFor]="statusMenu">
+    <mat-icon>swap_horiz</mat-icon>
+    <span>Change Status</span>
+  </button>
+  
+  <button mat-menu-item [matMenuTriggerFor]="priorityMenu">
+    <mat-icon>flag</mat-icon>
+    <span>Change Priority</span>
+  </button>
+  
+  <mat-divider></mat-divider>
+  
+  <button mat-menu-item (click)="delete.emit(task)" class="delete-action">
+    <mat-icon>delete</mat-icon>
+    <span>Delete</span>
+  </button>
+</mat-menu>
+
+<mat-menu #statusMenu="matMenu">
+  <button mat-menu-item (click)="onStatusChange('backlog')">Backlog</button>
+  <button mat-menu-item (click)="onStatusChange('in-progress')">In Progress</button>
+  <button mat-menu-item (click)="onStatusChange('done')">Done</button>
+  <button mat-menu-item (click)="onStatusChange('blocked')">Blocked</button>
+</mat-menu>
+
+<mat-menu #priorityMenu="matMenu">
+  <button mat-menu-item (click)="onPriorityChange('low')">Low</button>
+  <button mat-menu-item (click)="onPriorityChange('medium')">Medium</button>
+  <button mat-menu-item (click)="onPriorityChange('high')">High</button>
+  <button mat-menu-item (click)="onPriorityChange('urgent')">Urgent</button>
+</mat-menu>
