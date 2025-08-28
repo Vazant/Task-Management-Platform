@@ -28,6 +28,11 @@ export const initialState: TasksState = tasksAdapter.getInitialState({
 });
 ```
 
+Similarly for Projects:
+```ts
+export const projectsAdapter = createEntityAdapter<Project>({ selectId: p => p.id });
+```
+
 ### CRUD Reducers
 ```ts
 on(loadSuccess, (state, { tasks }) => tasksAdapter.setAll(tasks, state));

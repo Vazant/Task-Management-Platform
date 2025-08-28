@@ -1,24 +1,17 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ProjectsState } from './projects.state';
+import { projectsAdapter } from './projects.reducer';
+import type { Project } from '@models';
 
 
 
 export const selectProjectsState = createFeatureSelector<ProjectsState>('projects');
 
-export const selectAllProjects = createSelector(
-  selectProjectsState,
-  (state) => state.ids.map(id => state.entities[id]).filter(Boolean)
-);
+const { selectAll, selectEntities, selectIds } = projectsAdapter.getSelectors();
 
-export const selectProjectsEntities = createSelector(
-  selectProjectsState,
-  (state) => state.entities
-);
-
-export const selectProjectsIds = createSelector(
-  selectProjectsState,
-  (state) => state.ids
-);
+export const selectAllProjects = createSelector(selectProjectsState, selectAll);
+export const selectProjectsEntities = createSelector(selectProjectsState, selectEntities);
+export const selectProjectsIds = createSelector(selectProjectsState, selectIds);
 
 export const selectProjectsLoading = createSelector(
   selectProjectsState,
