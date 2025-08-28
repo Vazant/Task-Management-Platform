@@ -2,6 +2,7 @@ import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChang
 import { provideRouter } from '@angular/router';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
+import { provideServiceWorker } from '@angular/service-worker';
 import { ProjectsEffects } from './features/projects/store/projects.effects';
 import { AuthEffects } from './features/auth/store/auth.effects';
 import { TasksEffects } from './features/tasks/store/tasks.effects';
@@ -113,6 +114,11 @@ export const appConfig: ApplicationConfig = {
     }),
     // Core Module
     importProvidersFrom(CoreModule),
+    // Service Worker for PWA
+    provideServiceWorker('ngsw-worker.js', {
+      enabled: true,
+      registrationStrategy: 'registerWhenStable:30000'
+    }),
     // Lucide Icons - выбираем конкретные иконки для оптимизации
     importProvidersFrom(LucideAngularModule.pick({
       User,
