@@ -60,7 +60,7 @@ export class TaskFormComponent implements OnInit {
   statuses: TaskStatus[] = ['backlog', 'in-progress', 'done', 'blocked'];
   priorities: TaskPriority[] = ['low', 'medium', 'high', 'urgent'];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private readonly fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.isEditMode = !!this.task;
@@ -102,7 +102,7 @@ export class TaskFormComponent implements OnInit {
 
   getErrorMessage(controlName: string): string {
     const control = this.taskForm.get(controlName);
-    if (!control || !control.errors) return '';
+    if (!control?.errors) return '';
 
     if (control.hasError('required')) {
       return `${this.getFieldLabel(controlName)} is required`;

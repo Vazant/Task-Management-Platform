@@ -15,12 +15,12 @@ export interface WebSocketMessage {
 export class WebSocketService {
   private socket?: WebSocket;
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectDelay = 1000;
-  private destroy$ = new Subject<void>();
+  private readonly maxReconnectAttempts = 5;
+  private readonly reconnectDelay = 1000;
+  private readonly destroy$ = new Subject<void>();
 
-  private connectionStatus$ = new BehaviorSubject<'connected' | 'disconnected' | 'connecting'>('disconnected');
-  private messages$ = new Subject<WebSocketMessage>();
+  private readonly connectionStatus$ = new BehaviorSubject<'connected' | 'disconnected' | 'connecting'>('disconnected');
+  private readonly messages$ = new Subject<WebSocketMessage>();
 
   constructor() {}
 

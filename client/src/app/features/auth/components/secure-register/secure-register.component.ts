@@ -322,12 +322,12 @@ export class SecureRegisterComponent implements OnInit {
   loading$: Observable<boolean>;
 
   constructor(
-    private fb: FormBuilder,
-    private router: Router,
-    private store: Store,
-    private securityService: SecurityService,
-    private authService: AuthService,
-    private notificationService: NotificationService
+    private readonly fb: FormBuilder,
+    private readonly router: Router,
+    private readonly store: Store,
+    private readonly securityService: SecurityService,
+    private readonly authService: AuthService,
+    private readonly notificationService: NotificationService
   ) {
     this.loading$ = this.store.select(AuthSelectors.selectLoading);
   }

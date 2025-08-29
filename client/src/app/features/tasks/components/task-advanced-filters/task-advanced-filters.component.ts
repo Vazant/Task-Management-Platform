@@ -36,14 +36,14 @@ export class TaskAdvancedFiltersComponent implements OnInit, OnDestroy {
   @Output() filtersChange = new EventEmitter<Partial<TaskFilters>>();
   @Output() clearFilters = new EventEmitter<void>();
 
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
   filterForm!: FormGroup;
   activeFiltersCount = 0;
 
   statuses = ['all', 'backlog', 'in-progress', 'done', 'blocked'];
   priorities = ['all', 'low', 'medium', 'high', 'urgent'];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private readonly fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.initializeForm();

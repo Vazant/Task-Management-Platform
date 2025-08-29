@@ -20,7 +20,7 @@ export interface PerformanceReport {
 })
 export class PerformanceService {
   private metrics = new Map<string, PerformanceMetric[]>();
-  private marks = new Map<string, number>();
+  private readonly marks = new Map<string, number>();
   
   /**
    * Начинает измерение времени для указанной операции

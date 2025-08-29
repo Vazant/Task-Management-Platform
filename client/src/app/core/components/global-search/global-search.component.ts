@@ -50,11 +50,11 @@ export class GlobalSearchComponent implements OnInit, OnDestroy {
   showHistory = false;
   showSuggestions = false;
   
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
   
   constructor(
-    private searchService: GlobalSearchService,
-    private router: Router
+    private readonly searchService: GlobalSearchService,
+    private readonly router: Router
   ) {
     this.searchResults$ = this.searchService.searchResults$;
     this.searchHistory$ = this.searchService.searchHistory$;

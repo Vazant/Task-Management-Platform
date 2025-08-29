@@ -156,7 +156,7 @@ export class ExportReportsComponent {
     sections: ['overview', 'metrics', 'recommendations']
   };
 
-  selectedTemplate: string = 'executive';
+  selectedTemplate = 'executive';
   isExporting = false;
 
   onTemplateChange(templateId: string): void {

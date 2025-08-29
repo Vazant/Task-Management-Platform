@@ -222,7 +222,7 @@ export class TestDataFactory {
   /**
    * Create list of mock tasks
    */
-  static createTaskList(count: number = 3, overrides: Partial<Task> = {}): Task[] {
+  static createTaskList(count = 3, overrides: Partial<Task> = {}): Task[] {
     return Array.from({ length: count }, (_, i) => 
       this.createTask({ 
         id: `${i + 1}`, 
@@ -235,7 +235,7 @@ export class TestDataFactory {
   /**
    * Create list of mock projects
    */
-  static createProjectList(count: number = 3, overrides: Partial<Project> = {}): Project[] {
+  static createProjectList(count = 3, overrides: Partial<Project> = {}): Project[] {
     return Array.from({ length: count }, (_, i) => 
       this.createProject({ 
         id: `${i + 1}`, 
@@ -248,7 +248,7 @@ export class TestDataFactory {
   /**
    * Create list of mock users
    */
-  static createUserList(count: number = 3, overrides: Partial<User> = {}): User[] {
+  static createUserList(count = 3, overrides: Partial<User> = {}): User[] {
     return Array.from({ length: count }, (_, i) => 
       this.createUser({ 
         id: `${i + 1}`, 

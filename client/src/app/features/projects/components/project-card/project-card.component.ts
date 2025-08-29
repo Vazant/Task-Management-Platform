@@ -145,7 +145,7 @@ export class ProjectCardComponent implements OnInit, OnDestroy {
   // Private properties
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private readonly elementRef: ElementRef) {}
 
   ngOnInit(): void {
     this.validateInputs();

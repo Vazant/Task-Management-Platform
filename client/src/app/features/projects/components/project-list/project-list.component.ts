@@ -190,9 +190,9 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private store: Store,
-    private projectListService: ProjectListService,
-    private fb: FormBuilder
+    private readonly store: Store,
+    private readonly projectListService: ProjectListService,
+    private readonly fb: FormBuilder
   ) {
     // Инициализация форм
     this.searchForm = this.fb.group({

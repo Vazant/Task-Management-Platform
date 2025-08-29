@@ -40,10 +40,10 @@ export class PerformanceMonitorComponent implements OnInit, OnDestroy {
   
   displayedColumns = ['name', 'count', 'average', 'slowest', 'fastest', 'actions'];
   
-  private destroy$ = new Subject<void>();
-  private updateTimer$ = timer(0, 5000); // Update every 5 seconds
+  private readonly destroy$ = new Subject<void>();
+  private readonly updateTimer$ = timer(0, 5000); // Update every 5 seconds
   
-  constructor(private performanceService: PerformanceService) {
+  constructor(private readonly performanceService: PerformanceService) {
     this.performanceReport$ = this.updateTimer$.pipe(
       map(() => this.performanceService.getPerformanceReport())
     );

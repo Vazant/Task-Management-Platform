@@ -159,7 +159,7 @@ export class ToastNotificationComponent implements OnDestroy {
   @Input() onDismiss?: () => void;
   @Input() onAction?: () => void;
 
-  private autoDismissTimeout?: number;
+  private readonly autoDismissTimeout?: number;
 
   constructor() {
     // Auto-dismiss after 5 seconds for non-error notifications

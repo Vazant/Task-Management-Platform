@@ -6,7 +6,7 @@ import { SecurityService } from '../services/security.service';
 
 @Injectable()
 export class SecurityInterceptor implements HttpInterceptor {
-  constructor(private securityService: SecurityService) {}
+  constructor(private readonly securityService: SecurityService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     // Add security headers

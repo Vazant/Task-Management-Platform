@@ -10,23 +10,23 @@ import { User } from '../models/user.model';
   providedIn: 'root'
 })
 export class GlobalSearchService {
-  private searchSubject = new BehaviorSubject<string>('');
+  private readonly searchSubject = new BehaviorSubject<string>('');
   search$ = this.searchSubject.asObservable();
   
-  private searchResultsSubject = new BehaviorSubject<SearchResult[]>([]);
+  private readonly searchResultsSubject = new BehaviorSubject<SearchResult[]>([]);
   searchResults$ = this.searchResultsSubject.asObservable();
   
-  private searchHistorySubject = new BehaviorSubject<SearchHistory[]>([]);
+  private readonly searchHistorySubject = new BehaviorSubject<SearchHistory[]>([]);
   searchHistory$ = this.searchHistorySubject.asObservable();
   
-  private suggestionsSubject = new BehaviorSubject<SearchSuggestion[]>([]);
+  private readonly suggestionsSubject = new BehaviorSubject<SearchSuggestion[]>([]);
   suggestions$ = this.suggestionsSubject.asObservable();
   
-  private loadingSubject = new BehaviorSubject<boolean>(false);
+  private readonly loadingSubject = new BehaviorSubject<boolean>(false);
   loading$ = this.loadingSubject.asObservable();
   
   private searchHistory: SearchHistory[] = [];
-  private searchCache = new Map<string, SearchResult[]>();
+  private readonly searchCache = new Map<string, SearchResult[]>();
   
   constructor() {
     this.loadSearchHistory();

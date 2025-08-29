@@ -193,6 +193,7 @@ mvn jacoco:report
 - [CI/CD Pipeline and Docker](docs/ci-cd-pipeline.md)
 - [Final Testing Strategies](docs/final-testing-strategies.md)
 - [Project Handover](docs/project-handover.md)
+- [Project Optimization](docs/project-optimization.md)
 - [Release Notes](RELEASE_NOTES.md)
 
 ## 🤝 Contributing

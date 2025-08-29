@@ -82,7 +82,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   getErrorMessage(fieldName: string): string {
     const field = this.loginForm.get(fieldName);
-    if (!field || !field.errors) return '';
+    if (!field?.errors) return '';
 
     if (field.errors['required']) {
       return 'Это поле обязательно для заполнения';

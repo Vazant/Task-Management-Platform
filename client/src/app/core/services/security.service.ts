@@ -5,7 +5,7 @@ import { DomSanitizer, SafeHtml, SafeUrl, SafeStyle } from '@angular/platform-br
   providedIn: 'root'
 })
 export class SecurityService {
-  constructor(private sanitizer: DomSanitizer) {}
+  constructor(private readonly sanitizer: DomSanitizer) {}
 
   /**
    * Sanitize user input to prevent XSS attacks

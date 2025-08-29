@@ -126,7 +126,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   getErrorMessage(controlName: string): string {
     const control = this.registerForm.get(controlName);
-    if (!control || !control.errors) return '';
+    if (!control?.errors) return '';
 
     if (control.errors['required']) {
       return 'Это поле обязательно для заполнения';
