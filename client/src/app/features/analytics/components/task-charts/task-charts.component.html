@@ -158,8 +158,8 @@
             <div class="chart-data-preview">
               <h4>Data Preview:</h4>
               <p>Showing {{ trendChartData.labels.length }} data points</p>
-              <p>Completed tasks: {{ trendChartData.datasets[0].data.reduce((sum, val) => sum + val, 0) }}</p>
-              <p>Created tasks: {{ trendChartData.datasets[1].data.reduce((sum, val) => sum + val, 0) }}</p>
+              <p>Completed tasks: {{ getCompletedTasksCount() }}</p>
+              <p>Created tasks: {{ getCreatedTasksCount() }}</p>
             </div>
           </div>
         </div>
@@ -197,7 +197,7 @@
         </div>
         <div class="summary-item">
           <h4>Last Updated</h4>
-          <p>{{ new Date() | date:'short' }}</p>
+          <p>{{ getCurrentDate() | date:'short' }}</p>
         </div>
       </div>
     </mat-card-content>

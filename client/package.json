@@ -12,7 +12,11 @@
     "check-imports": "node ../scripts/check-imports.js",
     "pre-commit": "npm run lint && npm run check-imports",
     "storybook": "ng run taskboard-pro:storybook",
-    "build-storybook": "ng run taskboard-pro:build-storybook"
+    "build-storybook": "ng run taskboard-pro:build-storybook",
+    "e2e": "cypress open",
+    "e2e:run": "cypress run",
+    "e2e:headless": "cypress run --headless",
+    "e2e:record": "cypress run --record"
   },
   "prettier": {
     "overrides": [

@@ -167,7 +167,7 @@
                 <div class="activity-content">
                   <h4 class="activity-title">{{ task.title }}</h4>
                   <p class="activity-meta">
-                    <span class="assignee" *ngIf="task.assignee">Assigned to {{ task.assignee }}</span>
+                    <span class="assignee" *ngIf="task.assigneeId">Assigned to {{ task.assigneeId }}</span>
                     <span class="priority" *ngIf="task.priority">
                       <mat-chip-set>
                         <mat-chip [class]="'priority-' + task.priority" size="small">

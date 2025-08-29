@@ -132,7 +132,7 @@
                   [style.border-color]="label.color"
                   [style.color]="label.color"
                   (click)="addLabel(label)"
-                  [disabled]="taskForm.get('labels')?.value?.find((l: any) => l.name === label.name)">
+                  [disabled]="taskForm.get('labels')?.value?.includes(label)">
             {{ label.name }}
           </button>
         </div>

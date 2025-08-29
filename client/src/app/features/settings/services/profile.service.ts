@@ -58,7 +58,7 @@ export class ProfileService {
         // Показываем уведомление с кнопкой retry
         this.notificationService.showError(
           'Ошибка загрузки профиля',
-          () => this.loadProfile()
+          'Ошибка загрузки профиля'
         );
 
         return of(null);
@@ -80,7 +80,7 @@ export class ProfileService {
         this._profile.set(profile);
         this._isLoading.set(false);
         this._hasError.set(false);
-        this.notificationService.success('Успех', 'Профиль успешно обновлен');
+        this.notificationService.showSuccess('Успех', 'Профиль успешно обновлен');
       }),
       catchError(error => {
         console.error('Ошибка обновления профиля:', error);
@@ -89,7 +89,7 @@ export class ProfileService {
         this._isLoading.set(false);
         this._hasError.set(true);
 
-        this.notificationService.error('Ошибка обновления профиля', errorMessage);
+        this.notificationService.showError('Ошибка обновления профиля', errorMessage);
         return of(null);
       })
     );
@@ -113,7 +113,7 @@ export class ProfileService {
         this._profile.set(profile);
         this._isLoading.set(false);
         this._hasError.set(false);
-        this.notificationService.success('Успех', 'Аватар успешно обновлен');
+        this.notificationService.showSuccess('Успех', 'Аватар успешно обновлен');
       }),
       catchError(error => {
         console.error('Ошибка обновления аватара:', error);
@@ -122,7 +122,7 @@ export class ProfileService {
         this._isLoading.set(false);
         this._hasError.set(true);
 
-        this.notificationService.error('Ошибка обновления аватара', errorMessage);
+        this.notificationService.showError('Ошибка обновления аватара', errorMessage);
         return of(null);
       })
     );
@@ -142,7 +142,7 @@ export class ProfileService {
         this._profile.set(profile);
         this._isLoading.set(false);
         this._hasError.set(false);
-        this.notificationService.success('Успех', 'Аватар успешно удален');
+        this.notificationService.showSuccess('Успех', 'Аватар успешно удален');
       }),
       catchError(error => {
         console.error('Ошибка удаления аватара:', error);
@@ -151,7 +151,7 @@ export class ProfileService {
         this._isLoading.set(false);
         this._hasError.set(true);
 
-        this.notificationService.error('Ошибка удаления аватара', errorMessage);
+        this.notificationService.showError('Ошибка удаления аватара', errorMessage);
         return of(null);
       })
     );
@@ -175,7 +175,7 @@ export class ProfileService {
       tap(() => {
         this._isLoading.set(false);
         this._hasError.set(false);
-        this.notificationService.success('Успех', 'Пароль успешно изменен');
+        this.notificationService.showSuccess('Успех', 'Пароль успешно изменен');
       }),
       catchError(error => {
         console.error('Ошибка смены пароля:', error);
@@ -184,7 +184,7 @@ export class ProfileService {
         this._isLoading.set(false);
         this._hasError.set(true);
 
-        this.notificationService.error('Ошибка смены пароля', errorMessage);
+        this.notificationService.showError('Ошибка смены пароля', errorMessage);
         return of(null);
       })
     );

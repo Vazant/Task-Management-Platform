@@ -511,7 +511,7 @@ export class ProjectDashboardComponent implements OnInit {
   readonly wifiOffIcon = WifiOff;
 
   // Observables
-  readonly isOnline$ = this.networkStatus.isOnline$;
+  readonly isOnline$ = this.networkStatus.isOnline;
   readonly projects$ = this.store.select(selectAllProjects);
   readonly tasks$ = this.store.select(selectAllTasks);
 
@@ -529,11 +529,11 @@ export class ProjectDashboardComponent implements OnInit {
       const completedProjects = projects.filter(p => p.status === 'completed').length;
       
       const totalTasks = tasks.length;
-      const completedTasks = tasks.filter(t => t.status === 'completed').length;
-      const pendingTasks = tasks.filter(t => t.status === 'pending').length;
-      const overdueTasks = tasks.filter(t => 
-        t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'completed'
-      ).length;
+      const completedTasks = tasks.filter(t => t.status === 'done').length;
+      const pendingTasks = tasks.filter(t => t.status === 'in-progress').length;
+              const overdueTasks = tasks.filter(t => 
+          t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'done'
+        ).length;
 
       const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
       const averageTasksPerProject = totalProjects > 0 ? Math.round(totalTasks / totalProjects) : 0;
@@ -566,8 +566,8 @@ export class ProjectDashboardComponent implements OnInit {
         })),
         ...tasks.map(t => ({
           type: 'task',
-          title: `Task "${t.title}" ${t.status === 'completed' ? 'completed' : 'created'}`,
-          timestamp: t.status === 'completed' ? t.updatedAt : t.createdAt,
+          title: `Task "${t.title}" ${t.status === 'done' ? 'completed' : 'created'}`,
+          timestamp: t.status === 'done' ? t.updatedAt : t.createdAt,
           project: projects.find(p => p.id === t.projectId)?.name
         }))
       ];
@@ -580,7 +580,7 @@ export class ProjectDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     // Initialize offline storage
-    this.offlineStorage.initDatabase().catch(console.error);
+    this.offlineStorage.initDatabase().catch((error: unknown) => console.error('Failed to init database:', error));
   }
 
   async refreshData(): Promise<void> {

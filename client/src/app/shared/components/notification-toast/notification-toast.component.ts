@@ -1,10 +1,9 @@
 import { Component, OnDestroy, inject } from '@angular/core';
-import { NotificationService, Notification } from '@services';
+import { NotificationService } from '../../../core/services/notification.service';
+import { Notification } from '../../../core/models/notification.model';
 import { Observable, Subject } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AsyncPipe, NgFor, NgClass } from '@angular/common';
-
-
 
 @Component({
   selector: 'app-notification-toast',
@@ -127,7 +126,7 @@ import { AsyncPipe, NgFor, NgClass } from '@angular/common';
 })
 export class NotificationToastComponent implements OnDestroy {
   private readonly notificationService = inject(NotificationService);
-  notifications$: Observable<Notification[]> = this.notificationService.notifications$;
+  notifications$: Observable<Notification[]> = this.notificationService.notifications;
   private readonly destroy$ = new Subject<void>();
 
   ngOnDestroy(): void {
@@ -136,7 +135,7 @@ export class NotificationToastComponent implements OnDestroy {
   }
 
   removeNotification(id: string): void {
-    this.notificationService.removeNotification(id);
+    this.notificationService.deleteNotification(id);
   }
 
   trackByNotification(index: number, notification: Notification): string {

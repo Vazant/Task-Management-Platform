@@ -26,8 +26,8 @@ const baseTask: Task = {
   estimatedHours: 8,
   timeSpent: 3,
   labels: [
-    { name: 'Backend', color: '#3f51b5' },
-    { name: 'Security', color: '#f44336' }
+    'Backend',
+    'Security'
   ],
   subtasks: [],
   createdAt: new Date(),
@@ -98,11 +98,11 @@ export const ManyLabels: Story = {
     task: {
       ...baseTask,
       labels: [
-        { name: 'Backend', color: '#3f51b5' },
-        { name: 'Security', color: '#f44336' },
-        { name: 'Feature', color: '#4caf50' },
-        { name: 'High Priority', color: '#ff9800' },
-        { name: 'API', color: '#9c27b0' }
+        'Backend',
+        'Security',
+        'Feature',
+        'High Priority',
+        'API'
       ]
     }
   }

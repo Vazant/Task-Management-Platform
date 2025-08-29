@@ -6,6 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatBadgeModule } from '@angular/material/badge';
 import { LucideAngularModule, Clock, Calendar, User, MoreVertical } from 'lucide-angular';
 import { Task } from '@models';
 
@@ -20,6 +23,9 @@ import { Task } from '@models';
     MatButtonModule,
     MatTooltipModule,
     MatMenuModule,
+    MatDividerModule,
+    MatProgressBarModule,
+    MatBadgeModule,
     LucideAngularModule
   ],
   templateUrl: './task-card.component.html',
@@ -86,5 +92,12 @@ export class TaskCardComponent {
 
   onPriorityChange(priority: Task['priority']): void {
     this.priorityChange.emit({ task: this.task, priority });
+  }
+
+  getLabelColor(label: string): string {
+    // Простая функция для генерации цвета на основе строки
+    const colors = ['#3f51b5', '#f44336', '#4caf50', '#ff9800', '#9c27b0', '#607d8b'];
+    const index = label.charCodeAt(0) % colors.length;
+    return colors[index];
   }
 }

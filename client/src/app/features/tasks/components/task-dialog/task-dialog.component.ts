@@ -1,25 +1,25 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { Store } from '@ngrx/store';
-import { Observable, map, startWith } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
+
 import { Task, TaskStatus, TaskPriority } from '@models';
 import * as TaskActions from '../../store/tasks.actions';
 
 export interface TaskDialogData {
-  task?: Task;
   mode: 'create' | 'edit';
+  task?: Task;
   initialStatus?: TaskStatus;
 }
 
@@ -34,123 +34,235 @@ export interface TaskDialogData {
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
-    MatIconModule,
     MatChipsModule,
+    MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatAutocompleteModule,
-    MatSlideToggleModule
+    MatAutocompleteModule
   ],
-  templateUrl: './task-dialog.component.html',
-  styleUrls: ['./task-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <h2 mat-dialog-title>{{ getDialogTitle() }}</h2>
+    <form [formGroup]="taskForm" (ngSubmit)="onSubmit()">
+      <mat-dialog-content>
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Название задачи</mat-label>
+            <input matInput formControlName="title" placeholder="Введите название задачи">
+            <mat-error *ngIf="taskForm.get('title')?.hasError('required')">
+              Название обязательно
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Описание</mat-label>
+            <textarea matInput formControlName="description" rows="3" placeholder="Введите описание задачи"></textarea>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Статус</mat-label>
+            <mat-select formControlName="status">
+              <mat-option value="backlog">Backlog</mat-option>
+              <mat-option value="in-progress">В работе</mat-option>
+              <mat-option value="done">Завершено</mat-option>
+              <mat-option value="blocked">Заблокировано</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Приоритет</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option value="low">Низкий</mat-option>
+              <mat-option value="medium">Средний</mat-option>
+              <mat-option value="high">Высокий</mat-option>
+              <mat-option value="urgent">Срочный</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Исполнитель</mat-label>
+            <input matInput formControlName="assigneeId" placeholder="Введите имя исполнителя">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Срок выполнения</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="dueDate">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Метки</mat-label>
+            <mat-chip-grid #chipGrid>
+              <mat-chip-row *ngFor="let label of selectedLabels" 
+                           (removed)="removeLabel(label)">
+                {{ label }}
+                <button matChipRemove>
+                  <mat-icon>cancel</mat-icon>
+                </button>
+              </mat-chip-row>
+            </mat-chip-grid>
+            <input placeholder="Добавить метку..."
+                   [matChipInputFor]="chipGrid"
+                   (matChipInputTokenEnd)="addLabel($event)">
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Оценка времени (часы)</mat-label>
+            <input matInput type="number" formControlName="estimatedHours" min="0">
+          </mat-form-field>
+        </div>
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end">
+        <button mat-button type="button" (click)="onCancel()">Отмена</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="taskForm.invalid">
+          {{ getSubmitButtonText() }}
+        </button>
+      </mat-dialog-actions>
+    </form>
+  `,
+  styles: [`
+    .form-row {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    mat-form-field {
+      flex: 1;
+    }
+
+    mat-dialog-content {
+      min-width: 500px;
+    }
+
+    mat-dialog-actions {
+      padding: 16px 0;
+    }
+  `]
 })
-export class TaskDialogComponent implements OnInit {
-  taskForm!: FormGroup;
-  loading = false;
-  error: string | null = null;
-
-  readonly statusOptions: { value: TaskStatus; label: string }[] = [
-    { value: 'backlog', label: 'Backlog' },
-    { value: 'in-progress', label: 'In Progress' },
-    { value: 'done', label: 'Done' },
-    { value: 'blocked', label: 'Blocked' }
-  ];
-
-  readonly priorityOptions: { value: TaskPriority; label: string; color: string }[] = [
-    { value: 'low', label: 'Low', color: 'accent' },
-    { value: 'medium', label: 'Medium', color: 'primary' },
-    { value: 'high', label: 'High', color: 'warn' },
-    { value: 'urgent', label: 'Urgent', color: 'warn' }
-  ];
-
-  readonly assigneeOptions = [
-    'john.doe',
-    'jane.smith',
-    'bob.wilson',
-    'alice.johnson'
-  ];
-
-  filteredAssignees$!: Observable<string[]>;
-
+export class TaskDialogComponent implements OnInit, OnDestroy {
+  private readonly dialogRef = inject(MatDialogRef<TaskDialogComponent>);
+  private readonly data: TaskDialogData = inject(MAT_DIALOG_DATA) as TaskDialogData;
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
-  private readonly dialogRef = inject(MatDialogRef<TaskDialogComponent>);
-  private readonly data = inject(MAT_DIALOG_DATA);
+  private readonly destroy$ = new Subject<void>();
+
+  taskForm!: FormGroup;
+  selectedLabels: string[] = [];
 
   ngOnInit(): void {
     this.initForm();
-    this.setupAssigneeFilter();
     
     if (this.data.mode === 'edit' && this.data.task) {
       this.patchForm(this.data.task);
     }
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initForm(): void {
+    this.taskForm = this.fb.group({
+      title: ['', [Validators.required, Validators.minLength(3)]],
+      description: [''],
+      status: [this.data.initialStatus || 'backlog', Validators.required],
+      priority: ['medium', Validators.required],
+      assigneeId: [''],
+      dueDate: [null],
+      estimatedHours: [null, [Validators.min(0)]],
+      labels: [[]]
+    });
+
+    this.taskForm.get('labels')?.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(labels => {
+        this.selectedLabels = labels || [];
+      });
+  }
+
+  private patchForm(task: Task): void {
+    this.taskForm.patchValue({
+      title: task.title,
+      description: task.description,
+      status: task.status,
+      priority: task.priority,
+      assigneeId: task.assigneeId,
+      dueDate: task.dueDate,
+      estimatedHours: task.estimatedHours,
+      labels: task.labels
+    });
+  }
+
   onSubmit(): void {
     if (this.taskForm.valid) {
-      this.loading = true;
-      this.error = null;
-
       const formValue = this.taskForm.value;
+      
       const taskData: Partial<Task> = {
         title: formValue.title,
         description: formValue.description,
         status: formValue.status,
         priority: formValue.priority,
-        assignee: formValue.assignee,
-        dueDate: formValue.dueDate ? formValue.dueDate.toISOString().split('T')[0] : null,
+        assigneeId: formValue.assigneeId,
+        dueDate: formValue.dueDate,
         estimatedHours: formValue.estimatedHours,
-        labels: formValue.labels || [],
-        project: formValue.project || 'default'
+        labels: formValue.labels,
+        projectId: '1', // TODO: Get from current project
+        creatorId: 'user1', // TODO: Get from auth service
+        timeSpent: 0,
+        subtasks: []
       };
 
       if (this.data.mode === 'create') {
         this.store.dispatch(TaskActions.createTask({ task: taskData }));
-      } else if (this.data.task) {
+      } else {
         this.store.dispatch(TaskActions.updateTask({
-          id: this.data.task.id,
-          ...taskData
+          task: {
+            id: this.data.task!.id,
+            ...taskData,
+            updatedAt: new Date()
+          }
         }));
       }
 
-      // Подписываемся на результат операции
-      this.store.select(state => state.tasks).subscribe(tasksState => {
-        if (!tasksState.loading && this.loading) {
-          this.loading = false;
-          
-          if (tasksState.error) {
-            this.error = tasksState.error;
-          } else {
-            this.dialogRef.close(true);
-          }
-        }
-      });
-    } else {
-      this.markFormGroupTouched();
+      this.dialogRef.close();
     }
   }
 
   onCancel(): void {
-    this.dialogRef.close(false);
+    this.dialogRef.close();
   }
 
   addLabel(event: any): void {
     const value = (event.value || '').trim();
-    if (value) {
-      const labels = this.taskForm.get('labels')?.value || [];
-      const newLabel = { name: value, color: this.getRandomColor() };
-      this.taskForm.patchValue({ labels: [...labels, newLabel] });
-      event.chipInput?.clear();
+    if (value && !this.selectedLabels.includes(value)) {
+      this.selectedLabels.push(value);
+      this.taskForm.patchValue({ labels: this.selectedLabels });
     }
+    event.chipInput!.clear();
   }
 
-  removeLabel(label: any): void {
-    const labels = this.taskForm.get('labels')?.value || [];
-    const index = labels.findIndex((l: any) => l.name === label.name);
+  removeLabel(label: string): void {
+    const index = this.selectedLabels.indexOf(label);
     if (index >= 0) {
-      labels.splice(index, 1);
-      this.taskForm.patchValue({ labels: [...labels] });
+      this.selectedLabels.splice(index, 1);
+      this.taskForm.patchValue({ labels: this.selectedLabels });
     }
   }
 
@@ -160,59 +272,5 @@ export class TaskDialogComponent implements OnInit {
 
   getSubmitButtonText(): string {
     return this.data.mode === 'create' ? 'Create' : 'Update';
-  }
-
-  private initForm(): void {
-    this.taskForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      description: ['', [Validators.maxLength(1000)]],
-      status: [this.data.initialStatus || 'backlog', Validators.required],
-      priority: ['medium', Validators.required],
-      assignee: [''],
-      dueDate: [null],
-      estimatedHours: [null, [Validators.min(0.5), Validators.max(100)]],
-      labels: [[]],
-      project: ['default']
-    });
-  }
-
-  private setupAssigneeFilter(): void {
-    this.filteredAssignees$ = this.taskForm.get('assignee')!.valueChanges.pipe(
-      startWith(''),
-      map(value => this.filterAssignees(value))
-    );
-  }
-
-  private filterAssignees(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.assigneeOptions.filter(assignee => 
-      assignee.toLowerCase().includes(filterValue)
-    );
-  }
-
-  private patchForm(task: Task): void {
-    this.taskForm.patchValue({
-      title: task.title,
-      description: task.description,
-      status: task.status,
-      priority: task.priority,
-      assignee: task.assignee,
-      dueDate: task.dueDate ? new Date(task.dueDate) : null,
-      estimatedHours: task.estimatedHours,
-      labels: task.labels || [],
-      project: task.project
-    });
-  }
-
-  private markFormGroupTouched(): void {
-    Object.keys(this.taskForm.controls).forEach(key => {
-      const control = this.taskForm.get(key);
-      control?.markAsTouched();
-    });
-  }
-
-  private getRandomColor(): string {
-    const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4caf50', '#8bc34a', '#cddc39', '#ffeb3b', '#ffc107', '#ff9800', '#ff5722'];
-    return colors[Math.floor(Math.random() * colors.length)];
   }
 }

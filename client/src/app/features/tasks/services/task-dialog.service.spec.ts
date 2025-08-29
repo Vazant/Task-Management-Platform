@@ -17,11 +17,11 @@ describe('TaskDialogService', () => {
     priority: 'medium',
     assignee: 'john.doe',
     project: 'test-project',
-    dueDate: '2025-08-15',
+    dueDate: new Date('2025-08-15'),
     estimatedHours: 4,
-    labels: [{ name: 'bug', color: '#f44336' }],
-    createdAt: '2025-08-01T10:00:00Z',
-    updatedAt: '2025-08-01T10:00:00Z'
+    labels: ['bug'],
+    createdAt: new Date('2025-08-01T10:00:00Z'),
+    updatedAt: new Date('2025-08-01T10:00:00Z')
   };
 
   beforeEach(() => {

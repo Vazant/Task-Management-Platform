@@ -40,8 +40,8 @@
     </div>
 
     <div class="task-labels" *ngIf="task.labels.length > 0 && !compact">
-      <mat-chip *ngFor="let label of task.labels" [style.background-color]="label.color">
-        {{ label.name }}
+      <mat-chip *ngFor="let label of task.labels"         [style.background-color]="getLabelColor(label)">
+        {{ label }}
       </mat-chip>
     </div>
   </mat-card-content>

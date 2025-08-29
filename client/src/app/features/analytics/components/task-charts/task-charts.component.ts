@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -8,8 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { FormsModule } from '@angular/forms';
 
 import { TaskAnalytics } from '../analytics-dashboard/analytics-dashboard.component';
-import { TaskStatus } from '@core/enums/task-status.enum';
-import { TaskPriority } from '@core/enums/task-priority.enum';
+import { TaskStatus, TaskPriority } from '@models';
 
 export interface ChartData {
   labels: string[];
@@ -75,21 +74,34 @@ export class TaskChartsComponent implements OnInit {
   assigneeChartData: ChartData | null = null;
   trendChartData: ChartData | null = null;
 
-  readonly statusColors = {
-    [TaskStatus.TODO]: '#9e9e9e',
-    [TaskStatus.IN_PROGRESS]: '#ff9800',
-    [TaskStatus.COMPLETED]: '#4caf50',
-    [TaskStatus.BLOCKED]: '#f44336'
+  readonly statusColors: Record<string, string> = {
+    'backlog': '#9e9e9e',
+    'in-progress': '#ff9800',
+    'done': '#4caf50',
+    'blocked': '#f44336'
   };
 
-  readonly priorityColors = {
-    [TaskPriority.LOW]: '#4caf50',
-    [TaskPriority.MEDIUM]: '#ff9800',
-    [TaskPriority.HIGH]: '#f44336'
+  readonly priorityColors: Record<string, string> = {
+    'low': '#4caf50',
+    'medium': '#ff9800',
+    'high': '#f44336',
+    'urgent': '#d32f2f'
   };
 
   ngOnInit(): void {
     this.updateCharts();
+  }
+
+  getCompletedTasksCount(): number {
+    return this.trendChartData?.datasets?.[0]?.data?.reduce((sum, val) => sum + val, 0) ?? 0;
+  }
+
+  getCreatedTasksCount(): number {
+    return this.trendChartData?.datasets?.[1]?.data?.reduce((sum, val) => sum + val, 0) ?? 0;
+  }
+
+  getCurrentDate(): Date {
+    return new Date();
   }
 
   onChartTypeChange(): void {
@@ -113,7 +125,7 @@ export class TaskChartsComponent implements OnInit {
     );
     const data = Object.values(this.analytics.tasksByStatus);
     const colors = Object.keys(this.analytics.tasksByStatus).map(status => 
-      this.statusColors[status as TaskStatus]
+      this.statusColors[status]
     );
 
     return {
@@ -134,7 +146,7 @@ export class TaskChartsComponent implements OnInit {
     );
     const data = Object.values(this.analytics.tasksByPriority);
     const colors = Object.keys(this.analytics.tasksByPriority).map(priority => 
-      this.priorityColors[priority as TaskPriority]
+      this.priorityColors[priority]
     );
 
     return {
@@ -186,15 +198,15 @@ export class TaskChartsComponent implements OnInit {
         {
           label: 'Tasks Completed',
           data: completedData,
-          backgroundColor: 'rgba(76, 175, 80, 0.2)',
-          borderColor: '#4caf50',
+          backgroundColor: ['rgba(76, 175, 80, 0.2)'],
+          borderColor: ['#4caf50'],
           borderWidth: 2
         },
         {
           label: 'Tasks Created',
           data: createdData,
-          backgroundColor: 'rgba(25, 118, 210, 0.2)',
-          borderColor: '#1976d2',
+          backgroundColor: ['rgba(25, 118, 210, 0.2)'],
+          borderColor: ['#1976d2'],
           borderWidth: 2
         }
       ]
@@ -232,29 +244,31 @@ export class TaskChartsComponent implements OnInit {
     return days;
   }
 
-  private formatStatusLabel(status: TaskStatus): string {
+  private formatStatusLabel(status: string): string {
     switch (status) {
-      case TaskStatus.TODO:
-        return 'To Do';
-      case TaskStatus.IN_PROGRESS:
+      case 'backlog':
+        return 'Backlog';
+      case 'in-progress':
         return 'In Progress';
-      case TaskStatus.COMPLETED:
-        return 'Completed';
-      case TaskStatus.BLOCKED:
+      case 'done':
+        return 'Done';
+      case 'blocked':
         return 'Blocked';
       default:
         return status;
     }
   }
 
-  private formatPriorityLabel(priority: TaskPriority): string {
+  private formatPriorityLabel(priority: string): string {
     switch (priority) {
-      case TaskPriority.LOW:
+      case 'low':
         return 'Low';
-      case TaskPriority.MEDIUM:
+      case 'medium':
         return 'Medium';
-      case TaskPriority.HIGH:
+      case 'high':
         return 'High';
+      case 'urgent':
+        return 'Urgent';
       default:
         return priority;
     }

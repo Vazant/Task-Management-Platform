@@ -90,9 +90,9 @@
 ### 📋 Предстоящие задачи
 
 #### 2025-08-14: E2E Testing и Notifications
-- [ ] Изучение Cypress E2E testing: документация, паттерны E2E тестирования, автоматизация тестов, тестирование user flows
-- [ ] Реализация E2E тестов и notification системы: Cypress testing, real-time updates, автоматизация тестов
-- [ ] Реализация real-time notifications и WebSocket integration: push notifications, notification preferences
+- [x] Изучение Cypress E2E testing: документация, паттерны E2E тестирования, автоматизация тестов, тестирование user flows
+- [x] Реализация E2E тестов и notification системы: Cypress testing, real-time updates, автоматизация тестов
+- [x] Реализация real-time notifications и WebSocket integration: push notifications, notification preferences
 
 #### 2025-08-18: Security и Final Optimizations
 - [ ] Изучение Angular security: документация, валидация входных данных, защита от XSS, advanced security patterns, authentication strategies

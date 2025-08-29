@@ -16,7 +16,7 @@ import { authReducer } from './store/auth.reducer';
 import { authRoutes } from './auth.routes';
 
 @NgModule({
-  declarations: [
+  imports: [
     LoginComponent,
     RegisterComponent,
     ForgotPasswordComponent
@@ -29,6 +29,6 @@ import { authRoutes } from './auth.routes';
     EffectsModule.forFeature([AuthEffects]),
     LucideAngularModule
   ],
-  styleUrls: ['./auth.styles.scss']
+
 })
 export class AuthModule { }

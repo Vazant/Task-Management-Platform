@@ -47,7 +47,7 @@ export class TimeTrackingEffects {
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось загрузить записи времени');
+              this.notificationService.showError('Ошибка', 'Не удалось загрузить записи времени');
             }
             return of(TimeTrackingActions.loadTimeEntriesFailure({ error: error.message }));
           })
@@ -75,13 +75,13 @@ export class TimeTrackingEffects {
 
         return of(newTimeEntry).pipe(
           map(createdEntry => {
-            this.notificationService.success('Успех', 'Запись времени создана');
+            this.notificationService.showSuccess('Успех', 'Запись времени создана');
             return TimeTrackingActions.createTimeEntrySuccess({ timeEntry: createdEntry });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось создать запись времени');
+              this.notificationService.showError('Ошибка', 'Не удалось создать запись времени');
             }
             return of(TimeTrackingActions.createTimeEntryFailure({ error: error.message }));
           })
@@ -108,13 +108,13 @@ export class TimeTrackingEffects {
 
         return of(updatedTimeEntry).pipe(
           map(entry => {
-            this.notificationService.success('Успех', 'Запись времени обновлена');
+            this.notificationService.showSuccess('Успех', 'Запись времени обновлена');
             return TimeTrackingActions.updateTimeEntrySuccess({ timeEntry: entry });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось обновить запись времени');
+              this.notificationService.showError('Ошибка', 'Не удалось обновить запись времени');
             }
             return of(TimeTrackingActions.updateTimeEntryFailure({ error: error.message }));
           })
@@ -131,13 +131,13 @@ export class TimeTrackingEffects {
         // Здесь будет реальный API вызов
         return of(timeEntryId).pipe(
           map(id => {
-            this.notificationService.success('Успех', 'Запись времени удалена');
+            this.notificationService.showSuccess('Успех', 'Запись времени удалена');
             return TimeTrackingActions.deleteTimeEntrySuccess({ timeEntryId: id });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось удалить запись времени');
+              this.notificationService.showError('Ошибка', 'Не удалось удалить запись времени');
             }
             return of(TimeTrackingActions.deleteTimeEntryFailure({ error: error.message }));
           })

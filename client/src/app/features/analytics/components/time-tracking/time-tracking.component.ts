@@ -71,7 +71,7 @@ export class TimeTrackingComponent {
       return {
         taskId: task.id,
         taskTitle: task.title,
-        assignee: task.assignee || 'Unassigned',
+        assignee: task.assigneeId || 'Unassigned',
         estimatedHours,
         actualHours: Math.round(actualHours * 10) / 10,
         accuracy: Math.round(accuracy * 10) / 10,

@@ -19,7 +19,7 @@ describe('TaskFormComponent', () => {
     assigneeId: 'u2',
     dueDate: new Date('2024-12-31'),
     timeSpent: 5,
-    labels: [{ name: 'Feature', color: '#3f51b5' }],
+    labels: ['Feature'],
     subtasks: [],
     createdAt: new Date(),
     updatedAt: new Date()
@@ -136,7 +136,7 @@ describe('TaskFormComponent', () => {
 
     const labels = component.taskForm.get('labels')?.value;
     const featureLabels = labels.filter((l: any) => l.name === 'Feature');
-    expect(featureLabels).toHaveLength(1);
+    expect(featureLabels.length).toBe(1);
   });
 
   it('should remove label from form', () => {

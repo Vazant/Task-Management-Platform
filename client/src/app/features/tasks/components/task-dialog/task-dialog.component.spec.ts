@@ -19,11 +19,11 @@ describe('TaskDialogComponent', () => {
     priority: 'medium',
     assignee: 'john.doe',
     project: 'test-project',
-    dueDate: '2025-08-15',
+    dueDate: new Date('2025-08-15'),
     estimatedHours: 4,
-    labels: [{ name: 'bug', color: '#f44336' }],
-    createdAt: '2025-08-01T10:00:00Z',
-    updatedAt: '2025-08-01T10:00:00Z'
+    labels: ['bug'],
+    createdAt: new Date('2025-08-01T10:00:00Z'),
+    updatedAt: new Date('2025-08-01T10:00:00Z')
   };
 
   const mockDialogData: TaskDialogData = {
@@ -160,7 +160,7 @@ describe('TaskDialogComponent', () => {
     const label = { name: 'test-label', color: '#f44336' };
     component.taskForm.patchValue({ labels: [label] });
     
-    component.removeLabel(label);
+    component.removeLabel('bug');
     
     const labels = component.taskForm.get('labels')?.value;
     expect(labels).not.toContain(label);

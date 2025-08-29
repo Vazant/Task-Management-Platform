@@ -2,13 +2,17 @@ import { Component, OnInit, inject, OnDestroy, HostListener, ChangeDetectionStra
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '@services';
-import { User } from '@models';
+import { User, type TaskFilters, type TaskSortOption } from '@models';
 import { Subscription } from 'rxjs';
 import { LayoutComponent } from '../../../../shared/components/layout';
 import { LucideAngularModule, CheckSquare, Plus, Move, Calendar } from 'lucide-angular';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { Store } from '@ngrx/store';
 import { selectSortedTasks, selectTasksLoading, selectTasksFilters, selectTasksSortBy, updateFilters, updateSort, loadTasks } from '@store';
-import type { TaskFilters, TaskSortOption } from '@models';
+
 import { TaskListComponent } from '../task-list/task-list.component';
 import { TaskFiltersComponent } from '../task-filters/task-filters.component';
 import { TaskAdvancedFiltersComponent } from '../task-advanced-filters/task-advanced-filters.component';
@@ -23,6 +27,10 @@ import { TaskCardComponent } from '../task-card/task-card.component';
     CommonModule, 
     LayoutComponent, 
     LucideAngularModule, 
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatDividerModule,
     TaskListComponent, 
     TaskFiltersComponent, 
     TaskAdvancedFiltersComponent,

@@ -7,7 +7,7 @@
 =======
   <div class="projects-grid">
     <div class="sidebar">
-      <app-projects-sidebar (createProject)="onProjectAction({ type: 'create' })"></app-projects-sidebar>
+      <app-projects-sidebar (createProject)="onProjectAction({ type: 'create', projectId: '' })"></app-projects-sidebar>
     </div>
     <div class="content">
       <app-project-list

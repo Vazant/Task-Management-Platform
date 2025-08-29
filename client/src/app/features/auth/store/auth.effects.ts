@@ -1,21 +1,20 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { map, switchMap, catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-
+import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
 import * as AuthActions from './auth.actions';
-import { AuthService, NotificationService } from '@services';
-
-
-
 
 @Injectable()
 export class AuthEffects {
-  private readonly actions$ = inject(Actions);
-  private readonly authService = inject(AuthService);
-  private readonly notificationService = inject(NotificationService);
-  private readonly router = inject(Router);
+  constructor(
+    private actions$: Actions,
+    private authService: AuthService,
+    private notificationService: NotificationService,
+    private router: Router
+  ) {}
 
   login$ = createEffect(() => {
     return this.actions$.pipe(
@@ -28,7 +27,7 @@ export class AuthEffects {
               response.token,
               response.refreshToken
             );
-            this.notificationService.success('Успех', 'Вы успешно вошли в систему');
+            this.notificationService.showSuccess('Успех', 'Вход выполнен успешно');
             return AuthActions.loginSuccess({
               user: response.user,
               token: response.token,
@@ -36,10 +35,10 @@ export class AuthEffects {
             });
           }),
           catchError((error) => {
-            const errorMessage = error.message ?? 'Ошибка входа в систему';
+            const errorMessage = error.message ?? 'Ошибка входа';
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', errorMessage);
+              this.notificationService.showError('Ошибка', errorMessage);
             }
             return of(AuthActions.loginFailure({ error: errorMessage }));
           })
@@ -59,7 +58,7 @@ export class AuthEffects {
               response.token,
               response.refreshToken
             );
-            this.notificationService.success('Успех', 'Регистрация прошла успешно');
+            this.notificationService.showSuccess('Успех', 'Регистрация прошла успешно');
             return AuthActions.registerSuccess({
               user: response.user,
               token: response.token,
@@ -70,7 +69,7 @@ export class AuthEffects {
             const errorMessage = error.message ?? 'Ошибка регистрации';
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', errorMessage);
+              this.notificationService.showError('Ошибка', errorMessage);
             }
             return of(AuthActions.registerFailure({ error: errorMessage }));
           })
@@ -104,7 +103,7 @@ export class AuthEffects {
             const errorMessage = error.message ?? 'Ошибка обновления токена';
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', errorMessage);
+              this.notificationService.showError('Ошибка', errorMessage);
             }
             return of(AuthActions.refreshTokenFailure({ error: errorMessage }));
           })
@@ -125,7 +124,7 @@ export class AuthEffects {
             const errorMessage = error.message ?? 'Ошибка восстановления пароля';
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', errorMessage);
+              this.notificationService.showError('Ошибка', errorMessage);
             }
             return of(AuthActions.forgotPasswordFailure({ error: errorMessage }));
           })
@@ -139,12 +138,16 @@ export class AuthEffects {
       ofType(AuthActions.resetPassword),
       switchMap(({ token, password }) =>
         this.authService.resetPassword(token, password).pipe(
-          map(() => AuthActions.resetPasswordSuccess({
-            message: 'Пароль успешно изменен'
-          })),
+          map(() => {
+            this.notificationService.showSuccess('Успех', 'Пароль успешно изменен');
+            return AuthActions.resetPasswordSuccess({ message: 'Пароль успешно изменен' });
+          }),
           catchError((error) => {
             const errorMessage = error.message ?? 'Ошибка сброса пароля';
-            this.notificationService.error('Ошибка', errorMessage);
+            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
+            if (error.status && error.status >= 400 && error.status < 500) {
+              this.notificationService.showError('Ошибка', errorMessage);
+            }
             return of(AuthActions.resetPasswordFailure({ error: errorMessage }));
           })
         )
@@ -152,7 +155,6 @@ export class AuthEffects {
     );
   });
 
-  // Navigation effects
   loginSuccess$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.loginSuccess),
@@ -175,7 +177,7 @@ export class AuthEffects {
     return this.actions$.pipe(
       ofType(AuthActions.forgotPasswordSuccess),
       tap(({ message }) => {
-        this.notificationService.success('Успех', message);
+        this.notificationService.showSuccess('Успех', message);
       })
     );
   }, { dispatch: false });
@@ -184,7 +186,7 @@ export class AuthEffects {
     return this.actions$.pipe(
       ofType(AuthActions.resetPasswordSuccess),
       tap(({ message }) => {
-        this.notificationService.success('Успех', message);
+        this.notificationService.showSuccess('Успех', message);
         this.router.navigate(['/auth/login']);
       })
     );

@@ -44,7 +44,7 @@ describe('TaskCardComponent', () => {
       assigneeId: 'u2',
       dueDate: new Date('2024-12-31'),
       timeSpent: 5,
-      labels: [{ name: 'Feature', color: '#3f51b5' }],
+      labels: ['Feature'],
       subtasks: [],
       createdAt: new Date(),
       updatedAt: new Date()

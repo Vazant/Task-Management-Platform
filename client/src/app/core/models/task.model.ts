@@ -1,27 +1,34 @@
 export interface Task {
   id: string;
   title: string;
-  description: string;
-  status: 'backlog' | 'in-progress' | 'done' | 'blocked';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
+  description?: string;
+  status: TaskStatus;
+  priority: TaskPriority;
   projectId: string;
+  assigneeId?: string;
   creatorId: string;
-  assigneeId?: string; 
-  dueDate?: Date;
-  estimatedHours?: number;
+  labels: string[];
+  subtasks: SubTask[];
   timeSpent: number;
-  labels: Array<{ name: string; color: string }>;
-  subtasks: Array<{ id: string; title: string; completed: boolean }>;
+  estimatedHours?: number;
+  dueDate?: Date;
   createdAt: Date;
   updatedAt: Date;
+  blocked?: boolean;
 }
 
-export interface Subtask {
+export interface TaskLabel {
+  name: string;
+  color: string;
+}
+
+export type TaskStatus = 'backlog' | 'in-progress' | 'done' | 'blocked';
+export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export interface SubTask {
   id: string;
   title: string;
   completed: boolean;
-  taskId: string; // ref: Task
-  order: number;
 }
 
 export interface Label {
@@ -42,5 +49,3 @@ export interface TaskFilters {
 }
 
 export type TaskSortOption = 'created' | 'updated' | 'priority' | 'dueDate' | 'title';
-
-export type TaskStatus = Task['status'];

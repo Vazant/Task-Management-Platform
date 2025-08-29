@@ -63,7 +63,7 @@ export class ProjectsEffects {
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось загрузить проекты');
+              this.notificationService.showError('Ошибка', 'Не удалось загрузить проекты');
             }
             return of(ProjectsActions.loadProjectsFailure({ error: error.message }));
           })
@@ -98,13 +98,13 @@ export class ProjectsEffects {
 
         return of(newProject).pipe(
           map(createdProject => {
-            this.notificationService.success('Успех', 'Проект создан');
+            this.notificationService.showSuccess('Успех', 'Проект создан');
             return ProjectsActions.createProjectSuccess({ project: createdProject });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось создать проект');
+              this.notificationService.showError('Ошибка', 'Не удалось создать проект');
             }
             return of(ProjectsActions.createProjectFailure({ error: error.message }));
           })
@@ -138,13 +138,13 @@ export class ProjectsEffects {
 
         return of(updatedProject).pipe(
           map(project => {
-            this.notificationService.success('Успех', 'Проект обновлен');
+            this.notificationService.showSuccess('Успех', 'Проект обновлен');
             return ProjectsActions.updateProjectSuccess({ project });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось обновить проект');
+              this.notificationService.showError('Ошибка', 'Не удалось обновить проект');
             }
             return of(ProjectsActions.updateProjectFailure({ error: error.message }));
           })
@@ -161,13 +161,13 @@ export class ProjectsEffects {
         // Здесь будет реальный API вызов
         return of(projectId).pipe(
           map(id => {
-            this.notificationService.success('Успех', 'Проект удален');
+            this.notificationService.showSuccess('Успех', 'Проект удален');
             return ProjectsActions.deleteProjectSuccess({ projectId: id });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось удалить проект');
+              this.notificationService.showError('Ошибка', 'Не удалось удалить проект');
             }
             return of(ProjectsActions.deleteProjectFailure({ error: error.message }));
           })

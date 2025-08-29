@@ -55,7 +55,7 @@ export const selectFilteredTasks = createSelector(
       if (filters.query && filters.query.trim()) {
         const q = filters.query.toLowerCase();
         const inTitle = task.title.toLowerCase().includes(q);
-        const inDesc = task.description.toLowerCase().includes(q);
+        const inDesc = task.description?.toLowerCase().includes(q) ?? false;
         if (!inTitle && !inDesc) return false;
       }
       return true;
@@ -82,7 +82,7 @@ export const selectSortedTasks = createSelector(
           if (!a.dueDate && !b.dueDate) return 0;
           if (!a.dueDate) return 1;
           if (!b.dueDate) return -1;
-          return new Date(a.dueDate!).getTime() - new Date(b.dueDate!).getTime();
+          return new Date(a.dueDate ?? 0).getTime() - new Date(b.dueDate ?? 0).getTime();
         case 'title':
           return a.title.localeCompare(b.title);
         default:

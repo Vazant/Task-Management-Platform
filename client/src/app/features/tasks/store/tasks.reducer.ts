@@ -1,8 +1,7 @@
 import { createReducer, on } from '@ngrx/store';
 import { TasksState } from './tasks.state';
 import { createEntityAdapter } from '@ngrx/entity';
-import type { Task } from '@models';
-import { TaskFilters } from '@models';
+import type { Task, TaskFilters } from '@models';
 import * as TasksActions from './tasks.actions';
 
 

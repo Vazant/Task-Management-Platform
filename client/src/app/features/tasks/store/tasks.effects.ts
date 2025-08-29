@@ -34,7 +34,7 @@ export class TasksEffects {
             labels: ['design', 'frontend'],
             subtasks: [],
             timeSpent: 120,
-            estimatedTime: 240,
+            estimatedHours: 4,
             dueDate: new Date('2024-02-15'),
             createdAt: new Date(),
             updatedAt: new Date()
@@ -51,7 +51,7 @@ export class TasksEffects {
             labels: ['backend', 'api'],
             subtasks: [],
             timeSpent: 0,
-            estimatedTime: 480,
+            estimatedHours: 8,
             dueDate: new Date('2024-02-20'),
             createdAt: new Date(),
             updatedAt: new Date()
@@ -63,7 +63,7 @@ export class TasksEffects {
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось загрузить задачи');
+              this.notificationService.showError('Ошибка', 'Не удалось загрузить задачи');
             }
             return of(TasksActions.loadTasksFailure({ error: error.message }));
           })
@@ -91,7 +91,7 @@ export class TasksEffects {
           labels: task.labels ?? [],
           subtasks: task.subtasks ?? [],
           timeSpent: task.timeSpent ?? 0,
-          estimatedTime: task.estimatedTime,
+          estimatedHours: task.estimatedHours,
           dueDate: task.dueDate,
           createdAt: new Date(),
           updatedAt: new Date()
@@ -99,13 +99,13 @@ export class TasksEffects {
 
         return of(newTask).pipe(
           map(createdTask => {
-            this.notificationService.success('Успех', 'Задача создана');
+            this.notificationService.showSuccess('Успех', 'Задача создана');
             return TasksActions.createTaskSuccess({ task: createdTask });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось создать задачу');
+              this.notificationService.showError('Ошибка', 'Не удалось создать задачу');
             }
             return of(TasksActions.createTaskFailure({ error: error.message }));
           })
@@ -132,7 +132,7 @@ export class TasksEffects {
           labels: task.labels ?? [],
           subtasks: task.subtasks ?? [],
           timeSpent: task.timeSpent ?? 0,
-          estimatedTime: task.estimatedTime,
+          estimatedHours: task.estimatedHours,
           dueDate: task.dueDate,
           createdAt: task.createdAt ?? new Date(),
           updatedAt: new Date()
@@ -140,13 +140,13 @@ export class TasksEffects {
 
         return of(updatedTask).pipe(
           map(task => {
-            this.notificationService.success('Успех', 'Задача обновлена');
+            this.notificationService.showSuccess('Успех', 'Задача обновлена');
             return TasksActions.updateTaskSuccess({ task });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось обновить задачу');
+              this.notificationService.showError('Ошибка', 'Не удалось обновить задачу');
             }
             return of(TasksActions.updateTaskFailure({ error: error.message }));
           })
@@ -163,13 +163,13 @@ export class TasksEffects {
         // Здесь будет реальный API вызов
         return of(taskId).pipe(
           map(id => {
-            this.notificationService.success('Успех', 'Задача удалена');
+            this.notificationService.showSuccess('Успех', 'Задача удалена');
             return TasksActions.deleteTaskSuccess({ taskId: id });
           }),
           catchError(error => {
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.error('Ошибка', 'Не удалось удалить задачу');
+              this.notificationService.showError('Ошибка', 'Не удалось удалить задачу');
             }
             return of(TasksActions.deleteTaskFailure({ error: error.message }));
           })

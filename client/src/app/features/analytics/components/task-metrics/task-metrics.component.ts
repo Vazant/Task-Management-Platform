@@ -8,8 +8,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { TaskAnalytics } from '../analytics-dashboard/analytics-dashboard.component';
-import { TaskStatus } from '@core/enums/task-status.enum';
-import { TaskPriority } from '@core/enums/task-priority.enum';
+import { TaskStatus, TaskPriority } from '@models';
 
 export interface MetricItem {
   label: string;
@@ -144,57 +143,61 @@ export class TaskMetricsComponent {
     }
   }
 
-  private formatStatusLabel(status: TaskStatus): string {
+  private formatStatusLabel(status: string): string {
     switch (status) {
-      case TaskStatus.TODO:
-        return 'To Do';
-      case TaskStatus.IN_PROGRESS:
+      case 'backlog':
+        return 'Backlog';
+      case 'in-progress':
         return 'In Progress';
-      case TaskStatus.COMPLETED:
-        return 'Completed';
-      case TaskStatus.BLOCKED:
+      case 'done':
+        return 'Done';
+      case 'blocked':
         return 'Blocked';
       default:
         return status;
     }
   }
 
-  private formatPriorityLabel(priority: TaskPriority): string {
+  private formatPriorityLabel(priority: string): string {
     switch (priority) {
-      case TaskPriority.LOW:
+      case 'low':
         return 'Low';
-      case TaskPriority.MEDIUM:
+      case 'medium':
         return 'Medium';
-      case TaskPriority.HIGH:
+      case 'high':
         return 'High';
+      case 'urgent':
+        return 'Urgent';
       default:
         return priority;
     }
   }
 
-  private getStatusColor(status: TaskStatus): string {
+  private getStatusColor(status: string): string {
     switch (status) {
-      case TaskStatus.TODO:
+      case 'backlog':
         return '#9e9e9e';
-      case TaskStatus.IN_PROGRESS:
+      case 'in-progress':
         return '#ff9800';
-      case TaskStatus.COMPLETED:
+      case 'done':
         return '#4caf50';
-      case TaskStatus.BLOCKED:
+      case 'blocked':
         return '#f44336';
       default:
         return '#9e9e9e';
     }
   }
 
-  private getPriorityColor(priority: TaskPriority): string {
+  private getPriorityColor(priority: string): string {
     switch (priority) {
-      case TaskPriority.LOW:
+      case 'low':
         return '#4caf50';
-      case TaskPriority.MEDIUM:
+      case 'medium':
         return '#ff9800';
-      case TaskPriority.HIGH:
+      case 'high':
         return '#f44336';
+      case 'urgent':
+        return '#d32f2f';
       default:
         return '#9e9e9e';
     }

@@ -1,9 +1,7 @@
 import { NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { ApiService } from './services';
-import { AuthService } from './services';
-import { NotificationService } from './services';
+import { ApiService, AuthService, NotificationService } from './services';
 
 @NgModule({
   declarations: [],

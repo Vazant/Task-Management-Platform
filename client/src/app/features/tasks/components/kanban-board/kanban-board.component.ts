@@ -105,9 +105,11 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
       
       // Обновляем статус задачи в NgRx
       this.store.dispatch(TaskActions.updateTask({
-        id: task.id,
-        status: newStatus,
-        updatedAt: new Date().toISOString()
+        task: {
+          id: task.id,
+          status: newStatus,
+          updatedAt: new Date()
+        }
       }));
     }
   }
@@ -127,17 +129,21 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
 
   onTaskStatusChange(event: { task: Task; status: Task['status'] }): void {
     this.store.dispatch(TaskActions.updateTask({
-      id: event.task.id,
-      status: event.status,
-      updatedAt: new Date().toISOString()
+      task: {
+        id: event.task.id,
+        status: event.status,
+        updatedAt: new Date()
+      }
     }));
   }
 
   onTaskPriorityChange(event: { task: Task; priority: Task['priority'] }): void {
     this.store.dispatch(TaskActions.updateTask({
-      id: event.task.id,
-      priority: event.priority,
-      updatedAt: new Date().toISOString()
+      task: {
+        id: event.task.id,
+        priority: event.priority,
+        updatedAt: new Date()
+      }
     }));
   }
 
@@ -151,7 +157,17 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   }
 
   getConnectedDropLists(): string[] {
-    return this.columns.map(column => column.status);
+    return this.columns.map(col => col.status);
+  }
+
+  getStatusIcon(status: TaskStatus): string {
+    const icons: Record<TaskStatus, string> = {
+      'backlog': 'inbox',
+      'in-progress': 'play_circle',
+      'done': 'check_circle',
+      'blocked': 'block'
+    };
+    return icons[status];
   }
 
   trackByTaskId(index: number, task: Task): string {

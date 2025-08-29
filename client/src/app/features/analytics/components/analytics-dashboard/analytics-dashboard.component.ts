@@ -11,8 +11,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { Task } from '@core/models/task.model';
-import { TaskStatus } from '@core/enums/task-status.enum';
-import { TaskPriority } from '@core/enums/task-priority.enum';
+import { TaskStatus, TaskPriority } from '@models';
 import * as TasksSelectors from '@features/tasks/store/tasks.selectors';
 import * as TasksActions from '@features/tasks/store/tasks.actions';
 import { TaskMetricsComponent } from '../task-metrics/task-metrics.component';
@@ -82,17 +81,17 @@ export class AnalyticsDashboardComponent implements OnInit {
         const tasks = filteredTasks.length > 0 ? filteredTasks : allTasks;
         
         const totalTasks = tasks.length;
-        const completedTasks = tasks.filter(task => task.status === TaskStatus.COMPLETED).length;
-        const inProgressTasks = tasks.filter(task => task.status === TaskStatus.IN_PROGRESS).length;
-        const blockedTasks = tasks.filter(task => task.status === TaskStatus.BLOCKED).length;
+        const completedTasks = tasks.filter(task => task.status === 'done').length;
+        const inProgressTasks = tasks.filter(task => task.status === 'in-progress').length;
+        const blockedTasks = tasks.filter(task => task.status === 'blocked').length;
         
         const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
         
         const completedTaskTimes = tasks
-          .filter(task => task.status === TaskStatus.COMPLETED && task.completedAt && task.createdAt)
+          .filter(task => task.status === 'done' && task.updatedAt && task.createdAt)
           .map(task => {
             const created = new Date(task.createdAt);
-            const completed = new Date(task.completedAt!);
+            const completed = new Date(task.updatedAt);
             return (completed.getTime() - created.getTime()) / (1000 * 60 * 60 * 24); // days
           });
         
@@ -111,8 +110,8 @@ export class AnalyticsDashboardComponent implements OnInit {
         }, {} as Record<TaskStatus, number>);
 
         const tasksByAssignee = tasks.reduce((acc, task) => {
-          if (task.assignee) {
-            acc[task.assignee] = (acc[task.assignee] || 0) + 1;
+          if (task.assigneeId) {
+            acc[task.assigneeId] = (acc[task.assigneeId] || 0) + 1;
           }
           return acc;
         }, {} as Record<string, number>);
@@ -123,11 +122,11 @@ export class AnalyticsDashboardComponent implements OnInit {
 
         const now = new Date();
         const overdueTasks = tasks.filter(task => 
-          task.dueDate && new Date(task.dueDate) < now && task.status !== TaskStatus.COMPLETED
+          task.dueDate && new Date(task.dueDate) < now && task.status !== 'done'
         ).length;
 
         const upcomingDeadlines = tasks.filter(task => {
-          if (!task.dueDate || task.status === TaskStatus.COMPLETED) return false;
+          if (!task.dueDate || task.status === 'done') return false;
           const dueDate = new Date(task.dueDate);
           const daysUntilDue = (dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
           return daysUntilDue >= 0 && daysUntilDue <= 7;
@@ -155,15 +154,15 @@ export class AnalyticsDashboardComponent implements OnInit {
     return task.id;
   }
 
-  getStatusIcon(status: TaskStatus): string {
+  getStatusIcon(status: string): string {
     switch (status) {
-      case TaskStatus.TODO:
+      case 'backlog':
         return 'radio_button_unchecked';
-      case TaskStatus.IN_PROGRESS:
+      case 'in-progress':
         return 'pending';
-      case TaskStatus.COMPLETED:
+      case 'done':
         return 'check_circle';
-      case TaskStatus.BLOCKED:
+      case 'blocked':
         return 'block';
       default:
         return 'help';
