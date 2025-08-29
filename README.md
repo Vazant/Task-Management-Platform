@@ -187,6 +187,8 @@ mvn jacoco:report
 - [Development Roadmap](docs/DEVELOPMENT_ROADMAP.md)
 - [API Documentation](docs/api/README.md)
 - [Architecture Guide](docs/architecture/README.md)
+- [Angular Documentation Patterns](docs/angular-documentation.md)
+- [User Guides and Technical Documentation](docs/user-guides.md)
 - [Angular Security](docs/angular-security.md)
 
 ## 🤝 Contributing
