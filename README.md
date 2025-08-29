@@ -190,6 +190,7 @@ mvn jacoco:report
 - [Angular Documentation Patterns](docs/angular-documentation.md)
 - [User Guides and Technical Documentation](docs/user-guides.md)
 - [Angular Security](docs/angular-security.md)
+- [CI/CD Pipeline and Docker](docs/ci-cd-pipeline.md)
 
 ## 🤝 Contributing
 
