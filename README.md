@@ -191,6 +191,7 @@ mvn jacoco:report
 - [User Guides and Technical Documentation](docs/user-guides.md)
 - [Angular Security](docs/angular-security.md)
 - [CI/CD Pipeline and Docker](docs/ci-cd-pipeline.md)
+- [Final Testing Strategies](docs/final-testing-strategies.md)
 
 ## 🤝 Contributing
 
