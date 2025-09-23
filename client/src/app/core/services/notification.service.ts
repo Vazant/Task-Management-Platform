@@ -100,24 +100,44 @@ export class NotificationService {
     });
   }
 
-  showWarning(title: string, message: string, options?: Partial<Notification>): void {
-    this.addNotification({
-      title,
-      message,
-      type: 'warning',
-      priority: 'high',
-      ...options
-    });
-  }
-
   showError(title: string, message: string, options?: Partial<Notification>): void {
     this.addNotification({
       title,
       message,
       type: 'error',
-      priority: 'urgent',
+      priority: 'high',
       ...options
     });
+  }
+
+  showWarning(title: string, message: string, options?: Partial<Notification>): void {
+    this.addNotification({
+      title,
+      message,
+      type: 'warning',
+      priority: 'medium',
+      ...options
+    });
+  }
+
+  info(title: string, message: string): void {
+    this.showInfo(title, message);
+  }
+
+  error(title: string, message: string): void {
+    this.showError(title, message);
+  }
+
+  warning(title: string, message: string): void {
+    this.showWarning(title, message);
+  }
+
+  success(title: string, message: string): void {
+    this.showSuccess(title, message);
+  }
+
+  clearAll(): void {
+    this.clearAllNotifications();
   }
 
   // Preferences management

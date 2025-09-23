@@ -13,7 +13,7 @@ export const loadingInterceptor: HttpInterceptorFn = (request, next) => {
                            !request.url.includes('/user/current');
 
   if (shouldShowLoading) {
-    notificationService.info('Загрузка', 'Выполняется запрос...', 0);
+    notificationService.info('Загрузка', 'Выполняется запрос...');
   }
 
   return next(request).pipe(

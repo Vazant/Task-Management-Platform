@@ -172,24 +172,24 @@ export class GlobalSearchService {
   private searchUsers(query: string): SearchResult[] {
     // Simulate user search
     const mockUsers: Partial<User>[] = [
-      { id: '1', firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com' },
-      { id: '2', firstName: 'Jane', lastName: 'Smith', email: 'jane.smith@example.com' },
-      { id: '3', firstName: 'Bob', lastName: 'Johnson', email: 'bob.johnson@example.com' }
+      { id: '1', username: 'john.doe', email: 'john.doe@example.com' },
+      { id: '2', username: 'jane.smith', email: 'jane.smith@example.com' },
+      { id: '3', username: 'bob.johnson', email: 'bob.johnson@example.com' }
     ];
     
     return mockUsers
       .filter(user => 
-        `${user.firstName} ${user.lastName}`.toLowerCase().includes(query.toLowerCase()) ||
+        `${user.username}`.toLowerCase().includes(query.toLowerCase()) ||
         user.email?.toLowerCase().includes(query.toLowerCase())
       )
       .map(user => ({
         id: user.id!,
         type: 'user' as const,
-        title: `${user.firstName} ${user.lastName}`,
+        title: `${user.username}`,
         subtitle: user.email!,
         icon: 'person',
         route: `/users/${user.id}`,
-        score: this.calculateScore(`${user.firstName} ${user.lastName}`, query),
+        score: this.calculateScore(`${user.username}`, query),
         metadata: { email: user.email }
       }));
   }

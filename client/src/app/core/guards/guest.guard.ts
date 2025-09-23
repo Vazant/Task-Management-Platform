@@ -13,7 +13,7 @@ export class GuestGuard implements CanActivate {
 
   canActivate(): boolean {
     // Если пользователь аутентифицирован, перенаправляем на dashboard
-    if (this.authService.isAuthenticated() && this.authService.checkTokenValidity()) {
+    if (this.authService.isAuthenticated && this.authService.checkTokenValidity()) {
       this.router.navigate(['/dashboard']);
       return false;
     }

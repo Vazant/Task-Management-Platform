@@ -266,9 +266,12 @@ export class TaskInlineEditComponent implements OnInit {
   getStatusLabel(status: TaskStatus): string {
     const labels: Record<TaskStatus, string> = {
       'backlog': 'Backlog',
+      'pending': 'Pending',
       'in-progress': 'В работе',
       'done': 'Завершено',
-      'blocked': 'Заблокировано'
+      'blocked': 'Заблокировано',
+      'completed': 'Completed',
+      'todo': 'Todo'
     };
     return labels[status];
   }

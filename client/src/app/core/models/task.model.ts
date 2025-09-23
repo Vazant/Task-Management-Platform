@@ -22,7 +22,7 @@ export interface TaskLabel {
   color: string;
 }
 
-export type TaskStatus = 'backlog' | 'in-progress' | 'done' | 'blocked';
+export type TaskStatus = 'backlog' | 'pending' | 'in-progress' | 'done' | 'blocked' | 'completed' | 'todo';
 export type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
 
 export interface SubTask {

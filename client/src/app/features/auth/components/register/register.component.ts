@@ -7,8 +7,8 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LucideAngularModule, User, Mail, Eye, EyeOff, Loader2, Lock, Github } from 'lucide-angular';
 
-import { ValidationUtils } from '../../../core/utils/validation.utils';
-import { RegisterRequest } from '../../../core/models/api-response.model';
+import { ValidationUtils } from '../../../../core/utils/validation.utils';
+import { RegisterRequest } from '../../../../core/models/api-response.model';
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
 
@@ -200,8 +200,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
-  hasPasswordMismatch(): boolean {
-    return this.registerForm.hasError('passwordMismatch') && 
-           this.registerForm.get('confirmPassword')?.touched;
+    hasPasswordMismatch(): boolean {
+    return !!(this.registerForm.hasError('passwordMismatch') &&
+           this.registerForm.get('confirmPassword')?.touched);
   }
 }

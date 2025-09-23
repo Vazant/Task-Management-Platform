@@ -6,8 +6,8 @@ import { Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 import { LucideAngularModule, Loader2, Eye, EyeOff, Mail, Lock, Github } from 'lucide-angular';
 
-import { AuthService } from '../../../core/services/auth.service';
-import { LoginRequest } from '../../../core/models/api-response.model';
+import { AuthService } from '../../../../core/services/auth.service';
+import { LoginRequest } from '../../../../core/models/api-response.model';
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
 

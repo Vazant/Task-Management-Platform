@@ -48,9 +48,12 @@ export class TaskCardComponent {
   getStatusColor(status: Task['status']): string {
     const colors: Record<Task['status'], string> = {
       'backlog': 'accent',
+      'pending': 'warn',
       'in-progress': 'primary',
       'done': 'success',
-      'blocked': 'warn'
+      'blocked': 'warn',
+      'completed': 'success',
+      'todo': 'accent'
     };
     return colors[status] || 'accent';
   }

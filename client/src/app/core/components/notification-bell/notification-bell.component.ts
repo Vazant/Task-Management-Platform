@@ -17,8 +17,7 @@ import { NotificationService } from '../../services/notification.service';
     MatBadgeModule,
     MatButtonModule,
     MatMenuModule,
-    MatTooltipModule,
-    Bell
+    MatTooltipModule
   ],
   template: `
     <button

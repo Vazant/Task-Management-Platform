@@ -461,12 +461,12 @@ export class SecureRegisterComponent implements OnInit {
       
       // Additional security checks
       if (!this.securityService.isValidEmail(formData.email)) {
-        this.notificationService.showError('Invalid email format');
+        this.notificationService.showError('Error', 'Invalid email format');
         return;
       }
 
       if (!this.securityService.isStrongPassword(formData.password)) {
-        this.notificationService.showError('Password does not meet security requirements');
+        this.notificationService.showError('Error', 'Password does not meet security requirements');
         return;
       }
 
@@ -479,7 +479,7 @@ export class SecureRegisterComponent implements OnInit {
       }));
     } else {
       this.markFormGroupTouched();
-      this.notificationService.showError('Please fix the errors in the form');
+              this.notificationService.showError('Error', 'Please fix the errors in the form');
     }
   }
 

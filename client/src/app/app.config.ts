@@ -24,7 +24,7 @@ import { authReducer } from './features/auth/store/auth.reducer';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { errorHandlerInterceptor } from './core/interceptors/error-handler.interceptor';
-import { SecurityInterceptor } from './core/interceptors/security.interceptor';
+import { securityInterceptor } from './core/interceptors/security.interceptor';
 
 // Material Design
 import { provideNativeDateAdapter } from '@angular/material/core';
@@ -94,7 +94,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([authInterceptor, loadingInterceptor, errorHandlerInterceptor, SecurityInterceptor])
+      withInterceptors([authInterceptor, loadingInterceptor, errorHandlerInterceptor, securityInterceptor])
     ),
     provideNativeDateAdapter(),
     provideAnimations(),

@@ -5,8 +5,8 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class NetworkStatusService {
-  private readonly online$ = new BehaviorSubject<boolean>(navigator.onLine);
-  private readonly connectionType$ = new BehaviorSubject<string>('unknown');
+  private readonly isOnlineSubject = new BehaviorSubject<boolean>(navigator.onLine);
+  private readonly connectionTypeSubject = new BehaviorSubject<string>('unknown');
 
   constructor() {
     this.initializeNetworkMonitoring();
@@ -14,13 +14,13 @@ export class NetworkStatusService {
 
   private initializeNetworkMonitoring(): void {
     window.addEventListener('online', () => {
-      this.online$.next(true);
+      this.isOnlineSubject.next(true);
       this.updateConnectionType();
     });
 
     window.addEventListener('offline', () => {
-      this.online$.next(false);
-      this.connectionType$.next('offline');
+      this.isOnlineSubject.next(false);
+      this.connectionTypeSubject.next('offline');
     });
 
     // Monitor connection changes
@@ -36,23 +36,23 @@ export class NetworkStatusService {
   private updateConnectionType(): void {
     if ('connection' in navigator) {
       const connection = (navigator as any).connection;
-      this.connectionType$.next(connection.effectiveType || 'unknown');
+      this.connectionTypeSubject.next(connection.effectiveType || 'unknown');
     }
   }
 
   get isOnline$(): Observable<boolean> {
-    return this.online$.asObservable();
+    return this.isOnlineSubject.asObservable();
   }
 
   get isOnline(): boolean {
-    return this.online$.value;
+    return this.isOnlineSubject.value;
   }
 
   get connectionType$(): Observable<string> {
-    return this.connectionType$.asObservable();
+    return this.connectionTypeSubject.asObservable();
   }
 
   get connectionType(): string {
-    return this.connectionType$.value;
+    return this.connectionTypeSubject.value;
   }
 }

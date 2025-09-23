@@ -26,10 +26,10 @@ export interface LoginResponse {
   token: string;
   refreshToken: string;
 }
-
 export interface RegisterRequest {
   email: string;
   username: string;
   password: string;
   confirmPassword: string;
 }
+

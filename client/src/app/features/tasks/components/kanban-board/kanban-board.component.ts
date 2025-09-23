@@ -163,9 +163,12 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
   getStatusIcon(status: TaskStatus): string {
     const icons: Record<TaskStatus, string> = {
       'backlog': 'inbox',
+      'pending': 'schedule',
       'in-progress': 'play_circle',
       'done': 'check_circle',
-      'blocked': 'block'
+      'blocked': 'block',
+      'completed': 'check_circle',
+      'todo': 'assignment'
     };
     return icons[status];
   }

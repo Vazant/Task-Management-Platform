@@ -70,7 +70,7 @@ export class PerformanceService {
       this.endTimer(name, metadata);
       return result;
     } catch (error) {
-      this.endTimer(name, { ...metadata, error: error.message });
+      this.endTimer(name, { ...metadata, error: (error as Error).message });
       throw error;
     }
   }
@@ -85,7 +85,7 @@ export class PerformanceService {
       this.endTimer(name, metadata);
       return result;
     } catch (error) {
-      this.endTimer(name, { ...metadata, error: error.message });
+      this.endTimer(name, { ...metadata, error: (error as Error).message });
       throw error;
     }
   }

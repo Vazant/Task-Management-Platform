@@ -31,11 +31,11 @@ export class SecurityValidators {
     
     const errors: ValidationErrors = {};
     
-    if (!hasUpperCase) errors.missingUpperCase = true;
-    if (!hasLowerCase) errors.missingLowerCase = true;
-    if (!hasNumbers) errors.missingNumber = true;
-    if (!hasSpecialChar) errors.missingSpecialChar = true;
-    if (!isLongEnough) errors.tooShort = true;
+    if (!hasUpperCase) errors['missingUpperCase'] = true;
+    if (!hasLowerCase) errors['missingLowerCase'] = true;
+    if (!hasNumbers) errors['missingNumber'] = true;
+    if (!hasSpecialChar) errors['missingSpecialChar'] = true;
+    if (!isLongEnough) errors['tooShort'] = true;
     
     return Object.keys(errors).length > 0 ? errors : null;
   }

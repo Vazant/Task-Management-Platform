@@ -115,7 +115,7 @@ export class SecurityService {
    * Validate CSRF token
    */
   validateCsrfToken(token: string): boolean {
-    return token && token.length >= 20;
+    return !!(token && token.length >= 20);
   }
 
   /**

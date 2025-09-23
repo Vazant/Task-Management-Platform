@@ -3,8 +3,6 @@ import { BehaviorSubject, Observable, map, tap } from 'rxjs';
 import { ApiService } from '@services';
 import { User, LoginRequest, LoginResponse, RegisterRequest } from '@models';
 
-
-
 @Injectable({
   providedIn: 'root'
 })
@@ -78,13 +76,38 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  isAuthenticated(): boolean {
+  get isAuthenticated(): boolean {
     return this.isAuthenticatedSubject.value;
   }
+
+
 
   isAdmin(): boolean {
     const user = this.getCurrentUser();
     return user?.role === 'admin';
+  }
+
+  checkTokenValidity(): boolean {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+
+      if (payload.exp < currentTime) {
+        this.logout();
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Error checking token validity:', error);
+      this.logout();
+      return false;
+    }
   }
 
   refreshToken(): Observable<{ token: string; refreshToken: string }> {
@@ -115,28 +138,17 @@ export class AuthService {
     );
   }
 
-  // Метод для проверки валидности токена
-  checkTokenValidity(): boolean {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      return false;
-    }
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
 
-    try {
-      // Простая проверка JWT токена (можно расширить)
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const currentTime = Date.now() / 1000;
-
-      if (payload.exp < currentTime) {
-        this.logout();
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error checking token validity:', error);
-      this.logout();
-      return false;
-    }
+  updateProfile(profileData: Partial<User>): Observable<User> {
+    return this.apiService.put<User>('/auth/profile', profileData).pipe(
+      map(response => response.data),
+      tap(user => {
+        this.currentUserSubject.next(user);
+        localStorage.setItem('user', JSON.stringify(user));
+      })
+    );
   }
 }

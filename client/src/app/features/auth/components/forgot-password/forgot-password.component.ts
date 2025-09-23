@@ -7,7 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { LucideAngularModule, Mail, CheckCircle, Loader2 } from 'lucide-angular';
+import { LucideAngularModule, Mail, CheckCircle, Loader2, RefreshCw } from 'lucide-angular';
 
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
@@ -41,6 +41,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   readonly Mail = Mail;
   readonly CheckCircle = CheckCircle;
   readonly Loader2 = Loader2;
+  readonly RefreshCw = RefreshCw;
 
 
 

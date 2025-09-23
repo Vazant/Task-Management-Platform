@@ -5,8 +5,8 @@ import { of } from 'rxjs';
 import { map, mergeMap, catchError } from 'rxjs/operators';
 
 import * as ProjectsActions from './projects.actions';
-import { NotificationService } from '@services';
-import { Project } from '@models';
+import { NotificationService } from '../../../core/services/notification.service';
+import { Project } from '../../../core/models/project.model';
 
 
 
@@ -14,7 +14,7 @@ import { Project } from '@models';
 export class ProjectsEffects {
   private readonly actions$ = inject(Actions);
   private readonly store = inject(Store);
-  private readonly notificationService = inject(NotificationService);
+  private readonly notificationService: NotificationService = inject(NotificationService);
 
   // Загрузка проектов
   loadProjects$ = createEffect(() =>
