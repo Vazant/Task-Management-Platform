@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+        "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+        "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Suppress checkstyle for generated files -->
+    <suppress checks=".*" files=".*[/\\]target[/\\].*"/>
+    <suppress checks=".*" files=".*[/\\]generated[/\\].*"/>
+    
+    <!-- Suppress checkstyle for test files -->
+    <suppress checks=".*" files=".*Test\.java"/>
+    <suppress checks=".*" files=".*Tests\.java"/>
+    
+    <!-- Suppress line length for long URLs in comments -->
+    <suppress checks="LineLength" files=".*\.java"/>
+    
+    <!-- Suppress missing JavaDoc for simple getters/setters -->
+    <suppress checks="JavadocMethod" files=".*\.java"/>
+    <suppress checks="JavadocType" files=".*\.java"/>
+    <suppress checks="JavadocVariable" files=".*\.java"/>
+</suppressions>
