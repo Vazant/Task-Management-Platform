@@ -49,6 +49,9 @@ public class SecurityConfig {
     @Autowired
     private SecurityMetricsService securityMetricsService;
 
+    @Autowired
+    private OneTimeTokenConfig oneTimeTokenConfig;
+
     @Value("${security.csrf.enabled:false}")
     private boolean csrfEnabled;
 
@@ -141,12 +144,14 @@ public class SecurityConfig {
 
         // Configure One-Time Token Login if enabled
         if (oneTimeTokenEnabled) {
-            http.oneTimeTokenLogin(ott -> ott
-                .loginPage("/api/one-time-tokens/login")
-                .defaultSuccessUrl("/api/auth/ott-success")
-                .failureUrl("/api/auth/ott-failure")
-            );
-            log.info("One-Time Token Login configured");
+            // TODO: Fix OneTimeToken configuration
+            // http.oneTimeTokenLogin(ott -> ott
+            //     .loginPage("/api/one-time-tokens/login")
+            //     .defaultSuccessUrl("/api/auth/ott-success")
+            //     .failureUrl("/api/auth/ott-failure")
+            //     .successHandler(oneTimeTokenConfig.oneTimeTokenGenerationSuccessHandler())
+            // );
+            log.info("One-Time Token Login temporarily disabled - needs configuration fix");
         }
 
         // Для H2 консоли
