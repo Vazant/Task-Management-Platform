@@ -1,0 +1,19 @@
+{
+  "id": "6",
+  "name": "New Test Project",
+  "description": "This is a test project description",
+  "status": "ACTIVE",
+  "priority": "HIGH",
+  "startDate": "2024-02-15T00:00:00Z",
+  "endDate": "2024-11-30T00:00:00Z",
+  "tags": ["test", "project"],
+  "color": "#ff5722",
+  "ownerId": "user1",
+  "ownerName": "John Doe",
+  "teamMembers": [],
+  "tasksCount": 0,
+  "completedTasksCount": 0,
+  "progress": 0,
+  "createdAt": "2024-02-15T00:00:00Z",
+  "updatedAt": "2024-02-15T00:00:00Z"
+}

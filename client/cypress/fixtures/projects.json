@@ -1,0 +1,113 @@
+[
+  {
+    "id": "1",
+    "name": "E-commerce Platform",
+    "description": "Development of a modern e-commerce platform with React and Node.js",
+    "status": "ACTIVE",
+    "priority": "HIGH",
+    "startDate": "2024-01-15T00:00:00Z",
+    "endDate": "2024-06-30T00:00:00Z",
+    "tags": ["e-commerce", "react", "nodejs"],
+    "color": "#1976d2",
+    "ownerId": "user1",
+    "ownerName": "John Doe",
+    "teamMembers": [
+      {
+        "id": "user2",
+        "name": "Jane Smith",
+        "email": "jane@example.com",
+        "role": "MEMBER",
+        "joinedAt": "2024-01-20T00:00:00Z"
+      }
+    ],
+    "tasksCount": 15,
+    "completedTasksCount": 8,
+    "progress": 53,
+    "createdAt": "2024-01-15T00:00:00Z",
+    "updatedAt": "2024-02-15T00:00:00Z"
+  },
+  {
+    "id": "2",
+    "name": "Mobile App Development",
+    "description": "Cross-platform mobile application using React Native",
+    "status": "ACTIVE",
+    "priority": "MEDIUM",
+    "startDate": "2024-02-01T00:00:00Z",
+    "endDate": "2024-08-31T00:00:00Z",
+    "tags": ["mobile", "react-native", "ios", "android"],
+    "color": "#4caf50",
+    "ownerId": "user1",
+    "ownerName": "John Doe",
+    "teamMembers": [],
+    "tasksCount": 12,
+    "completedTasksCount": 3,
+    "progress": 25,
+    "createdAt": "2024-02-01T00:00:00Z",
+    "updatedAt": "2024-02-10T00:00:00Z"
+  },
+  {
+    "id": "3",
+    "name": "Data Analytics Dashboard",
+    "description": "Business intelligence dashboard with real-time analytics",
+    "status": "COMPLETED",
+    "priority": "LOW",
+    "startDate": "2023-10-01T00:00:00Z",
+    "endDate": "2024-01-31T00:00:00Z",
+    "tags": ["analytics", "dashboard", "business-intelligence"],
+    "color": "#ff9800",
+    "ownerId": "user3",
+    "ownerName": "Bob Johnson",
+    "teamMembers": [
+      {
+        "id": "user4",
+        "name": "Alice Brown",
+        "email": "alice@example.com",
+        "role": "ADMIN",
+        "joinedAt": "2023-10-05T00:00:00Z"
+      }
+    ],
+    "tasksCount": 20,
+    "completedTasksCount": 20,
+    "progress": 100,
+    "createdAt": "2023-10-01T00:00:00Z",
+    "updatedAt": "2024-01-31T00:00:00Z"
+  },
+  {
+    "id": "4",
+    "name": "API Integration",
+    "description": "Third-party API integration and microservices architecture",
+    "status": "ACTIVE",
+    "priority": "HIGH",
+    "startDate": "2024-01-01T00:00:00Z",
+    "endDate": "2024-05-15T00:00:00Z",
+    "tags": ["api", "microservices", "integration"],
+    "color": "#f44336",
+    "ownerId": "user5",
+    "ownerName": "Charlie Wilson",
+    "teamMembers": [],
+    "tasksCount": 8,
+    "completedTasksCount": 2,
+    "progress": 25,
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-02-01T00:00:00Z"
+  },
+  {
+    "id": "5",
+    "name": "Legacy System Migration",
+    "description": "Migration from legacy system to modern architecture",
+    "status": "ON_HOLD",
+    "priority": "MEDIUM",
+    "startDate": "2023-12-01T00:00:00Z",
+    "endDate": "2024-04-30T00:00:00Z",
+    "tags": ["migration", "legacy", "modernization"],
+    "color": "#9e9e9e",
+    "ownerId": "user6",
+    "ownerName": "David Lee",
+    "teamMembers": [],
+    "tasksCount": 25,
+    "completedTasksCount": 5,
+    "progress": 20,
+    "createdAt": "2023-12-01T00:00:00Z",
+    "updatedAt": "2024-01-15T00:00:00Z"
+  }
+]
