@@ -285,7 +285,6 @@ export class ProjectListEffects {
         // Проверка на development окружение через Angular
         if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
           // eslint-disable-next-line no-console
-          console.log('Project List Action:', action.type, action);
         }
       })
     ),
