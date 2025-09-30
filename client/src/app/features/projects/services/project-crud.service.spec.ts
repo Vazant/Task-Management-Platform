@@ -1,0 +1,372 @@
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { ProjectService } from './project.service';
+import { Project, CreateProjectRequest, UpdateProjectRequest, ProjectFilters, ProjectStatus, ProjectPriority } from '../../core/models/project.model';
+import { environment } from '../../../../environments/environment';
+
+describe('ProjectService - CRUD Operations', () => {
+  let service: ProjectService;
+  let httpMock: HttpTestingController;
+
+  const mockProject: Project = {
+    id: '1',
+    name: 'Test Project',
+    description: 'Test Description',
+    status: ProjectStatus.ACTIVE,
+    priority: ProjectPriority.MEDIUM,
+    startDate: new Date('2024-01-01'),
+    endDate: new Date('2024-12-31'),
+    tags: ['test'],
+    color: '#1976d2',
+    ownerId: 'user1',
+    ownerName: 'Test User',
+    teamMembers: [],
+    tasksCount: 5,
+    completedTasksCount: 2,
+    progress: 40,
+    createdAt: new Date('2024-01-01'),
+    updatedAt: new Date('2024-01-15')
+  };
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [ProjectService]
+    });
+    service = TestBed.inject(ProjectService);
+    httpMock = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
+  });
+
+  describe('Advanced CRUD Operations', () => {
+    it('should get projects with pagination', () => {
+      const mockResponse = {
+        content: [mockProject],
+        totalElements: 1,
+        totalPages: 1,
+        number: 0
+      };
+
+      service.getProjectsPaginated(0, 10).subscribe(response => {
+        expect(response.projects).toEqual([mockProject]);
+        expect(response.totalElements).toBe(1);
+        expect(response.totalPages).toBe(1);
+        expect(response.currentPage).toBe(0);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/paginated?page=0&size=10`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockResponse);
+    });
+
+    it('should get projects with filters', () => {
+      const filters: ProjectFilters = {
+        status: ProjectStatus.ACTIVE,
+        priority: ProjectPriority.HIGH,
+        tags: ['react', 'nodejs']
+      };
+
+      service.getProjectsPaginated(0, 10, filters).subscribe(response => {
+        expect(response.projects).toEqual([mockProject]);
+      });
+
+      const req = httpMock.expectOne(
+        `${environment.apiUrl}/projects/paginated?page=0&size=10&status=ACTIVE&priority=HIGH&tags=react,nodejs`
+      );
+      expect(req.request.method).toBe('GET');
+      req.flush({ content: [mockProject], totalElements: 1, totalPages: 1, number: 0 });
+    });
+
+    it('should get projects by tags', () => {
+      const tags = ['react', 'nodejs'];
+
+      service.getProjectsByTags(tags).subscribe(projects => {
+        expect(projects).toEqual([mockProject]);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/by-tags?tags=react,nodejs`);
+      expect(req.request.method).toBe('GET');
+      req.flush([mockProject]);
+    });
+
+    it('should get projects by date range', () => {
+      const startDate = new Date('2024-01-01');
+      const endDate = new Date('2024-12-31');
+
+      service.getProjectsByDateRange(startDate, endDate).subscribe(projects => {
+        expect(projects).toEqual([mockProject]);
+      });
+
+      const req = httpMock.expectOne(
+        `${environment.apiUrl}/projects/by-date?startDate=2024-01-01T00:00:00.000Z&endDate=2024-12-31T00:00:00.000Z`
+      );
+      expect(req.request.method).toBe('GET');
+      req.flush([mockProject]);
+    });
+
+    it('should duplicate project', () => {
+      const newName = 'Duplicated Project';
+
+      service.duplicateProject('1', newName).subscribe(project => {
+        expect(project.name).toBe(newName);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/1/duplicate`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual({ name: newName });
+      req.flush({ ...mockProject, name: newName });
+    });
+
+    it('should archive project', () => {
+      service.archiveProject('1').subscribe(project => {
+        expect(project.status).toBe(ProjectStatus.ARCHIVED);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/1/archive`);
+      expect(req.request.method).toBe('PUT');
+      req.flush({ ...mockProject, status: ProjectStatus.ARCHIVED });
+    });
+
+    it('should unarchive project', () => {
+      service.unarchiveProject('1').subscribe(project => {
+        expect(project.status).toBe(ProjectStatus.ACTIVE);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/1/unarchive`);
+      expect(req.request.method).toBe('PUT');
+      req.flush({ ...mockProject, status: ProjectStatus.ACTIVE });
+    });
+
+    it('should change project status', () => {
+      const newStatus = ProjectStatus.COMPLETED;
+
+      service.changeProjectStatus('1', newStatus).subscribe(project => {
+        expect(project.status).toBe(newStatus);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/1/status`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ status: newStatus });
+      req.flush({ ...mockProject, status: newStatus });
+    });
+
+    it('should change project priority', () => {
+      const newPriority = ProjectPriority.HIGH;
+
+      service.changeProjectPriority('1', newPriority).subscribe(project => {
+        expect(project.priority).toBe(newPriority);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/1/priority`);
+      expect(req.request.method).toBe('PUT');
+      expect(req.request.body).toEqual({ priority: newPriority });
+      req.flush({ ...mockProject, priority: newPriority });
+    });
+
+    it('should get project history', () => {
+      const mockHistory = [
+        {
+          id: '1',
+          projectId: '1',
+          action: 'CREATED',
+          description: 'Project created',
+          userId: 'user1',
+          userName: 'Test User',
+          timestamp: new Date('2024-01-01'),
+          changes: []
+        }
+      ];
+
+      service.getProjectHistory('1').subscribe(history => {
+        expect(history).toEqual(mockHistory);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/1/history`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockHistory);
+    });
+
+    it('should export projects to CSV', () => {
+      const mockBlob = new Blob(['test content'], { type: 'text/csv' });
+
+      service.exportProjectsToCSV().subscribe(blob => {
+        expect(blob).toBe(mockBlob);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/export/csv`);
+      expect(req.request.method).toBe('GET');
+      req.flush(mockBlob);
+    });
+
+    it('should import projects from CSV', () => {
+      const mockFile = new File(['test content'], 'test.csv', { type: 'text/csv' });
+      const mockResult = { success: 3, errors: [] };
+
+      service.importProjectsFromCSV(mockFile).subscribe(result => {
+        expect(result).toEqual(mockResult);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/import/csv`);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toBeInstanceOf(FormData);
+      req.flush(mockResult);
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle HTTP errors gracefully', () => {
+      service.getProjects().subscribe({
+        next: () => fail('should have failed'),
+        error: (error) => {
+          expect(error.message).toBe('Failed to load projects');
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects`);
+      req.flush('Server Error', { status: 500, statusText: 'Server Error' });
+    });
+
+    it('should handle network errors', () => {
+      service.getProjects().subscribe({
+        next: () => fail('should have failed'),
+        error: (error) => {
+          expect(error.message).toBe('Network error');
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects`);
+      req.error(new ErrorEvent('Network error'));
+    });
+
+    it('should handle timeout errors', () => {
+      service.getProjects().subscribe({
+        next: () => fail('should have failed'),
+        error: (error) => {
+          expect(error.message).toBe('Request timeout');
+        }
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects`);
+      req.flush('Timeout', { status: 408, statusText: 'Request Timeout' });
+    });
+  });
+
+  describe('Data Transformation', () => {
+    it('should transform API response to Project model', () => {
+      const apiResponse = {
+        id: '1',
+        name: 'Test Project',
+        description: 'Test Description',
+        status: 'ACTIVE',
+        priority: 'MEDIUM',
+        startDate: '2024-01-01T00:00:00.000Z',
+        endDate: '2024-12-31T00:00:00.000Z',
+        tags: ['test'],
+        color: '#1976d2',
+        ownerId: 'user1',
+        ownerName: 'Test User',
+        teamMembers: [],
+        tasksCount: 5,
+        completedTasksCount: 2,
+        progress: 40,
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-15T00:00:00.000Z'
+      };
+
+      service.getProject('1').subscribe(project => {
+        expect(project.id).toBe('1');
+        expect(project.name).toBe('Test Project');
+        expect(project.startDate).toBeInstanceOf(Date);
+        expect(project.endDate).toBeInstanceOf(Date);
+        expect(project.createdAt).toBeInstanceOf(Date);
+        expect(project.updatedAt).toBeInstanceOf(Date);
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/1`);
+      req.flush(apiResponse);
+    });
+
+    it('should handle null/undefined values', () => {
+      const apiResponse = {
+        id: '1',
+        name: 'Test Project',
+        description: null,
+        status: 'ACTIVE',
+        priority: 'MEDIUM',
+        startDate: null,
+        endDate: null,
+        tags: null,
+        color: null,
+        ownerId: 'user1',
+        ownerName: null,
+        teamMembers: null,
+        tasksCount: null,
+        completedTasksCount: null,
+        progress: null,
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-15T00:00:00.000Z'
+      };
+
+      service.getProject('1').subscribe(project => {
+        expect(project.description).toBeUndefined();
+        expect(project.startDate).toBeUndefined();
+        expect(project.endDate).toBeUndefined();
+        expect(project.tags).toBeUndefined();
+        expect(project.color).toBeUndefined();
+        expect(project.ownerName).toBeUndefined();
+        expect(project.teamMembers).toBeUndefined();
+        expect(project.tasksCount).toBeUndefined();
+        expect(project.completedTasksCount).toBeUndefined();
+        expect(project.progress).toBeUndefined();
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects/1`);
+      req.flush(apiResponse);
+    });
+  });
+
+  describe('Performance', () => {
+    it('should handle large datasets efficiently', () => {
+      const largeDataset = Array.from({ length: 1000 }, (_, i) => ({
+        ...mockProject,
+        id: i.toString(),
+        name: `Project ${i}`
+      }));
+
+      service.getProjects().subscribe(projects => {
+        expect(projects.length).toBe(1000);
+        expect(projects[0].name).toBe('Project 0');
+        expect(projects[999].name).toBe('Project 999');
+      });
+
+      const req = httpMock.expectOne(`${environment.apiUrl}/projects`);
+      req.flush(largeDataset);
+    });
+
+    it('should handle concurrent requests', () => {
+      const requests = [
+        service.getProjects(),
+        service.getProjectsStatistics(),
+        service.getProject('1')
+      ];
+
+      Promise.all(requests.map(req => req.toPromise())).then(() => {
+        expect(true).toBe(true);
+      });
+
+      const reqs = httpMock.match(`${environment.apiUrl}/projects`);
+      expect(reqs.length).toBe(2);
+      
+      const statsReq = httpMock.expectOne(`${environment.apiUrl}/projects/statistics`);
+      const projectReq = httpMock.expectOne(`${environment.apiUrl}/projects/1`);
+
+      reqs[0].flush([mockProject]);
+      reqs[1].flush([mockProject]);
+      statsReq.flush({ total: 1, active: 1, completed: 0, archived: 0, completionRate: 0 });
+      projectReq.flush(mockProject);
+    });
+  });
+});

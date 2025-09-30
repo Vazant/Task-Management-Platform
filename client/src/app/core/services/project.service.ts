@@ -121,6 +121,171 @@ export class ProjectService {
   }
 
   /**
+   * Получить проекты с пагинацией
+   */
+  getProjectsPaginated(page: number = 0, size: number = 10, filters?: ProjectFilters): Observable<{
+    projects: Project[];
+    totalElements: number;
+    totalPages: number;
+    currentPage: number;
+  }> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    
+    if (filters) {
+      if (filters.status) params = params.set('status', filters.status);
+      if (filters.priority) params = params.set('priority', filters.priority);
+      if (filters.ownerId) params = params.set('ownerId', filters.ownerId);
+      if (filters.tags?.length) params = params.set('tags', filters.tags.join(','));
+      if (filters.dateRange) {
+        params = params.set('startDate', filters.dateRange.start.toISOString());
+        params = params.set('endDate', filters.dateRange.end.toISOString());
+      }
+    }
+
+    return this.http.get<any>(`${this.apiUrl}/paginated`, { params })
+      .pipe(
+        map(response => ({
+          projects: response.content.map((project: any) => this.mapToProject(project)),
+          totalElements: response.totalElements,
+          totalPages: response.totalPages,
+          currentPage: response.number
+        })),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Получить проекты по тегам
+   */
+  getProjectsByTags(tags: string[]): Observable<Project[]> {
+    const params = new HttpParams().set('tags', tags.join(','));
+    
+    return this.http.get<Project[]>(`${this.apiUrl}/by-tags`, { params })
+      .pipe(
+        map(projects => projects.map(project => this.mapToProject(project))),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Получить проекты по дате создания
+   */
+  getProjectsByDateRange(startDate: Date, endDate: Date): Observable<Project[]> {
+    const params = new HttpParams()
+      .set('startDate', startDate.toISOString())
+      .set('endDate', endDate.toISOString());
+    
+    return this.http.get<Project[]>(`${this.apiUrl}/by-date`, { params })
+      .pipe(
+        map(projects => projects.map(project => this.mapToProject(project))),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Дублировать проект
+   */
+  duplicateProject(projectId: string, newName?: string): Observable<Project> {
+    const request = newName ? { name: newName } : {};
+    
+    return this.http.post<Project>(`${this.apiUrl}/${projectId}/duplicate`, request)
+      .pipe(
+        map(project => this.mapToProject(project)),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Архивировать проект
+   */
+  archiveProject(projectId: string): Observable<Project> {
+    return this.http.put<Project>(`${this.apiUrl}/${projectId}/archive`, {})
+      .pipe(
+        map(project => this.mapToProject(project)),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Восстановить проект из архива
+   */
+  unarchiveProject(projectId: string): Observable<Project> {
+    return this.http.put<Project>(`${this.apiUrl}/${projectId}/unarchive`, {})
+      .pipe(
+        map(project => this.mapToProject(project)),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Изменить статус проекта
+   */
+  changeProjectStatus(projectId: string, status: ProjectStatus): Observable<Project> {
+    return this.http.put<Project>(`${this.apiUrl}/${projectId}/status`, { status })
+      .pipe(
+        map(project => this.mapToProject(project)),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Изменить приоритет проекта
+   */
+  changeProjectPriority(projectId: string, priority: ProjectPriority): Observable<Project> {
+    return this.http.put<Project>(`${this.apiUrl}/${projectId}/priority`, { priority })
+      .pipe(
+        map(project => this.mapToProject(project)),
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Получить историю изменений проекта
+   */
+  getProjectHistory(projectId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${projectId}/history`)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  /**
+   * Экспортировать проекты в CSV
+   */
+  exportProjectsToCSV(filters?: ProjectFilters): Observable<Blob> {
+    let params = new HttpParams();
+    
+    if (filters) {
+      if (filters.status) params = params.set('status', filters.status);
+      if (filters.priority) params = params.set('priority', filters.priority);
+      if (filters.ownerId) params = params.set('ownerId', filters.ownerId);
+      if (filters.tags?.length) params = params.set('tags', filters.tags.join(','));
+    }
+
+    return this.http.get(`${this.apiUrl}/export/csv`, { 
+      params,
+      responseType: 'blob'
+    }).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /**
+   * Импортировать проекты из CSV
+   */
+  importProjectsFromCSV(file: File): Observable<{ success: number; errors: any[] }> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.post<{ success: number; errors: any[] }>(`${this.apiUrl}/import/csv`, formData)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  /**
    * Добавить участника в проект
    */
   addTeamMember(projectId: string, userId: string, role: string): Observable<Project> {

@@ -66,7 +66,37 @@ export interface ProjectStatistics {
   active: number;
   archived: number;
   completed: number;
+  onHold: number;
   completionRate: number;
+  averageProgress: number;
+  overdueProjects: number;
+  upcomingDeadlines: number;
+}
+
+export interface ProjectHistoryEntry {
+  id: string;
+  projectId: string;
+  action: string;
+  description: string;
+  userId: string;
+  userName: string;
+  timestamp: Date;
+  changes?: {
+    field: string;
+    oldValue: any;
+    newValue: any;
+  }[];
+}
+
+export interface ProjectExportOptions {
+  format: 'csv' | 'xlsx' | 'pdf';
+  includeTasks?: boolean;
+  includeTeamMembers?: boolean;
+  includeHistory?: boolean;
+  dateRange?: {
+    start: Date;
+    end: Date;
+  };
 }
 
 export enum ProjectStatus {
