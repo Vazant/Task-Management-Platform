@@ -90,7 +90,16 @@ describe('TaskDialogComponent', () => {
       imports: [TaskDialogComponent, ReactiveFormsModule, MatDialogModule],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: editData },
-        { provide: MatDialogRef, useValue: mockDialogRef }
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        provideMockStore({
+          initialState: {
+            tasks: {
+              tasks: [],
+              loading: false,
+              error: null
+            }
+          }
+        })
       ]
     });
     
@@ -103,7 +112,7 @@ describe('TaskDialogComponent', () => {
     expect(component.taskForm.get('description')?.value).toBe('Test Description');
     expect(component.taskForm.get('status')?.value).toBe('in-progress');
     expect(component.taskForm.get('priority')?.value).toBe('medium');
-    expect(component.taskForm.get('assignee')?.value).toBe('john.doe');
+    expect(component.taskForm.get('assigneeId')?.value).toBe('john.doe');
   });
 
   it('should validate required fields', () => {
@@ -113,7 +122,7 @@ describe('TaskDialogComponent', () => {
     const statusControl = component.taskForm.get('status');
     
     expect(titleControl?.valid).toBeFalsy();
-    expect(statusControl?.valid).toBeTruthy();
+    expect(statusControl?.valid).toBeTruthy(); // status has default value
     
     titleControl?.setValue('Test Task');
     expect(titleControl?.valid).toBeTruthy();
@@ -125,12 +134,15 @@ describe('TaskDialogComponent', () => {
     const titleControl = component.taskForm.get('title');
     
     titleControl?.setValue('ab'); // Too short
+    titleControl?.markAsTouched();
     expect(titleControl?.hasError('minlength')).toBeTruthy();
     
     titleControl?.setValue('a'.repeat(101)); // Too long
+    titleControl?.markAsTouched();
     expect(titleControl?.hasError('maxlength')).toBeTruthy();
     
     titleControl?.setValue('Valid Title');
+    titleControl?.markAsTouched();
     expect(titleControl?.valid).toBeTruthy();
   });
 
@@ -140,9 +152,11 @@ describe('TaskDialogComponent', () => {
     const hoursControl = component.taskForm.get('estimatedHours');
     
     hoursControl?.setValue(0.3); // Too low
+    hoursControl?.markAsTouched();
     expect(hoursControl?.hasError('min')).toBeTruthy();
     
     hoursControl?.setValue(150); // Too high
+    hoursControl?.markAsTouched();
     expect(hoursControl?.hasError('max')).toBeTruthy();
     
     hoursControl?.setValue(4);
@@ -217,7 +231,16 @@ describe('TaskDialogComponent', () => {
       imports: [TaskDialogComponent, ReactiveFormsModule, MatDialogModule],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: editData },
-        { provide: MatDialogRef, useValue: mockDialogRef }
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        provideMockStore({
+          initialState: {
+            tasks: {
+              tasks: [],
+              loading: false,
+              error: null
+            }
+          }
+        })
       ]
     });
     
@@ -287,7 +310,16 @@ describe('TaskDialogComponent', () => {
       imports: [TaskDialogComponent, ReactiveFormsModule, MatDialogModule],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: editData },
-        { provide: MatDialogRef, useValue: mockDialogRef }
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        provideMockStore({
+          initialState: {
+            tasks: {
+              tasks: [],
+              loading: false,
+              error: null
+            }
+          }
+        })
       ]
     });
     
@@ -313,7 +345,16 @@ describe('TaskDialogComponent', () => {
       imports: [TaskDialogComponent, ReactiveFormsModule, MatDialogModule],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: editData },
-        { provide: MatDialogRef, useValue: mockDialogRef }
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        provideMockStore({
+          initialState: {
+            tasks: {
+              tasks: [],
+              loading: false,
+              error: null
+            }
+          }
+        })
       ]
     });
     
@@ -324,6 +365,8 @@ describe('TaskDialogComponent', () => {
   });
 
   it('should have correct form structure', () => {
+    component.ngOnInit();
+    expect(component.taskForm).toBeTruthy();
     expect(component.taskForm.get('title')).toBeTruthy();
     expect(component.taskForm.get('description')).toBeTruthy();
     expect(component.taskForm.get('status')).toBeTruthy();

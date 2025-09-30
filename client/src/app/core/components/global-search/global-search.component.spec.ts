@@ -44,14 +44,27 @@ describe('GlobalSearchComponent', () => {
   beforeEach(async () => {
     const searchServiceSpy = jasmine.createSpyObj('GlobalSearchService', [
       'clearSearch', 'clearSearchHistory', 'getSuggestions'
-    ], {
-      searchResults$: of(mockSearchResults),
-      searchHistory$: of(mockSearchHistory),
-      suggestions$: of(mockSuggestions),
-      loading$: of(false)
+    ]);
+    
+    // Set up observables as properties
+    Object.defineProperty(searchServiceSpy, 'searchResults$', {
+      value: of(mockSearchResults),
+      writable: true
+    });
+    Object.defineProperty(searchServiceSpy, 'searchHistory$', {
+      value: of(mockSearchHistory),
+      writable: true
+    });
+    Object.defineProperty(searchServiceSpy, 'suggestions$', {
+      value: of(mockSuggestions),
+      writable: true
+    });
+    Object.defineProperty(searchServiceSpy, 'loading$', {
+      value: of(false),
+      writable: true
     });
     
-    searchServiceSpy.search = jasmine.createSpy('search').and.returnValue(of(mockSearchResults));
+    searchServiceSpy.search = jasmine.createSpy('search');
 
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
@@ -94,6 +107,7 @@ describe('GlobalSearchComponent', () => {
 
   it('should show results when search is performed', fakeAsync(() => {
     component.ngOnInit();
+    component.searchControl.setValue('test');
     component.onSearchInput();
     tick();
     
@@ -243,7 +257,7 @@ describe('GlobalSearchComponent', () => {
 
     const result = component.trackByHistoryId(0, history);
     expect(result).toContain('test');
-    expect(result).toContain('2023-01-01');
+    expect(result).toContain('1672531200000'); // timestamp for 2023-01-01
   });
 
   it('should track suggestions by text and type', () => {
