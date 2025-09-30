@@ -154,8 +154,11 @@ export class NotificationService {
   }
 
   private updateUnreadCount(): void {
-    const unreadCount = this.notifications$.value.filter(n => !n.read).length;
-    this.unreadCount$.next(unreadCount);
+    // Use setTimeout to avoid synchronous updates that can cause infinite recursion
+    setTimeout(() => {
+      const unreadCount = this.notifications$.value.filter(n => !n.read).length;
+      this.unreadCount$.next(unreadCount);
+    }, 0);
   }
 
   private getDefaultPreferences(): NotificationPreferences {

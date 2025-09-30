@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { NotificationService } from './notification.service';
 import { Notification, NotificationType, NotificationPriority } from '../models/notification.model';
+import { take } from 'rxjs/operators';
 
 describe('NotificationService', () => {
   let service: NotificationService;
@@ -17,6 +18,12 @@ describe('NotificationService', () => {
 
   afterEach(() => {
     localStorage.clear();
+    // Clean up any subscriptions to prevent memory leaks
+    if (service) {
+      service['notifications$'].complete();
+      service['unreadCount$'].complete();
+      service['preferences$'].complete();
+    }
   });
 
   it('should be created', () => {
@@ -24,7 +31,7 @@ describe('NotificationService', () => {
   });
 
   describe('Notification Management', () => {
-    it('should add a new notification', () => {
+    it('should add a new notification', (done) => {
       const notification = {
         title: 'Test Notification',
         message: 'Test message',
@@ -34,7 +41,7 @@ describe('NotificationService', () => {
 
       service.addNotification(notification);
 
-      service.notifications.subscribe(notifications => {
+      service.notifications.pipe(take(1)).subscribe(notifications => {
         expect(notifications.length).toBe(1);
         expect(notifications[0].title).toBe('Test Notification');
         expect(notifications[0].message).toBe('Test message');
@@ -42,10 +49,11 @@ describe('NotificationService', () => {
         expect(notifications[0].read).toBe(false);
         expect(notifications[0].id).toBeDefined();
         expect(notifications[0].createdAt).toBeInstanceOf(Date);
+        done();
       });
     });
 
-    it('should mark notification as read', () => {
+    it('should mark notification as read', (done) => {
       const notification = {
         title: 'Test Notification',
         message: 'Test message',
@@ -54,19 +62,23 @@ describe('NotificationService', () => {
       };
 
       service.addNotification(notification);
-
-      service.notifications.subscribe(notifications => {
-        if (notifications.length > 0) {
-          service.markAsRead(notifications[0].id);
-          
-          service.notifications.subscribe(updatedNotifications => {
+      
+      // Get the notification ID from the first emission
+      service.notifications.pipe(take(1)).subscribe(notifications => {
+        const notificationId = notifications[0].id;
+        service.markAsRead(notificationId);
+        
+        // Check the result after marking as read
+        setTimeout(() => {
+          service.notifications.pipe(take(1)).subscribe(updatedNotifications => {
             expect(updatedNotifications[0].read).toBe(true);
+            done();
           });
-        }
+        }, 10);
       });
     });
 
-    it('should mark all notifications as read', () => {
+    it('should mark all notifications as read', (done) => {
       const notification1 = {
         title: 'Test Notification 1',
         message: 'Test message 1',
@@ -84,19 +96,21 @@ describe('NotificationService', () => {
       service.addNotification(notification1);
       service.addNotification(notification2);
 
-      service.notifications.subscribe(notifications => {
-        if (notifications.length === 2) {
-          service.markAllAsRead();
-          
-          service.notifications.subscribe(updatedNotifications => {
+      service.notifications.pipe(take(1)).subscribe(notifications => {
+        expect(notifications.length).toBe(2);
+        service.markAllAsRead();
+        
+        setTimeout(() => {
+          service.notifications.pipe(take(1)).subscribe(updatedNotifications => {
             expect(updatedNotifications[0].read).toBe(true);
             expect(updatedNotifications[1].read).toBe(true);
+            done();
           });
-        }
+        }, 10);
       });
     });
 
-    it('should delete a notification', () => {
+    it('should delete a notification', (done) => {
       const notification = {
         title: 'Test Notification',
         message: 'Test message',
@@ -110,9 +124,13 @@ describe('NotificationService', () => {
         if (notifications.length > 0) {
           service.deleteNotification(notifications[0].id);
           
-          service.notifications.subscribe(updatedNotifications => {
-            expect(updatedNotifications.length).toBe(0);
-          });
+          // Use a separate subscription to avoid nested subscriptions
+          setTimeout(() => {
+            service.notifications.subscribe(updatedNotifications => {
+              expect(updatedNotifications.length).toBe(0);
+              done();
+            });
+          }, 0);
         }
       });
     });
@@ -204,17 +222,14 @@ describe('NotificationService', () => {
 
       service.addNotification(notification);
 
-      service.unreadCount.subscribe(count => {
-        expect(count).toBe(1);
-      });
-
-      service.notifications.subscribe(notifications => {
+      // Test initial count
+      expect(service['unreadCount$'].value).toBe(1);
+      
+      // Test after marking as read
+      service.notifications.pipe(take(1)).subscribe(notifications => {
         if (notifications.length > 0) {
           service.markAsRead(notifications[0].id);
-          
-          service.unreadCount.subscribe(count => {
-            expect(count).toBe(0);
-          });
+          expect(service['unreadCount$'].value).toBe(0);
         }
       });
     });
@@ -237,15 +252,13 @@ describe('NotificationService', () => {
       service.addNotification(notification1);
       service.addNotification(notification2);
 
-      service.unreadCount.subscribe(count => {
-        expect(count).toBe(2);
-      });
+      // Test initial count
+      expect(service['unreadCount$'].value).toBe(2);
 
       service.markAllAsRead();
 
-      service.unreadCount.subscribe(count => {
-        expect(count).toBe(0);
-      });
+      // Test after marking all as read
+      expect(service['unreadCount$'].value).toBe(0);
     });
   });
 
