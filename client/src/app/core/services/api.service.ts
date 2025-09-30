@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ApiResponse, PaginatedResponse } from '@models';
+import { environment } from '../../../environments/environment';
 
 
 
@@ -10,7 +11,7 @@ import { ApiResponse, PaginatedResponse } from '@models';
   providedIn: 'root'
 })
 export class ApiService {
-  private readonly baseUrl = 'http://localhost:3000/api'; // Замените на ваш API URL
+  private readonly baseUrl = environment.apiUrl;
   private readonly http = inject(HttpClient);
 
   private getHeaders(): HttpHeaders {

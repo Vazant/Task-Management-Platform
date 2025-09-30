@@ -1,9 +1,25 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-import { Project } from '../../core/models/project.model';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormsModule } from '@angular/forms';
+import { Project } from '../../../../core/models/project.model';
+import { ProjectAction } from '../../models';
 import { 
   loadProjects, 
   deleteProject, 
@@ -22,11 +38,32 @@ import { ProjectEditDialogComponent } from '../project-edit-dialog/project-edit-
 
 @Component({
   selector: 'app-project-list',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatTooltipModule,
+    MatChipsModule,
+    MatProgressBarModule,
+    MatDividerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './project-list.component.html',
   styleUrls: ['./project-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectListComponent implements OnInit, OnDestroy {
+  @Output() projectSelected = new EventEmitter<Project>();
+  @Output() projectAction = new EventEmitter<ProjectAction>();
+
   projects$: Observable<Project[]>;
   loading$: Observable<boolean>;
   error$: Observable<string | null>;
@@ -73,6 +110,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
 
   onProjectSelect(project: Project): void {
     this.store.dispatch(setSelectedProject({ project }));
+    this.projectSelected.emit(project);
   }
 
   onCreateProject(): void {
@@ -102,6 +140,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
       .subscribe(result => {
         if (result) {
           this.loadProjects();
+          this.projectAction.emit({ type: 'edit', projectId: project.id });
         }
       });
   }
@@ -109,6 +148,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   onDeleteProject(project: Project): void {
     if (confirm(`Вы уверены, что хотите удалить проект "${project.name}"?`)) {
       this.store.dispatch(deleteProject({ id: project.id }));
+      this.projectAction.emit({ type: 'delete', projectId: project.id });
     }
   }
 

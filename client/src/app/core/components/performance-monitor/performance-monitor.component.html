@@ -40,11 +40,11 @@
             <div class="metric-label">Unique Operations</div>
           </div>
           <div class="metric-item">
-            <div class="metric-value">{{ formatDuration(report.slowest[0]?.duration || 0) }}</div>
+            <div class="metric-value">{{ formatDuration(report.slowest?.[0]?.duration || 0) }}</div>
             <div class="metric-label">Slowest Operation</div>
           </div>
           <div class="metric-item">
-            <div class="metric-value">{{ formatDuration(report.fastest[0]?.duration || 0) }}</div>
+            <div class="metric-value">{{ formatDuration(report.fastest?.[0]?.duration || 0) }}</div>
             <div class="metric-label">Fastest Operation</div>
           </div>
         </div>
@@ -82,7 +82,7 @@
           <td mat-cell *matCellDef="let metric">
             <mat-chip-set>
               <mat-chip size="small" color="primary">
-                {{ (performanceReport$ | async)?.totals[metric.name] || 0 }}
+                {{ (performanceReport$ | async)?.totals?.[metric.name] || 0 }}
               </mat-chip>
             </mat-chip-set>
           </td>
@@ -93,9 +93,9 @@
           <th mat-header-cell *matHeaderCellDef>Average</th>
           <td mat-cell *matCellDef="let metric">
             <div class="average-time">
-              <span>{{ formatDuration((performanceReport$ | async)?.averages[metric.name] || 0) }}</span>
+              <span>{{ formatDuration((performanceReport$ | async)?.averages?.[metric.name] || 0) }}</span>
               <mat-progress-bar 
-                                 [value]="getProgressBarValue(metric.name, (performanceReport$ | async)?.averages)"
+                                 [value]="getProgressBarValue(metric.name, (performanceReport$ | async)?.averages || {})"
                 [color]="getPerformanceStatus(metric) === 'critical' ? 'warn' : 'primary'">
               </mat-progress-bar>
             </div>
@@ -153,7 +153,7 @@
       <div class="insight-section">
         <h4>Slowest Operations</h4>
         <mat-list>
-          <mat-list-item *ngFor="let metric of getSlowestOperations((performanceReport$ | async) || { slowest: [] }); trackBy: trackByMetricName">
+          <mat-list-item *ngFor="let metric of getSlowestOperations((performanceReport$ | async) || { slowest: [], metrics: [], averages: {}, totals: {}, fastest: [] }); trackBy: trackByMetricName">
             <mat-icon matListItemIcon 
                       [style.color]="getStatusColor(getPerformanceStatus(metric))">
               {{ getStatusIcon(getPerformanceStatus(metric)) }}
@@ -168,7 +168,7 @@
       <div class="insight-section">
         <h4>Most Frequent Operations</h4>
         <mat-list>
-          <mat-list-item *ngFor="let operation of getMostFrequentOperations((performanceReport$ | async) || { totals: {}, averages: {} }); trackBy: trackByOperationName">
+          <mat-list-item *ngFor="let operation of getMostFrequentOperations((performanceReport$ | async) || { totals: {}, averages: {}, slowest: [], metrics: [], fastest: [] }); trackBy: trackByOperationName">
             <mat-icon matListItemIcon>repeat</mat-icon>
             <div matListItemTitle>{{ operation.name }}</div>
             <div matListItemLine>{{ operation.count }} calls • {{ formatDuration(operation.average) }} avg</div>

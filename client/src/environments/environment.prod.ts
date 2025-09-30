@@ -1,4 +1,8 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://localhost:3000' // Измените на ваш продакшен URL
+  apiUrl: 'https://api.taskboard.com/api',
+  wsUrl: 'wss://api.taskboard.com/ws',
+  enableServiceWorker: true,
+  enableAnalytics: true,
+  logLevel: 'error'
 };

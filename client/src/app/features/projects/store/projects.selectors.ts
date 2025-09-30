@@ -1,6 +1,6 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { ProjectsState } from './projects.reducer';
-import { Project } from '../../core/models/project.model';
+import { Project, ProjectStatus } from '@models/project.model';
 
 export const selectProjectsState = createFeatureSelector<ProjectsState>('projects');
 
@@ -85,12 +85,12 @@ export const selectProjectsByStatus = createSelector(
 
 export const selectActiveProjects = createSelector(
   selectAllProjects,
-  (projects: Project[]) => projects.filter(project => project.status === 'ACTIVE')
+  (projects: Project[]) => projects.filter(project => project.status === ProjectStatus.ACTIVE)
 );
 
 export const selectArchivedProjects = createSelector(
   selectAllProjects,
-  (projects: Project[]) => projects.filter(project => project.status === 'ARCHIVED')
+  (projects: Project[]) => projects.filter(project => project.status === ProjectStatus.ARCHIVED)
 );
 
 export const selectProjectById = (id: string) => createSelector(
@@ -118,9 +118,9 @@ export const selectProjectsStatistics = createSelector(
   selectAllProjects,
   (projects: Project[]) => {
     const total = projects.length;
-    const active = projects.filter(p => p.status === 'ACTIVE').length;
-    const archived = projects.filter(p => p.status === 'ARCHIVED').length;
-    const completed = projects.filter(p => p.status === 'COMPLETED').length;
+    const active = projects.filter(p => p.status === ProjectStatus.ACTIVE).length;
+    const archived = projects.filter(p => p.status === ProjectStatus.ARCHIVED).length;
+    const completed = projects.filter(p => p.status === ProjectStatus.COMPLETED).length;
 
     return {
       total,

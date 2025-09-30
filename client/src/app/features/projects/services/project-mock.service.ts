@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError, delay } from 'rxjs';
-import { Project, CreateProjectRequest, UpdateProjectRequest, ProjectFilters, ProjectStatistics, ProjectHistoryEntry } from '../../core/models/project.model';
-import { ProjectStatus, ProjectPriority } from '../../core/models/project.model';
+import { Project, CreateProjectRequest, UpdateProjectRequest, ProjectFilters, ProjectAnalytics, ProjectHistoryEntry, ProjectStatus, ProjectPriority, ProjectMember, ProjectStatistics } from '@models/project.model';
 
 @Injectable({
   providedIn: 'root'

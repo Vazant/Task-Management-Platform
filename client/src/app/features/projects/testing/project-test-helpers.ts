@@ -1,16 +1,20 @@
 import { TestBed } from '@angular/core/testing';
 import { Store } from '@ngrx/store';
 import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
-import { Project } from '../../core/models/project.model';
+import { of, Subject, BehaviorSubject, ReplaySubject, AsyncSubject, Observable, throwError } from 'rxjs';
+import { delay, switchMap } from 'rxjs/operators';
+import { Project } from '@models/project.model';
 import { MOCK_PROJECTS } from './project-test-data';
 
+// Declare jasmine for testing
+declare const jasmine: any;
+
 export class ProjectTestHelpers {
-  static createMockStore(): jasmine.SpyObj<Store> {
+  static createMockStore(): any {
     const storeSpy = jasmine.createSpyObj('Store', ['select', 'dispatch']);
     
     // Setup default selectors
-    storeSpy.select.and.callFake((selector) => {
+    storeSpy.select.and.callFake((selector: any) => {
       if (selector.toString().includes('selectAllProjects')) {
         return of(MOCK_PROJECTS);
       }
@@ -29,7 +33,7 @@ export class ProjectTestHelpers {
     return storeSpy;
   }
 
-  static createMockDialog(): jasmine.SpyObj<MatDialog> {
+  static createMockDialog(): any {
     const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
     
     const mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
@@ -224,34 +228,18 @@ export class ProjectTestHelpers {
   }
 
   static createMockPublishSubject<T>() {
-    return new PublishSubject<T>();
+    return new Subject<T>();
   }
 
   static createMockPublishBehaviorSubject<T>(initialValue: T) {
-    return new PublishBehaviorSubject<T>(initialValue);
+    return new BehaviorSubject<T>(initialValue);
   }
 
   static createMockPublishReplaySubject<T>(bufferSize: number = 1) {
-    return new PublishReplaySubject<T>(bufferSize);
+    return new ReplaySubject<T>(bufferSize);
   }
 
   static createMockPublishAsyncSubject<T>() {
-    return new PublishAsyncSubject<T>();
-  }
-
-  static createMockPublishSubject<T>() {
-    return new PublishSubject<T>();
-  }
-
-  static createMockPublishBehaviorSubject<T>(initialValue: T) {
-    return new PublishBehaviorSubject<T>(initialValue);
-  }
-
-  static createMockPublishReplaySubject<T>(bufferSize: number = 1) {
-    return new PublishReplaySubject<T>(bufferSize);
-  }
-
-  static createMockPublishAsyncSubject<T>() {
-    return new PublishAsyncSubject<T>();
+    return new AsyncSubject<T>();
   }
 }

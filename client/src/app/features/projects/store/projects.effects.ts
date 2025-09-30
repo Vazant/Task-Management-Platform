@@ -3,7 +3,7 @@ import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { ProjectService } from '../../core/services/project.service';
+import { ProjectService } from '@services/project.service';
 import * as ProjectsActions from './projects.actions';
 import * as ProjectsSelectors from './projects.selectors';
 
@@ -36,7 +36,7 @@ export class ProjectsEffects {
     this.actions$.pipe(
       ofType(ProjectsActions.loadProject),
       switchMap(({ id }) =>
-        this.projectService.getProject(id).pipe(
+        this.projectService.getProjectById(id).pipe(
           map(project => ProjectsActions.loadProjectSuccess({ project })),
           catchError(error => of(ProjectsActions.loadProjectFailure({ 
             error: error.message || 'Failed to load project' 

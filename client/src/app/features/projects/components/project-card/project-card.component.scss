@@ -1,0 +1,99 @@
+.project-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 16px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.status-badge, .priority-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  margin-right: 8px;
+}
+
+.project-description {
+  color: #666;
+  margin: 8px 0;
+  line-height: 1.4;
+}
+
+.project-stats {
+  display: flex;
+  gap: 16px;
+  margin: 12px 0;
+  
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #666;
+    font-size: 14px;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+.progress-section {
+  margin: 12px 0;
+  
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+.tags-section {
+  margin: 12px 0;
+  
+  mat-chip-listbox {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+}
+
+.dates-section {
+  margin: 12px 0;
+  
+  .date-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 4px;
+    
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  
+  button {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}

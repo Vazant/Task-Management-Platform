@@ -1,0 +1,76 @@
+<mat-card class="project-card" (click)="onProjectClick()">
+  <mat-card-header>
+    <div mat-card-avatar [style.background-color]="project.color || '#1976d2'"></div>
+    <mat-card-title>{{ project.name }}</mat-card-title>
+    <mat-card-subtitle>
+      <span class="status-badge" [style.background-color]="getStatusColor()">
+        {{ project.status | titlecase }}
+      </span>
+      <span class="priority-badge" [style.background-color]="getPriorityColor()">
+        {{ project.priority | titlecase }}
+      </span>
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p *ngIf="project.description" class="project-description">
+      {{ project.description }}
+    </p>
+    
+    <div class="project-stats">
+      <div class="stat-item">
+        <mat-icon>assignment</mat-icon>
+        <span>{{ project.tasksCount || 0 }} tasks</span>
+      </div>
+      <div class="stat-item">
+        <mat-icon>people</mat-icon>
+        <span>{{ project.members?.length || 0 }} members</span>
+      </div>
+    </div>
+
+    <div class="progress-section" *ngIf="project.tasksCount && project.tasksCount > 0">
+      <div class="progress-label">
+        <span>Progress: {{ getProgressPercentage() }}%</span>
+      </div>
+      <mat-progress-bar 
+        mode="determinate" 
+        [value]="getProgressPercentage()"
+        [color]="getProgressPercentage() === 100 ? 'primary' : 'accent'">
+      </mat-progress-bar>
+    </div>
+
+    <div class="tags-section" *ngIf="project.tags && project.tags.length > 0">
+      <mat-chip-listbox>
+        <mat-chip *ngFor="let tag of project.tags">
+          {{ tag }}
+        </mat-chip>
+      </mat-chip-listbox>
+    </div>
+
+    <div class="dates-section" *ngIf="project.startDate || project.endDate">
+      <div class="date-item" *ngIf="project.startDate">
+        <mat-icon>play_arrow</mat-icon>
+        <span>Start: {{ project.startDate | date:'short' }}</span>
+      </div>
+      <div class="date-item" *ngIf="project.endDate">
+        <mat-icon>flag</mat-icon>
+        <span>End: {{ project.endDate | date:'short' }}</span>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-button (click)="onEditProject($event)">
+      <mat-icon>edit</mat-icon>
+      Edit
+    </button>
+    <button mat-button (click)="onArchiveProject($event)">
+      <mat-icon>archive</mat-icon>
+      Archive
+    </button>
+    <button mat-button color="warn" (click)="onDeleteProject($event)">
+      <mat-icon>delete</mat-icon>
+      Delete
+    </button>
+  </mat-card-actions>
+</mat-card>

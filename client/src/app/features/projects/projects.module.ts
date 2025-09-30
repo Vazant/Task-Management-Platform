@@ -26,9 +26,9 @@ import { ProjectsEffects } from './store/projects.effects';
 
 @NgModule({
   declarations: [
-    ProjectListComponent,
-    ProjectCreateDialogComponent,
-    ProjectEditDialogComponent
+    // ProjectListComponent,
+    // ProjectCreateDialogComponent,
+    // ProjectEditDialogComponent
   ],
   imports: [
     CommonModule,

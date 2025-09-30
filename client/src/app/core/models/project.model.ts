@@ -4,73 +4,54 @@ export interface Project {
   description?: string;
   status: ProjectStatus;
   priority: ProjectPriority;
+  createdAt: Date;
+  updatedAt: Date;
+  members?: ProjectMember[];
+  tags?: string[];
   startDate?: Date;
   endDate?: Date;
-  tags?: string[];
-  color?: string;
+  budget?: number;
+  progress: number;
   ownerId: string;
   ownerName?: string;
   teamMembers?: ProjectMember[];
   tasksCount?: number;
   completedTasksCount?: number;
-  progress?: number;
-  createdAt: Date;
-  updatedAt: Date;
+  analytics?: ProjectAnalytics;
+  history?: ProjectHistoryEntry[];
+  color?: string;
+}
+
+export enum ProjectStatus {
+  ACTIVE = 'active',
+  ARCHIVED = 'archived',
+  COMPLETED = 'completed',
+  ON_HOLD = 'on-hold'
+}
+
+export enum ProjectPriority {
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high',
+  URGENT = 'urgent'
 }
 
 export interface ProjectMember {
   id: string;
   name: string;
   email: string;
-  role: ProjectRole;
+  role: string;
   avatar?: string;
-  joinedAt: Date;
 }
 
-export interface CreateProjectRequest {
-  name: string;
-  description?: string;
-  priority: ProjectPriority;
-  startDate?: Date;
-  endDate?: Date;
-  tags?: string[];
-  color?: string;
-  teamMemberIds?: string[];
-}
-
-export interface UpdateProjectRequest {
-  name?: string;
-  description?: string;
-  status?: ProjectStatus;
-  priority?: ProjectPriority;
-  startDate?: Date;
-  endDate?: Date;
-  tags?: string[];
-  color?: string;
-  teamMemberIds?: string[];
-}
-
-export interface ProjectFilters {
-  status?: ProjectStatus;
-  priority?: ProjectPriority;
-  ownerId?: string;
-  tags?: string[];
-  dateRange?: {
-    start: Date;
-    end: Date;
-  };
-}
-
-export interface ProjectStatistics {
-  total: number;
-  active: number;
-  archived: number;
-  completed: number;
-  onHold: number;
-  completionRate: number;
-  averageProgress: number;
-  overdueProjects: number;
-  upcomingDeadlines: number;
+export interface ProjectAnalytics {
+  tasksByStatus: { [key: string]: number };
+  tasksByPriority: { [key: string]: number };
+  tasksByAssignee: { [key: string]: number };
+  completionTrend: Array<{ date: Date; completed: number }>;
+  resourceUtilization: Array<{ memberId: string; utilization: number }>;
+  budgetSpent: number;
+  budgetAllocated: number;
 }
 
 export interface ProjectHistoryEntry {
@@ -81,82 +62,51 @@ export interface ProjectHistoryEntry {
   userId: string;
   userName: string;
   timestamp: Date;
-  changes?: {
-    field: string;
-    oldValue: any;
-    newValue: any;
-  }[];
+  changes: Array<{ field: string; oldValue: any; newValue: any }>;
 }
 
-export interface ProjectExportOptions {
-  format: 'csv' | 'xlsx' | 'pdf';
-  includeTasks?: boolean;
-  includeTeamMembers?: boolean;
-  includeHistory?: boolean;
+export interface CreateProjectRequest {
+  name: string;
+  description?: string;
+  status: ProjectStatus;
+  priority: ProjectPriority;
+  startDate?: Date;
+  endDate?: Date;
+  tags?: string[];
+  color?: string;
+}
+
+export interface UpdateProjectRequest {
+  id?: string;
+  name?: string;
+  description?: string;
+  status?: ProjectStatus;
+  priority?: ProjectPriority;
+  startDate?: Date;
+  endDate?: Date;
+  tags?: string[];
+  color?: string;
+}
+
+export interface ProjectFilters {
+  status?: string;
+  priority?: string;
+  tags?: string[];
+  ownerId?: string;
   dateRange?: {
     start: Date;
     end: Date;
   };
 }
 
-export enum ProjectStatus {
-  ACTIVE = 'ACTIVE',
-  COMPLETED = 'COMPLETED',
-  ARCHIVED = 'ARCHIVED',
-  ON_HOLD = 'ON_HOLD'
+export interface ProjectStatistics {
+  total: number;
+  active: number;
+  completed: number;
+  archived: number;
+  onHold: number;
+  completionRate: number;
+  averageProgress: number;
+  overdueProjects: number;
+  upcomingDeadlines: number;
 }
-
-export enum ProjectPriority {
-  LOW = 'LOW',
-  MEDIUM = 'MEDIUM',
-  HIGH = 'HIGH',
-  URGENT = 'URGENT'
-}
-
-export enum ProjectRole {
-  OWNER = 'OWNER',
-  ADMIN = 'ADMIN',
-  MEMBER = 'MEMBER',
-  VIEWER = 'VIEWER'
-}
-
-// Utility types
-export type ProjectStatusType = keyof typeof ProjectStatus;
-export type ProjectPriorityType = keyof typeof ProjectPriority;
-export type ProjectRoleType = keyof typeof ProjectRole;
-
-// Constants
-export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
-  [ProjectStatus.ACTIVE]: 'Активный',
-  [ProjectStatus.COMPLETED]: 'Завершен',
-  [ProjectStatus.ARCHIVED]: 'Архивный',
-  [ProjectStatus.ON_HOLD]: 'Приостановлен'
-};
-
-export const PROJECT_PRIORITY_LABELS: Record<ProjectPriority, string> = {
-  [ProjectPriority.LOW]: 'Низкий',
-  [ProjectPriority.MEDIUM]: 'Средний',
-  [ProjectPriority.HIGH]: 'Высокий',
-  [ProjectPriority.URGENT]: 'Срочный'
-};
-
-export const PROJECT_ROLE_LABELS: Record<ProjectRole, string> = {
-  [ProjectRole.OWNER]: 'Владелец',
-  [ProjectRole.ADMIN]: 'Администратор',
-  [ProjectRole.MEMBER]: 'Участник',
-  [ProjectRole.VIEWER]: 'Наблюдатель'
-};
-
-export const PROJECT_STATUS_COLORS: Record<ProjectStatus, string> = {
-  [ProjectStatus.ACTIVE]: '#4CAF50',
-  [ProjectStatus.COMPLETED]: '#2196F3',
-  [ProjectStatus.ARCHIVED]: '#9E9E9E',
-  [ProjectStatus.ON_HOLD]: '#FF9800'
-};
-
-export const PROJECT_PRIORITY_COLORS: Record<ProjectPriority, string> = {
-  [ProjectPriority.LOW]: '#4CAF50',
-  [ProjectPriority.MEDIUM]: '#FF9800',
-  [ProjectPriority.HIGH]: '#F44336',
-  [ProjectPriority.URGENT]: '#E91E63'
-};

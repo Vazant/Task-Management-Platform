@@ -1,15 +1,40 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CreateProjectRequest, ProjectPriority } from '../../core/models/project.model';
+import { CreateProjectRequest, ProjectPriority, ProjectStatus } from '../../../../core/models/project.model';
 import { createProject } from '../../store';
 import { selectProjectsLoading } from '../../store/projects.selectors';
 
 @Component({
   selector: 'app-project-create-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatChipsModule,
+    MatIconModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './project-create-dialog.component.html',
   styleUrls: ['./project-create-dialog.component.scss']
 })
@@ -72,6 +97,7 @@ export class ProjectCreateDialogComponent implements OnInit, OnDestroy {
       const request: CreateProjectRequest = {
         name: formValue.name,
         description: formValue.description || undefined,
+        status: ProjectStatus.ACTIVE,
         priority: formValue.priority,
         startDate: formValue.startDate ? new Date(formValue.startDate) : undefined,
         endDate: formValue.endDate ? new Date(formValue.endDate) : undefined,

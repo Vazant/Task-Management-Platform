@@ -5,10 +5,10 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { SecurityValidators } from '@core/validators/security-validators';
 import { SecurityService } from '@core/services/security.service';
-import { AuthService } from '@features/auth/services/auth.service';
-import { NotificationService } from '@core/services/notification.service';
-import { AuthActions } from '@features/auth/store/auth.actions';
-import { AuthSelectors } from '@features/auth/store/auth.selectors';
+import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import * as AuthActions from '../../store/auth.actions';
+import * as AuthSelectors from '../../store/auth.selectors';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
@@ -32,6 +33,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatCardModule,
     MatIconModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatCheckboxModule,
     MatTooltipModule
   ],
@@ -329,7 +331,7 @@ export class SecureRegisterComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly notificationService: NotificationService
   ) {
-    this.loading$ = this.store.select(AuthSelectors.selectLoading);
+    this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
   }
 
   ngOnInit(): void {
@@ -472,10 +474,12 @@ export class SecureRegisterComponent implements OnInit {
 
       // Dispatch registration action
       this.store.dispatch(AuthActions.register({
-        username: formData.username,
-        email: formData.email,
-        password: formData.password,
-        phoneNumber: formData.phoneNumber
+        userData: {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          confirmPassword: formData.password // Using same password for confirmation
+        }
       }));
     } else {
       this.markFormGroupTouched();

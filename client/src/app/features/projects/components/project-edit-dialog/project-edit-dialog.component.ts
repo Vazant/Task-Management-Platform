@@ -1,15 +1,40 @@
 import { Component, OnInit, OnDestroy, Inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { Store } from '@ngrx/store';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { Project, UpdateProjectRequest, ProjectPriority, ProjectStatus } from '../../core/models/project.model';
+import { Project, UpdateProjectRequest, ProjectPriority, ProjectStatus } from '../../../../core/models/project.model';
 import { updateProject } from '../../store';
 import { selectProjectsLoading } from '../../store/projects.selectors';
 
 @Component({
   selector: 'app-project-edit-dialog',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatChipsModule,
+    MatIconModule,
+    MatProgressSpinnerModule
+  ],
   templateUrl: './project-edit-dialog.component.html',
   styleUrls: ['./project-edit-dialog.component.scss']
 })
@@ -98,6 +123,7 @@ export class ProjectEditDialogComponent implements OnInit, OnDestroy {
       const formValue = this.projectForm.value;
       
       const request: UpdateProjectRequest = {
+        id: this.project.id,
         name: formValue.name,
         description: formValue.description || undefined,
         status: formValue.status,

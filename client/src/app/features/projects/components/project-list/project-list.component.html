@@ -124,9 +124,9 @@
         </div>
 
         <div class="project-tags" *ngIf="project.tags && project.tags.length > 0">
-          <mat-chip-list>
+          <mat-chip-set>
             <mat-chip *ngFor="let tag of project.tags">{{ tag }}</mat-chip>
-          </mat-chip-list>
+          </mat-chip-set>
         </div>
 
         <div class="project-meta">

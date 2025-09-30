@@ -1,4 +1,4 @@
-import { Project, ProjectStatus, ProjectPriority } from '../../core/models/project.model';
+import { Project, ProjectStatus, ProjectPriority } from '@models/project.model';
 
 export const MOCK_PROJECTS: Project[] = [
   {

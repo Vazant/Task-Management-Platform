@@ -6,7 +6,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { ProjectMockService } from '../services/project-mock.service';
-import { ProjectService } from '../../core/services/project.service';
+import { ProjectService } from '@services/project.service';
 import { projectsReducer } from '../store/projects.reducer';
 import { ProjectsEffects } from '../store/projects.effects';
 

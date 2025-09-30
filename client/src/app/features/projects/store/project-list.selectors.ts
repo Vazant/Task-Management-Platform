@@ -276,7 +276,7 @@ export const selectFilteredProjects = createSelector(
         const searchLower = filters.searchTerm.toLowerCase();
         const matchesSearch =
           project.name.toLowerCase().includes(searchLower) ||
-          project.description.toLowerCase().includes(searchLower);
+          project.description?.toLowerCase().includes(searchLower);
 
         if (!matchesSearch) return false;
       }

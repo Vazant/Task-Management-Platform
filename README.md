@@ -1,6 +1,41 @@
 # Task Management Platform
 
-Full-stack task management platform with Angular frontend and Spring Boot backend.
+A comprehensive task and project management platform built with Angular 20 and Spring Boot 3, featuring real-time collaboration, advanced analytics, and enterprise-grade security.
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repository
+git clone https://github.com/your-org/task-management-platform.git
+cd task-management-platform
+
+# Start the entire system
+./scripts/quick-start.sh
+
+# Open your browser to http://localhost:4200
+```
+
+## ✨ Features
+
+### 🎯 Core Functionality
+- **Task Management**: Create, assign, and track tasks with full lifecycle management
+- **Project Management**: Organize tasks into projects with team collaboration
+- **Real-time Updates**: WebSocket-based live updates for team collaboration
+- **Advanced Analytics**: Comprehensive reporting and performance metrics
+- **Kanban Boards**: Visual task management with drag-and-drop functionality
+
+### 🔧 Technical Features
+- **Modern Stack**: Angular 20 + Spring Boot 3 + PostgreSQL
+- **PWA Support**: Offline functionality and mobile app-like experience
+- **Security**: JWT authentication, role-based access control, and data encryption
+- **Testing**: Comprehensive test suite with Unit, Integration, E2E, and Load tests
+- **Monitoring**: Built-in health checks, metrics, and performance monitoring
+
+### 📊 Analytics & Reporting
+- **Task Analytics**: Completion rates, time tracking, and productivity metrics
+- **Project Reports**: Progress tracking, team performance, and deadline management
+- **Custom Dashboards**: Personalized views and real-time data visualization
+- **Export Options**: PDF, Excel, and CSV export capabilities
 
 ## 🏗️ Project Structure
 

@@ -22,11 +22,16 @@
       "@features/*": ["app/features/*"],
       "@store/*": ["app/store/*"],
       "@store": ["app/store/index.ts"],
-      "@models": ["app/core/models"],
-      "@services": ["app/core/services"],
-      "@utils": ["app/core/utils"],
-      "@guards": ["app/core/guards"],
-      "@interceptors": ["app/core/interceptors"]
+      "@models/*": ["app/core/models/*"],
+      "@models": ["app/core/models/index.ts"],
+      "@services/*": ["app/core/services/*"],
+      "@services": ["app/core/services/index.ts"],
+      "@utils/*": ["app/core/utils/*"],
+      "@utils": ["app/core/utils/index.ts"],
+      "@guards/*": ["app/core/guards/*"],
+      "@guards": ["app/core/guards/index.ts"],
+      "@interceptors/*": ["app/core/interceptors/*"],
+      "@interceptors": ["app/core/interceptors/index.ts"]
     }
   },
   "angularCompilerOptions": {

@@ -27,11 +27,12 @@ import { NotificationService } from '../../services/notification.service';
       [matTooltip]="'Notifications'"
       class="notification-bell"
       (click)="$event.stopPropagation()">
-      <lucide-bell />
+      <mat-icon>notifications</mat-icon>
       <span 
-        *ngIf="(unreadCount$ | async) as count && count > 0"
-        class="notification-badge">
-        {{ count > 99 ? '99+' : count }}
+        *ngIf="(unreadCount$ | async) as unreadCount"
+        class="notification-badge"
+        [style.display]="unreadCount > 0 ? 'flex' : 'none'">
+        {{ unreadCount > 99 ? '99+' : unreadCount }}
       </span>
     </button>
 
