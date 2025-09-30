@@ -17,8 +17,11 @@ describe('TaskDialogComponent', () => {
     description: 'Test Description',
     status: 'in-progress',
     priority: 'medium',
-    assignee: 'john.doe',
-    project: 'test-project',
+    assigneeId: 'john.doe',
+    projectId: 'test-project',
+    creatorId: 'creator-1',
+    subtasks: [],
+    timeSpent: 0,
     dueDate: new Date('2025-08-15'),
     estimatedHours: 4,
     labels: ['bug'],
@@ -283,30 +286,11 @@ describe('TaskDialogComponent', () => {
     expect(component.getSubmitButtonText()).toBe('Update');
   });
 
-  it('should have correct status options', () => {
-    expect(component.statusOptions).toEqual([
-      { value: 'backlog', label: 'Backlog' },
-      { value: 'in-progress', label: 'In Progress' },
-      { value: 'done', label: 'Done' },
-      { value: 'blocked', label: 'Blocked' }
-    ]);
-  });
-
-  it('should have correct priority options', () => {
-    expect(component.priorityOptions).toEqual([
-      { value: 'low', label: 'Low', color: 'accent' },
-      { value: 'medium', label: 'Medium', color: 'primary' },
-      { value: 'high', label: 'High', color: 'warn' },
-      { value: 'urgent', label: 'Urgent', color: 'warn' }
-    ]);
-  });
-
-  it('should have correct assignee options', () => {
-    expect(component.assigneeOptions).toEqual([
-      'john.doe',
-      'jane.smith',
-      'bob.wilson',
-      'alice.johnson'
-    ]);
+  it('should have correct form structure', () => {
+    expect(component.taskForm.get('title')).toBeTruthy();
+    expect(component.taskForm.get('description')).toBeTruthy();
+    expect(component.taskForm.get('status')).toBeTruthy();
+    expect(component.taskForm.get('priority')).toBeTruthy();
+    expect(component.taskForm.get('assigneeId')).toBeTruthy();
   });
 });

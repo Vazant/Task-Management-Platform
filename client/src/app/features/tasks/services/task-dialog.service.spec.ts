@@ -15,8 +15,11 @@ describe('TaskDialogService', () => {
     description: 'Test Description',
     status: 'in-progress',
     priority: 'medium',
-    assignee: 'john.doe',
-    project: 'test-project',
+    assigneeId: 'john.doe',
+    projectId: 'test-project',
+    creatorId: 'creator-1',
+    subtasks: [],
+    timeSpent: 0,
     dueDate: new Date('2025-08-15'),
     estimatedHours: 4,
     labels: ['bug'],
@@ -176,23 +179,23 @@ describe('TaskDialogService', () => {
       // Test create dialog
       service.openCreateDialog();
       const createCall = mockDialog.open.calls.first();
-      expect(createCall.args[1].maxWidth).toBe('90vw');
-      expect(createCall.args[1].maxHeight).toBe('90vh');
-      expect(createCall.args[1].disableClose).toBe(true);
+      expect(createCall.args[1]?.maxWidth).toBe('90vw');
+      expect(createCall.args[1]?.maxHeight).toBe('90vh');
+      expect(createCall.args[1]?.disableClose).toBe(true);
 
       // Test edit dialog
       service.openEditDialog(mockTask);
       const editCall = mockDialog.open.calls.mostRecent();
-      expect(editCall.args[1].maxWidth).toBe('90vw');
-      expect(editCall.args[1].maxHeight).toBe('90vh');
-      expect(editCall.args[1].disableClose).toBe(true);
+      expect(editCall.args[1]?.maxWidth).toBe('90vw');
+      expect(editCall.args[1]?.maxHeight).toBe('90vh');
+      expect(editCall.args[1]?.disableClose).toBe(true);
 
       // Test quick create dialog
       service.openQuickCreateDialog('backlog');
       const quickCreateCall = mockDialog.open.calls.mostRecent();
-      expect(quickCreateCall.args[1].maxWidth).toBe('90vw');
-      expect(quickCreateCall.args[1].maxHeight).toBe('90vh');
-      expect(quickCreateCall.args[1].disableClose).toBe(true);
+      expect(quickCreateCall.args[1]?.maxWidth).toBe('90vw');
+      expect(quickCreateCall.args[1]?.maxHeight).toBe('90vh');
+      expect(quickCreateCall.args[1]?.disableClose).toBe(true);
     });
 
     it('should use different widths for different dialog types', () => {
@@ -201,15 +204,15 @@ describe('TaskDialogService', () => {
 
       // Create dialog
       service.openCreateDialog();
-      expect(mockDialog.open.calls.first().args[1].width).toBe('600px');
+      expect(mockDialog.open.calls.first().args[1]?.width).toBe('600px');
 
       // Edit dialog
       service.openEditDialog(mockTask);
-      expect(mockDialog.open.calls.mostRecent().args[1].width).toBe('600px');
+      expect(mockDialog.open.calls.mostRecent().args[1]?.width).toBe('600px');
 
       // Quick create dialog
       service.openQuickCreateDialog('backlog');
-      expect(mockDialog.open.calls.mostRecent().args[1].width).toBe('500px');
+      expect(mockDialog.open.calls.mostRecent().args[1]?.width).toBe('500px');
     });
   });
 
@@ -244,7 +247,7 @@ describe('TaskDialogService', () => {
       service.openCreateDialog('in-progress');
 
       const callArgs = mockDialog.open.calls.mostRecent().args;
-      expect(callArgs[1].data).toEqual({
+      expect(callArgs[1]?.data).toEqual({
         mode: 'create',
         initialStatus: 'in-progress'
       });
@@ -257,7 +260,7 @@ describe('TaskDialogService', () => {
       service.openEditDialog(mockTask);
 
       const callArgs = mockDialog.open.calls.mostRecent().args;
-      expect(callArgs[1].data).toEqual({
+      expect(callArgs[1]?.data).toEqual({
         mode: 'edit',
         task: mockTask
       });
@@ -270,7 +273,7 @@ describe('TaskDialogService', () => {
       service.openQuickCreateDialog('done');
 
       const callArgs = mockDialog.open.calls.mostRecent().args;
-      expect(callArgs[1].data).toEqual({
+      expect(callArgs[1]?.data).toEqual({
         mode: 'create',
         initialStatus: 'done'
       });

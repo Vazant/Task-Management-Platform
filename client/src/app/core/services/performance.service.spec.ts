@@ -345,7 +345,7 @@ describe('PerformanceService', () => {
       }
       
       const metrics = service.getMetrics('error-with-metadata');
-      expect(metrics[0].metadata?.error).toBe('Test error');
+      expect(metrics[0].metadata?.['error']).toBe('Test error');
     });
   });
 });

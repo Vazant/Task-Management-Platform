@@ -55,11 +55,9 @@ public class MessageService {
      */
     public String getMessage(final String key, final Object arg) {
         Object[] args = new Object[]{arg};
-        String message = messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
+        String message = messageSource.getMessage(key, args, LocaleContextHolder.getLocale());
         System.out.println("DEBUG 2-param: key=" + key + ", message=" + message + ", arg=" + arg);
-        String result = MessageFormat.format(message, args);
-        System.out.println("DEBUG 2-param: result=" + result);
-        return result;
+        return message;
     }
 
     /**
@@ -72,11 +70,9 @@ public class MessageService {
      */
     public String getMessage(final String key, final Object arg, final Locale locale) {
         Object[] args = new Object[]{arg};
-        String message = messageSource.getMessage(key, null, locale);
+        String message = messageSource.getMessage(key, args, locale);
         System.out.println("DEBUG 3-param: key=" + key + ", message=" + message + ", arg=" + arg + ", locale=" + locale);
-        String result = MessageFormat.format(message, args);
-        System.out.println("DEBUG 3-param: result=" + result);
-        return result;
+        return message;
     }
 
     /**

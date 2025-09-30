@@ -130,7 +130,9 @@ describe('OfflineStorageService', () => {
     await service.initDatabase();
     
     // Simulate successful getAll
-    getAllRequest.onsuccess();
+    if (getAllRequest.onsuccess) {
+      (getAllRequest.onsuccess as any)();
+    }
     
     const result = await service.getTasks();
     expect(result).toEqual(mockTasks);
@@ -159,7 +161,7 @@ describe('OfflineStorageService', () => {
 
   it('should get sync queue from database', async () => {
     const mockQueue = [
-      { id: 1, action: { type: '[Tasks] Create Task' }, type: '[Tasks] Create Task', timestamp: Date.now(), retryCount: 0 }
+      { id: '1', action: { type: '[Tasks] Create Task' }, type: '[Tasks] Create Task', timestamp: Date.now(), retryCount: 0 }
     ];
     
     const request = mockIndexedDB.open();
@@ -175,7 +177,9 @@ describe('OfflineStorageService', () => {
     await service.initDatabase();
     
     // Simulate successful getAll
-    getAllRequest.onsuccess();
+    if (getAllRequest.onsuccess) {
+      (getAllRequest.onsuccess as any)();
+    }
     
     const result = await service.getSyncQueue();
     expect(result).toEqual(mockQueue);
@@ -186,18 +190,18 @@ describe('OfflineStorageService', () => {
     request.onsuccess();
     await service.initDatabase();
     
-    await service.removeFromSyncQueue(1);
+    await service.removeFromSyncQueue('1');
     
     const transaction = mockIndexedDB.open().result.transaction;
     const store = transaction.objectStore;
     
     expect(transaction).toHaveBeenCalledWith(['syncQueue'], 'readwrite');
-    expect(store.delete).toHaveBeenCalledWith(1);
+    expect(store.delete).toHaveBeenCalledWith('1');
   });
 
   it('should update sync queue item', async () => {
     const item: SyncQueueItem = {
-      id: 1,
+      id: '1',
       action: { type: '[Tasks] Create Task' },
       type: '[Tasks] Create Task',
       timestamp: Date.now(),

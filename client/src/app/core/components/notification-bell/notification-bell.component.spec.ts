@@ -123,7 +123,7 @@ describe('NotificationBellComponent', () => {
     const deleteButton = fixture.nativeElement.querySelector('.notification-delete');
     deleteButton.click();
 
-    expect(notificationService.deleteNotification).toHaveBeenCalledWith('1', jasmine.any(Object));
+    expect(notificationService.deleteNotification).toHaveBeenCalledWith('1');
   });
 
   it('should display correct notification icons', () => {

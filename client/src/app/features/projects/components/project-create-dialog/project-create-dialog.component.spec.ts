@@ -4,7 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { of, Subject } from 'rxjs';
 import { ProjectCreateDialogComponent } from './project-create-dialog.component';
-import { ProjectPriority } from '../../core/models/project.model';
+import { ProjectPriority } from '../../../../core/models/project.model';
 import * as ProjectsActions from '../../store/projects.actions';
 import * as ProjectsSelectors from '../../store/projects.selectors';
 
@@ -105,10 +105,10 @@ describe('ProjectCreateDialogComponent', () => {
       name: '' // Invalid
     });
 
-    spyOn(component, 'markFormGroupTouched');
+    spyOn(component as any, 'markFormGroupTouched');
     component.onSubmit();
 
-    expect(component.markFormGroupTouched).toHaveBeenCalled();
+    expect((component as any).markFormGroupTouched).toHaveBeenCalled();
   });
 
   it('should close dialog on cancel', () => {

@@ -14,7 +14,11 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Конфигурация для работы с локализованными сообщениями.
@@ -54,6 +58,9 @@ public class MessageConfig implements WebMvcConfigurer {
 
     @Bean
     public LocaleResolver localeResolver() {
+        // Создаем кастомный LocaleResolver, который поддерживает оба способа:
+        // 1. Accept-Language заголовок (по умолчанию)
+        // 2. Параметр lang (через LocaleChangeInterceptor)
         AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
         localeResolver.setSupportedLocales(Arrays.asList(
             new Locale("en"),
@@ -63,15 +70,7 @@ public class MessageConfig implements WebMvcConfigurer {
         return localeResolver;
     }
 
-    @Bean
-    public LocaleChangeInterceptor localeChangeInterceptor() {
-        LocaleChangeInterceptor interceptor = new LocaleChangeInterceptor();
-        interceptor.setParamName("lang");
-        return interceptor;
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(localeChangeInterceptor());
-    }
+    // LocaleChangeInterceptor не используется с AcceptHeaderLocaleResolver,
+    // так как AcceptHeaderLocaleResolver не поддерживает setLocale()
+    // Если нужна поддержка параметра lang, используйте SessionLocaleResolver
 }

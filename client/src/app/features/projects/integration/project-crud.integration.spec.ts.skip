@@ -2,14 +2,14 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Store, StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
-import { ProjectService } from '../services/project.service';
+import { ProjectService } from '../../../core/services/project.service';
 import { ProjectTestingModule } from '../testing/project-testing.module';
 import { ProjectTestHelpers } from '../testing/project-test-helpers';
 import { MOCK_PROJECTS } from '../testing/project-test-data';
 import * as ProjectsActions from '../store/projects.actions';
 import { projectsReducer } from '../store/projects.reducer';
 import { ProjectsEffects } from '../store/projects.effects';
-import { Project, ProjectStatus, ProjectPriority } from '../../core/models/project.model';
+import { Project, ProjectStatus, ProjectPriority } from '../../../core/models/project.model';
 
 describe('Project CRUD Integration Tests', () => {
   let service: ProjectService;
@@ -61,6 +61,7 @@ describe('Project CRUD Integration Tests', () => {
       service.createProject({
         name: 'New Project',
         description: 'New Description',
+        status: ProjectStatus.ACTIVE,
         priority: ProjectPriority.MEDIUM,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-12-31'),
@@ -71,7 +72,8 @@ describe('Project CRUD Integration Tests', () => {
         expect(createdProject.status).toBe(ProjectStatus.ACTIVE);
 
         // 2. Read Project
-        service.getProject(createdProject.id).subscribe(retrievedProject => {
+        service.getProjects().subscribe(projects => {
+          const retrievedProject = projects.find(p => p.id === createdProject.id);
           expect(retrievedProject.id).toBe(createdProject.id);
           expect(retrievedProject.name).toBe('New Project');
 
@@ -87,7 +89,8 @@ describe('Project CRUD Integration Tests', () => {
             // 4. Delete Project
             service.deleteProject(updatedProject.id).subscribe(() => {
               // 5. Verify deletion
-              service.getProject(updatedProject.id).subscribe({
+              service.getProjects().subscribe(projects => {
+                const updated = projects.find(p => p.id === updatedProject.id);
                 next: () => fail('Project should not exist'),
                 error: (error) => {
                   expect(error.message).toBe('Project not found');
@@ -167,10 +170,10 @@ describe('Project CRUD Integration Tests', () => {
     it('should handle store state changes', (done) => {
       let stateChanges = 0;
 
-      store.select('projects').subscribe(state => {
+      store.select((state: any) => state.projects).subscribe(projects => {
         stateChanges++;
         if (stateChanges === 2) { // Initial + after load
-          expect(state.projects.length).toBe(MOCK_PROJECTS.length);
+          expect(projects.length).toBe(MOCK_PROJECTS.length);
           done();
         }
       });
@@ -266,7 +269,8 @@ describe('Project CRUD Integration Tests', () => {
           expect(updated.description).toBe(originalProject.description);
 
           // Verify consistency
-          service.getProject(updated.id).subscribe(retrieved => {
+          service.getProjects().subscribe(projects => {
+            const retrieved = projects.find(p => p.id === updated.id);
             expect(retrieved.name).toBe('Updated Name');
             expect(retrieved.id).toBe(created.id);
             expect(retrieved.description).toBe(originalProject.description);
@@ -342,7 +346,8 @@ describe('Project CRUD Integration Tests', () => {
 
     it('should handle rapid successive requests', (done) => {
       const requests = Array.from({ length: 10 }, (_, i) => 
-        service.getProject(i.toString())
+        service.getProjects().subscribe(projects => {
+          const project = projects.find(p => p.id === i.toString());
       );
 
       Promise.all(requests.map(req => req.toPromise())).then(() => {

@@ -19,7 +19,10 @@ describe('GlobalSearchService', () => {
     });
     
     service = TestBed.inject(GlobalSearchService);
-    localStorageSpy = TestBed.inject('localStorage') as jasmine.SpyObj<Storage>;
+    localStorageSpy = jasmine.createSpyObj('Storage', ['getItem', 'setItem', 'removeItem']);
+    spyOn(Storage.prototype, 'getItem').and.callFake(localStorageSpy.getItem);
+    spyOn(Storage.prototype, 'setItem').and.callFake(localStorageSpy.setItem);
+    spyOn(Storage.prototype, 'removeItem').and.callFake(localStorageSpy.removeItem);
   });
 
   it('should be created', () => {
@@ -70,10 +73,10 @@ describe('GlobalSearchService', () => {
     
     service.searchResults$.subscribe(results => {
       expect(results.length).toBeGreaterThan(0);
-      expect(results[0]).toHaveProperty('id');
-      expect(results[0]).toHaveProperty('type');
-      expect(results[0]).toHaveProperty('title');
-      expect(results[0]).toHaveProperty('score');
+      expect(results[0].id).toBeDefined();
+      expect(results[0].type).toBeDefined();
+      expect(results[0].title).toBeDefined();
+      expect(results[0].score).toBeDefined();
       done();
     });
   });
@@ -140,8 +143,8 @@ describe('GlobalSearchService', () => {
   it('should get suggestions for query', (done) => {
     service.getSuggestions('test').subscribe(suggestions => {
       expect(suggestions.length).toBeGreaterThan(0);
-      expect(suggestions[0]).toHaveProperty('text');
-      expect(suggestions[0]).toHaveProperty('type');
+      expect(suggestions[0].text).toBeDefined();
+      expect(suggestions[0].type).toBeDefined();
       done();
     });
   });

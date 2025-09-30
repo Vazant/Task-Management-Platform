@@ -50,10 +50,10 @@ public class MessageServiceTest {
     @Test
     public void testGetMessageWithParameters() {
         // Тест получения сообщения с параметрами
-        String message = messageService.getMessage("info.test.auth", "john.doe", Locale.ENGLISH);
+        String message = messageService.getMessage("info.test.auth", new Object[]{"john.doe"}, Locale.ENGLISH);
         assertEquals("Authenticated as: john.doe", message);
 
-        String messageRu = messageService.getMessage("info.test.auth", "john.doe", Locale.forLanguageTag("ru"));
+        String messageRu = messageService.getMessage("info.test.auth", new Object[]{"john.doe"}, Locale.forLanguageTag("ru"));
         assertEquals("Аутентифицирован как: john.doe", messageRu);
     }
 
@@ -77,10 +77,10 @@ public class MessageServiceTest {
     @Test
     public void testErrorMessages() {
         // Тест сообщений об ошибках
-        String message = messageService.getMessage("error.global.unexpected", "Test error", Locale.ENGLISH);
+        String message = messageService.getMessage("error.global.unexpected", new Object[]{"Test error"}, Locale.ENGLISH);
         assertEquals("Internal server error: Test error", message);
 
-        String messageRu = messageService.getMessage("error.global.unexpected", "Test error", Locale.forLanguageTag("ru"));
+        String messageRu = messageService.getMessage("error.global.unexpected", new Object[]{"Test error"}, Locale.forLanguageTag("ru"));
         assertEquals("Внутренняя ошибка сервера: Test error", messageRu);
     }
 

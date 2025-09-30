@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { of, Subject } from 'rxjs';
 import { ProjectListComponent } from './project-list.component';
-import { Project, ProjectStatus, ProjectPriority } from '../../core/models/project.model';
+import { Project, ProjectStatus, ProjectPriority } from '../../../../core/models/project.model';
 import * as ProjectsActions from '../../store/projects.actions';
 import * as ProjectsSelectors from '../../store/projects.selectors';
 
@@ -80,7 +80,7 @@ describe('ProjectListComponent', () => {
     mockDialog = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
 
     // Setup store selectors
-    mockStore.select.and.callFake((selector) => {
+    mockStore.select.and.callFake((selector: any) => {
       if (selector === ProjectsSelectors.selectFilteredProjects) {
         return of(mockProjects);
       }

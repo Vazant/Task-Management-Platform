@@ -167,8 +167,8 @@ describe('TaskFormComponent', () => {
       priority: 'high',
       projectId: 'p1',
       assigneeId: '',
-      dueDate: null,
-      estimatedHours: null,
+      dueDate: undefined,
+      estimatedHours: undefined,
       labels: []
     });
   });

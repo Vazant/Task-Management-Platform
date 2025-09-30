@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -38,20 +39,13 @@ public class TestController {
     }
 
     @GetMapping("/public")
-    public ResponseEntity<ApiResponse<String>> testPublic() {
-        log.info("Test public endpoint called");
-        try {
-            String message = messageService.getMessage("info.test.public");
-            return ResponseEntity.ok(new ApiResponse<>(
-                message,
-                "Success",
-                true));
-        } catch (Exception e) {
-            log.error("Error getting message: {}", e.getMessage(), e);
-            return ResponseEntity.ok(new ApiResponse<>(
-                "Test message",
-                "Success",
-                true));
-        }
+    public ResponseEntity<ApiResponse<String>> testPublic(@RequestParam(value = "lang", required = false) String lang) {
+        log.info("Test public endpoint called with lang: {}", lang);
+        // LocaleChangeInterceptor автоматически обрабатывает параметр lang
+        String message = messageService.getMessage("info.test.public");
+        return ResponseEntity.ok(new ApiResponse<>(
+            message,
+            "Success",
+            true));
     }
 }
