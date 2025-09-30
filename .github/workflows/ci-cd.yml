@@ -192,31 +192,30 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: backend-build
-        
-          - name: Start application
-            run: |
-              # Start backend
-              java -jar server/target/*.jar &
-              # Wait for backend to start
-              sleep 10
-              # Start frontend with proper configuration
-              cd client
-              npx serve dist/ -p 4200 -s &
-              # Wait for frontend to start
-              sleep 20
-              # Check if services are running
-              curl -f http://localhost:8080/api/test/public || echo "Backend not ready"
-              curl -f http://localhost:4200 || echo "Frontend not ready"
-        
-          - name: Run E2E tests
-            run: |
-              cd client
-              # Wait for services to be ready
-              sleep 30
-              # Run only basic tests first
-              npx cypress run --headless --browser chrome --spec "cypress/e2e/basic.cy.ts"
-            env:
-              TERM: xterm
+
+    - name: Start application
+      run: |
+        # Start backend
+        java -jar server/target/*.jar &
+        # Wait for backend to start
+        sleep 10
+        # Start frontend with proper configuration
+        cd client
+        npx serve dist/ -p 4200 -s &
+        # Wait for frontend to start
+        sleep 20
+        # Check if services are running
+        curl -f http://localhost:8080/api/test/public || echo "Backend not ready"
+        curl -f http://localhost:4200 || echo "Frontend not ready"
+    - name: Run E2E tests
+      run: |
+        cd client
+        # Wait for services to be ready
+        sleep 30
+        # Run only basic tests first
+        npx cypress run --headless --browser chrome --spec "cypress/e2e/basic.cy.ts"
+      env:
+        TERM: xterm
         
   # Deploy to Staging
   deploy-staging:
