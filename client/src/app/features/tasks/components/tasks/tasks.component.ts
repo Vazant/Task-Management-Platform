@@ -16,7 +16,6 @@ import { selectSortedTasks, selectTasksLoading, selectTasksFilters, selectTasksS
 import { TaskListComponent } from '../task-list/task-list.component';
 import { TaskFiltersComponent } from '../task-filters/task-filters.component';
 import { TaskAdvancedFiltersComponent } from '../task-advanced-filters/task-advanced-filters.component';
-import { TaskCardComponent } from '../task-card/task-card.component';
 
 @Component({
   selector: 'app-tasks',
@@ -33,8 +32,7 @@ import { TaskCardComponent } from '../task-card/task-card.component';
     MatDividerModule,
     TaskListComponent, 
     TaskFiltersComponent, 
-    TaskAdvancedFiltersComponent,
-    TaskCardComponent
+    TaskAdvancedFiltersComponent
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

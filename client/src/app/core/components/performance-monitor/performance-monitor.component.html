@@ -40,11 +40,11 @@
             <div class="metric-label">Unique Operations</div>
           </div>
           <div class="metric-item">
-            <div class="metric-value">{{ formatDuration(report.slowest?.[0]?.duration || 0) }}</div>
+            <div class="metric-value">{{ formatDuration(report.slowest[0].duration || 0) }}</div>
             <div class="metric-label">Slowest Operation</div>
           </div>
           <div class="metric-item">
-            <div class="metric-value">{{ formatDuration(report.fastest?.[0]?.duration || 0) }}</div>
+            <div class="metric-value">{{ formatDuration(report.fastest[0].duration || 0) }}</div>
             <div class="metric-label">Fastest Operation</div>
           </div>
         </div>

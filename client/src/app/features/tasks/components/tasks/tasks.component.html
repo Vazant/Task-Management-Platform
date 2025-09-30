@@ -7,7 +7,7 @@
       </div>
       <div class="header-right">
         <div class="user-info" *ngIf="currentUser">
-          <span class="user-name">{{ currentUser?.username || 'User' }}</span>
+          <span class="user-name">{{ currentUser.username || 'User' }}</span>
           <button mat-icon-button [matMenuTriggerFor]="userMenu">
             <mat-icon>account_circle</mat-icon>
           </button>
