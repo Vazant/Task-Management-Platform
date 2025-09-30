@@ -186,33 +186,41 @@ describe('NotificationService', () => {
       });
     });
 
-    it('should show warning notification', () => {
+    it('should show warning notification', (done) => {
       service.showWarning('Warning Title', 'Warning message');
 
-      service.notifications.subscribe(notifications => {
-        expect(notifications.length).toBe(1);
-        expect(notifications[0].title).toBe('Warning Title');
-        expect(notifications[0].message).toBe('Warning message');
-        expect(notifications[0].type).toBe('warning');
-        expect(notifications[0].priority).toBe('high');
-      });
+      // Wait for async update
+      setTimeout(() => {
+        service.notifications.subscribe(notifications => {
+          expect(notifications.length).toBe(1);
+          expect(notifications[0].title).toBe('Warning Title');
+          expect(notifications[0].message).toBe('Warning message');
+          expect(notifications[0].type).toBe('warning');
+          expect(notifications[0].priority).toBe('high');
+          done();
+        });
+      }, 10);
     });
 
-    it('should show error notification', () => {
+    it('should show error notification', (done) => {
       service.showError('Error Title', 'Error message');
 
-      service.notifications.subscribe(notifications => {
-        expect(notifications.length).toBe(1);
-        expect(notifications[0].title).toBe('Error Title');
-        expect(notifications[0].message).toBe('Error message');
-        expect(notifications[0].type).toBe('error');
-        expect(notifications[0].priority).toBe('urgent');
-      });
+      // Wait for async update
+      setTimeout(() => {
+        service.notifications.subscribe(notifications => {
+          expect(notifications.length).toBe(1);
+          expect(notifications[0].title).toBe('Error Title');
+          expect(notifications[0].message).toBe('Error message');
+          expect(notifications[0].type).toBe('error');
+          expect(notifications[0].priority).toBe('urgent');
+          done();
+        });
+      }, 10);
     });
   });
 
   describe('Unread Count', () => {
-    it('should track unread count correctly', () => {
+    it('should track unread count correctly', (done) => {
       const notification = {
         title: 'Test Notification',
         message: 'Test message',
@@ -222,19 +230,27 @@ describe('NotificationService', () => {
 
       service.addNotification(notification);
 
-      // Test initial count
-      expect(service['unreadCount$'].value).toBe(1);
-      
-      // Test after marking as read
-      service.notifications.pipe(take(1)).subscribe(notifications => {
-        if (notifications.length > 0) {
-          service.markAsRead(notifications[0].id);
-          expect(service['unreadCount$'].value).toBe(0);
-        }
-      });
+      // Wait for async update
+      setTimeout(() => {
+        // Test initial count
+        expect(service['unreadCount$'].value).toBe(1);
+        
+        // Test after marking as read
+        service.notifications.pipe(take(1)).subscribe(notifications => {
+          if (notifications.length > 0) {
+            service.markAsRead(notifications[0].id);
+            
+            // Wait for async update
+            setTimeout(() => {
+              expect(service['unreadCount$'].value).toBe(0);
+              done();
+            }, 10);
+          }
+        });
+      }, 10);
     });
 
-    it('should update unread count when marking all as read', () => {
+    it('should update unread count when marking all as read', (done) => {
       const notification1 = {
         title: 'Test Notification 1',
         message: 'Test message 1',
@@ -252,13 +268,20 @@ describe('NotificationService', () => {
       service.addNotification(notification1);
       service.addNotification(notification2);
 
-      // Test initial count
-      expect(service['unreadCount$'].value).toBe(2);
+      // Wait for async update
+      setTimeout(() => {
+        // Test initial count
+        expect(service['unreadCount$'].value).toBe(2);
 
-      service.markAllAsRead();
+        service.markAllAsRead();
 
-      // Test after marking all as read
-      expect(service['unreadCount$'].value).toBe(0);
+        // Wait for async update
+        setTimeout(() => {
+          // Test after marking all as read
+          expect(service['unreadCount$'].value).toBe(0);
+          done();
+        }, 10);
+      }, 10);
     });
   });
 
