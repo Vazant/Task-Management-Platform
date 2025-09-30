@@ -67,7 +67,7 @@ describe('ProjectListComponent', () => {
     const dialogSpy = jasmine.createSpyObj('MatDialog', ['open']);
 
     await TestBed.configureTestingModule({
-      declarations: [ProjectListComponent],
+      imports: [ProjectListComponent],
       providers: [
         { provide: Store, useValue: storeSpy },
         { provide: MatDialog, useValue: dialogSpy }

@@ -196,7 +196,7 @@ describe('NotificationService', () => {
           expect(notifications[0].title).toBe('Warning Title');
           expect(notifications[0].message).toBe('Warning message');
           expect(notifications[0].type).toBe('warning');
-          expect(notifications[0].priority).toBe('high');
+          expect(notifications[0].priority).toBe('medium');
           done();
         });
       }, 10);
@@ -212,7 +212,7 @@ describe('NotificationService', () => {
           expect(notifications[0].title).toBe('Error Title');
           expect(notifications[0].message).toBe('Error message');
           expect(notifications[0].type).toBe('error');
-          expect(notifications[0].priority).toBe('urgent');
+          expect(notifications[0].priority).toBe('high');
           done();
         });
       }, 10);

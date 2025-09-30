@@ -43,13 +43,15 @@ describe('GlobalSearchComponent', () => {
 
   beforeEach(async () => {
     const searchServiceSpy = jasmine.createSpyObj('GlobalSearchService', [
-      'search', 'clearSearch', 'clearSearchHistory', 'getSuggestions'
+      'clearSearch', 'clearSearchHistory', 'getSuggestions'
     ], {
       searchResults$: of(mockSearchResults),
       searchHistory$: of(mockSearchHistory),
       suggestions$: of(mockSuggestions),
       loading$: of(false)
     });
+    
+    searchServiceSpy.search = jasmine.createSpy('search').and.returnValue(of(mockSearchResults));
 
     const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 

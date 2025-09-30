@@ -88,7 +88,9 @@ describe('TaskCardComponent', () => {
   it('should emit edit event', () => {
     spyOn(component.edit, 'emit');
     const editButton = fixture.debugElement.query(By.css('[mat-menu-item]'));
-    editButton.nativeElement.click();
+    if (editButton && editButton.nativeElement) {
+      editButton.nativeElement.click();
+    }
     expect(component.edit.emit).toHaveBeenCalledWith(mockTask);
   });
 

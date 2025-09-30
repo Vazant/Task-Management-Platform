@@ -1,7 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ReactiveFormsModule } from '@angular/forms';
 import { TaskDialogComponent, TaskDialogData } from './task-dialog.component';
 import { Task } from '@models';
 
@@ -83,7 +84,16 @@ describe('TaskDialogComponent', () => {
       task: mockTask
     };
 
-    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: editData });
+    // Create new TestBed for this test
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [TaskDialogComponent, ReactiveFormsModule, MatDialogModule],
+      providers: [
+        { provide: MAT_DIALOG_DATA, useValue: editData },
+        { provide: MatDialogRef, useValue: mockDialogRef }
+      ]
+    });
+    
     fixture = TestBed.createComponent(TaskDialogComponent);
     component = fixture.componentInstance;
     
@@ -201,7 +211,16 @@ describe('TaskDialogComponent', () => {
       task: mockTask
     };
 
-    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: editData });
+    // Create new TestBed for this test
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [TaskDialogComponent, ReactiveFormsModule, MatDialogModule],
+      providers: [
+        { provide: MAT_DIALOG_DATA, useValue: editData },
+        { provide: MatDialogRef, useValue: mockDialogRef }
+      ]
+    });
+    
     fixture = TestBed.createComponent(TaskDialogComponent);
     component = fixture.componentInstance;
     
@@ -262,7 +281,16 @@ describe('TaskDialogComponent', () => {
       task: mockTask
     };
 
-    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: editData });
+    // Create new TestBed for this test
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [TaskDialogComponent, ReactiveFormsModule, MatDialogModule],
+      providers: [
+        { provide: MAT_DIALOG_DATA, useValue: editData },
+        { provide: MatDialogRef, useValue: mockDialogRef }
+      ]
+    });
+    
     fixture = TestBed.createComponent(TaskDialogComponent);
     component = fixture.componentInstance;
     
@@ -279,7 +307,16 @@ describe('TaskDialogComponent', () => {
       task: mockTask
     };
 
-    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: editData });
+    // Create new TestBed for this test
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [TaskDialogComponent, ReactiveFormsModule, MatDialogModule],
+      providers: [
+        { provide: MAT_DIALOG_DATA, useValue: editData },
+        { provide: MatDialogRef, useValue: mockDialogRef }
+      ]
+    });
+    
     fixture = TestBed.createComponent(TaskDialogComponent);
     component = fixture.componentInstance;
     
