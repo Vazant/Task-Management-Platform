@@ -155,12 +155,12 @@ describe('TaskDialogComponent', () => {
     
     const hoursControl = component.taskForm.get('estimatedHours');
     
-    hoursControl?.setValue(0.3); // Too low
+    hoursControl?.setValue(0.3); // Too low (min is 0.5)
     hoursControl?.markAsTouched();
     hoursControl?.updateValueAndValidity();
     expect(hoursControl?.hasError('min')).toBeTruthy();
     
-    hoursControl?.setValue(150); // Too high
+    hoursControl?.setValue(1500); // Too high (max is 1000)
     hoursControl?.markAsTouched();
     hoursControl?.updateValueAndValidity();
     expect(hoursControl?.hasError('max')).toBeTruthy();
@@ -265,9 +265,11 @@ describe('TaskDialogComponent', () => {
     expect(mockStore.dispatch).toHaveBeenCalledWith(
       jasmine.objectContaining({
         type: '[Tasks] Update Task',
-        id: '1',
-        title: 'Updated Task',
-        description: 'Updated Description'
+        task: jasmine.objectContaining({
+          id: '1',
+          title: 'Updated Task',
+          description: 'Updated Description'
+        })
       })
     );
   });
@@ -288,11 +290,11 @@ describe('TaskDialogComponent', () => {
     // Make form invalid by clearing title
     component.taskForm.patchValue({ title: '' });
     
-    spyOn(component.taskForm, 'markAllAsTouched');
+    spyOn(component as any, 'markFormGroupTouched');
     
     component.onSubmit();
     
-    expect(component.taskForm.markAllAsTouched).toHaveBeenCalled();
+    expect(component['markFormGroupTouched']).toHaveBeenCalledWith(component.taskForm);
   });
 
   it('should close dialog with false when cancel is called', () => {

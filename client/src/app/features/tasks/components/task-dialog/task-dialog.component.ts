@@ -180,13 +180,13 @@ export class TaskDialogComponent implements OnInit, OnDestroy {
 
   private initForm(): void {
     this.taskForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
+      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
       description: [''],
       status: [this.data.initialStatus || 'backlog', Validators.required],
       priority: ['medium', Validators.required],
       assigneeId: [''],
       dueDate: [null],
-      estimatedHours: [null, [Validators.min(0)]],
+      estimatedHours: [null, [Validators.min(0.5), Validators.max(1000)]],
       labels: [[]]
     });
 
