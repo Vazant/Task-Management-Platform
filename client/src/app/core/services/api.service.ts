@@ -62,7 +62,6 @@ export class ApiService {
   }
 
   post<T>(endpoint: string, data: unknown): Observable<ApiResponse<T>> {
-    console.log('API POST request:', `${this.baseUrl}${endpoint}`, data);
     return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(

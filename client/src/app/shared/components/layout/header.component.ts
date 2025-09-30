@@ -290,8 +290,7 @@ export class HeaderComponent implements OnInit {
   }
 
   changePassword(): void {
-    // TODO: Реализовать смену пароля
-    // Пока просто заглушка
+    // Change password functionality will be implemented
   }
 
   toggleMobileMenu(): void {

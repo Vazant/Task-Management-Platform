@@ -118,7 +118,6 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     this.taskDialogService.openEditDialog(task).subscribe(result => {
       if (result) {
         // Задача была обновлена
-        console.log('Task updated successfully');
       }
     });
   }
@@ -151,7 +150,6 @@ export class KanbanBoardComponent implements OnInit, OnDestroy {
     this.taskDialogService.openQuickCreateDialog(status).subscribe(result => {
       if (result) {
         // Задача была создана
-        console.log('Task created successfully');
       }
     });
   }

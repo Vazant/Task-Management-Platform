@@ -223,8 +223,8 @@ export class TaskDialogComponent implements OnInit, OnDestroy {
         dueDate: formValue.dueDate,
         estimatedHours: formValue.estimatedHours,
         labels: formValue.labels,
-        projectId: '1', // TODO: Get from current project
-        creatorId: 'user1', // TODO: Get from auth service
+        projectId: this.getCurrentProjectId(),
+        creatorId: this.getCurrentUserId()
         timeSpent: 0,
         subtasks: []
       };
@@ -286,5 +286,15 @@ export class TaskDialogComponent implements OnInit, OnDestroy {
 
   getSubmitButtonText(): string {
     return this.data.mode === 'create' ? 'Create' : 'Update';
+  }
+
+  private getCurrentProjectId(): string {
+    // Get from current project context
+    return '1'; // Placeholder - should be implemented
+  }
+
+  private getCurrentUserId(): string {
+    // Get from auth service
+    return 'user1'; // Placeholder - should be implemented
   }
 }

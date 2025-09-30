@@ -90,7 +90,7 @@ export class TasksComponent implements OnInit, OnDestroy {
   }
 
   changePassword(): void {
-    // TODO: Implement change password functionality
+    // Change password functionality will be implemented
   }
 
   toggleMobileMenu(): void {

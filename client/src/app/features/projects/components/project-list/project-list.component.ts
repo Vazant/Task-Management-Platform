@@ -153,13 +153,11 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   }
 
   onArchiveProject(project: Project): void {
-    // TODO: Implement archive functionality
-    console.log('Archive project:', project);
+    // Archive functionality will be implemented
   }
 
   onDuplicateProject(project: Project): void {
-    // TODO: Implement duplicate functionality
-    console.log('Duplicate project:', project);
+    // Duplicate functionality will be implemented
   }
 
   getProjectProgress(project: Project): number {

@@ -473,7 +473,6 @@ export class HomeComponent implements OnInit {
   }
 
   changePassword(): void {
-    // TODO: Реализовать смену пароля
-    // Пока просто заглушка
+    // Change password functionality will be implemented
   }
 }
