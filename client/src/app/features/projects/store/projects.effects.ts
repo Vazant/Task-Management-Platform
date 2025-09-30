@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -9,12 +9,9 @@ import * as ProjectsSelectors from './projects.selectors';
 
 @Injectable()
 export class ProjectsEffects {
-
-  constructor(
-    private readonly actions$: Actions,
-    private readonly store: Store,
-    private readonly projectService: ProjectService
-  ) {}
+  private readonly actions$ = inject(Actions);
+  private readonly store = inject(Store);
+  private readonly projectService = inject(ProjectService);
 
   // Load Projects Effect
   loadProjects$ = createEffect(() =>
