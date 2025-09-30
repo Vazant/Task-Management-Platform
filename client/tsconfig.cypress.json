@@ -1,14 +1,7 @@
 {
+  "extends": "./cypress/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "strict": false,
-    "types": ["cypress", "node"],
-    "baseUrl": "../src",
+    "baseUrl": "./src",
     "paths": {
       "@app/*": ["app/*"],
       "@core/*": ["app/core/*"],
@@ -27,12 +20,5 @@
       "@interceptors/*": ["app/core/interceptors/*"],
       "@interceptors": ["app/core/interceptors/index.ts"]
     }
-  },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  }
 }
