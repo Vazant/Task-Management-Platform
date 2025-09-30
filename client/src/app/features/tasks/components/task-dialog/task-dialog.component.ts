@@ -224,7 +224,7 @@ export class TaskDialogComponent implements OnInit, OnDestroy {
         estimatedHours: formValue.estimatedHours,
         labels: formValue.labels,
         projectId: this.getCurrentProjectId(),
-        creatorId: this.getCurrentUserId()
+        creatorId: this.getCurrentUserId(),
         timeSpent: 0,
         subtasks: []
       };
