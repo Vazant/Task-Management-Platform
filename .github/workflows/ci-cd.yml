@@ -205,7 +205,9 @@ jobs:
     - name: Run E2E tests
       run: |
         cd client
-        npx cypress run --headless
+        npx cypress run --headless --browser chrome
+      env:
+        TERM: xterm
         
   # Deploy to Staging
   deploy-staging:
