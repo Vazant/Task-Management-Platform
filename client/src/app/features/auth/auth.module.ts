@@ -17,18 +17,15 @@ import { authRoutes } from './auth.routes';
 
 @NgModule({
   imports: [
-    LoginComponent,
-    RegisterComponent,
-    ForgotPasswordComponent
-  ],
-  imports: [
     CommonModule,
     ReactiveFormsModule,
     RouterModule.forChild(authRoutes),
     StoreModule.forFeature('auth', authReducer),
     EffectsModule.forFeature([AuthEffects]),
-    LucideAngularModule
-  ],
-
+    LucideAngularModule,
+    LoginComponent,
+    RegisterComponent,
+    ForgotPasswordComponent
+  ]
 })
 export class AuthModule { }

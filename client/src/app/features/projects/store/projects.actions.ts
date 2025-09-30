@@ -1,8 +1,10 @@
 import { createAction, props } from '@ngrx/store';
-import { Project } from '@models';
+import { Project, CreateProjectRequest, UpdateProjectRequest } from '../../core/models/project.model';
 
 // Load Projects
-export const loadProjects = createAction('[Projects] Load Projects');
+export const loadProjects = createAction(
+  '[Projects] Load Projects'
+);
 
 export const loadProjectsSuccess = createAction(
   '[Projects] Load Projects Success',
@@ -14,10 +16,26 @@ export const loadProjectsFailure = createAction(
   props<{ error: string }>()
 );
 
+// Load Project by ID
+export const loadProject = createAction(
+  '[Projects] Load Project',
+  props<{ id: string }>()
+);
+
+export const loadProjectSuccess = createAction(
+  '[Projects] Load Project Success',
+  props<{ project: Project }>()
+);
+
+export const loadProjectFailure = createAction(
+  '[Projects] Load Project Failure',
+  props<{ error: string }>()
+);
+
 // Create Project
 export const createProject = createAction(
   '[Projects] Create Project',
-  props<{ project: Partial<Project> }>()
+  props<{ request: CreateProjectRequest }>()
 );
 
 export const createProjectSuccess = createAction(
@@ -33,7 +51,7 @@ export const createProjectFailure = createAction(
 // Update Project
 export const updateProject = createAction(
   '[Projects] Update Project',
-  props<{ project: Partial<Project> & { id: string } }>()
+  props<{ id: string; request: UpdateProjectRequest }>()
 );
 
 export const updateProjectSuccess = createAction(
@@ -49,12 +67,12 @@ export const updateProjectFailure = createAction(
 // Delete Project
 export const deleteProject = createAction(
   '[Projects] Delete Project',
-  props<{ projectId: string }>()
+  props<{ id: string }>()
 );
 
 export const deleteProjectSuccess = createAction(
   '[Projects] Delete Project Success',
-  props<{ projectId: string }>()
+  props<{ id: string }>()
 );
 
 export const deleteProjectFailure = createAction(
@@ -62,11 +80,25 @@ export const deleteProjectFailure = createAction(
   props<{ error: string }>()
 );
 
-// Select Project
-export const selectProject = createAction(
-  '[Projects] Select Project',
-  props<{ projectId: string }>()
+// Clear Projects
+export const clearProjects = createAction(
+  '[Projects] Clear Projects'
 );
 
-// Clear Error
-export const clearProjectsError = createAction('[Projects] Clear Error');
+// Set Selected Project
+export const setSelectedProject = createAction(
+  '[Projects] Set Selected Project',
+  props<{ project: Project | null }>()
+);
+
+// Filter Projects
+export const filterProjects = createAction(
+  '[Projects] Filter Projects',
+  props<{ filter: string }>()
+);
+
+// Search Projects
+export const searchProjects = createAction(
+  '[Projects] Search Projects',
+  props<{ query: string }>()
+);

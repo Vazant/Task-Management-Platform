@@ -5,7 +5,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Bell } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { NotificationService } from '../../services/notification.service';
 
 @Component({
@@ -17,7 +17,8 @@ import { NotificationService } from '../../services/notification.service';
     MatBadgeModule,
     MatButtonModule,
     MatMenuModule,
-    MatTooltipModule
+    MatTooltipModule,
+    LucideAngularModule
   ],
   template: `
     <button
@@ -26,16 +27,12 @@ import { NotificationService } from '../../services/notification.service';
       [matTooltip]="'Notifications'"
       class="notification-bell"
       (click)="$event.stopPropagation()">
-      <mat-icon>
-        <lucide-bell />
-      </mat-icon>
-      <mat-badge
-        *ngIf="(unreadCount$ | async) as count; count > 0"
-        [content]="count > 99 ? '99+' : count"
-        [matBadgeHidden]="count === 0"
-        matBadgeColor="warn"
-        matBadgeSize="small">
-      </mat-badge>
+      <lucide-bell />
+      <span 
+        *ngIf="(unreadCount$ | async) as count && count > 0"
+        class="notification-badge">
+        {{ count > 99 ? '99+' : count }}
+      </span>
     </button>
 
     <mat-menu #notificationMenu="matMenu" class="notification-menu">
@@ -97,6 +94,23 @@ import { NotificationService } from '../../services/notification.service';
   styles: [`
     .notification-bell {
       position: relative;
+    }
+
+    .notification-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: #f44336;
+      color: white;
+      border-radius: 50%;
+      min-width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 0 4px;
     }
 
     .notification-menu {

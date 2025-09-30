@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 
 export interface SyncQueueItem {
-  id?: number;
+  id?: string;
   action: any;
   type: string;
   timestamp: number;
@@ -104,6 +104,7 @@ export class OfflineStorageService {
     const store = transaction.objectStore('syncQueue');
     
     await store.add({
+      id: crypto.randomUUID(),
       action,
       type: action.type,
       timestamp: Date.now(),
@@ -124,7 +125,7 @@ export class OfflineStorageService {
     });
   }
 
-  async removeFromSyncQueue(id: number): Promise<void> {
+  async removeFromSyncQueue(id: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
     
     const transaction = this.db.transaction(['syncQueue'], 'readwrite');

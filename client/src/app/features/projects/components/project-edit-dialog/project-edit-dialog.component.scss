@@ -1,0 +1,66 @@
+.project-edit-dialog {
+  min-width: 500px;
+  
+  mat-dialog-content {
+    padding: 24px;
+    max-height: 70vh;
+    overflow-y: auto;
+  }
+  
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .form-row {
+    display: flex;
+    gap: 16px;
+    
+    .half-width {
+      flex: 1;
+    }
+  }
+  
+  .full-width {
+    width: 100%;
+  }
+  
+  mat-form-field {
+    width: 100%;
+  }
+  
+  mat-dialog-actions {
+    padding: 16px 24px;
+    border-top: 1px solid #e0e0e0;
+    margin: 0;
+    
+    button {
+      min-width: 100px;
+      
+      &[color="primary"] {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 600px) {
+  .project-edit-dialog {
+    min-width: unset;
+    width: 100vw;
+    max-width: 100vw;
+    
+    mat-dialog-content {
+      padding: 16px;
+    }
+    
+    .form-row {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+}

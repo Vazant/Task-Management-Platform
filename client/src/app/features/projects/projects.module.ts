@@ -1,24 +1,55 @@
 import { NgModule } from '@angular/core';
-import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatNativeDateModule } from '@angular/material/core';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 
-// Routes
-import { projectsRoutes } from './projects.routes';
-
-// Components
-import { ProjectsComponent } from './components/projects/projects.component';
+import { ProjectsRoutingModule } from './projects-routing.module';
 import { ProjectListComponent } from './components/project-list/project-list.component';
-import { ProjectCardComponent } from './components/project-card/project-card.component';
+import { ProjectCreateDialogComponent } from './components/project-create-dialog/project-create-dialog.component';
+import { ProjectEditDialogComponent } from './components/project-edit-dialog/project-edit-dialog.component';
+import { projectsReducer } from './store/projects.reducer';
+import { ProjectsEffects } from './store/projects.effects';
 
 @NgModule({
+  declarations: [
+    ProjectListComponent,
+    ProjectCreateDialogComponent,
+    ProjectEditDialogComponent
+  ],
   imports: [
     CommonModule,
-    HttpClientModule,
-    RouterModule.forChild(projectsRoutes),
-    ProjectsComponent,
-    ProjectListComponent,
-    ProjectCardComponent
+    ReactiveFormsModule,
+    FormsModule,
+    ProjectsRoutingModule,
+    StoreModule.forFeature('projects', projectsReducer),
+    EffectsModule.forFeature([ProjectsEffects]),
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatChipsModule,
+    MatProgressBarModule,
+    MatMenuModule,
+    MatDialogModule,
+    MatProgressSpinnerModule,
+    MatNativeDateModule
   ]
 })
 export class ProjectsModule { }

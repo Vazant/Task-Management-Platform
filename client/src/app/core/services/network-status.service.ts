@@ -1,43 +1,15 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, fromEvent, merge } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NetworkStatusService {
   private readonly isOnlineSubject = new BehaviorSubject<boolean>(navigator.onLine);
-  private readonly connectionTypeSubject = new BehaviorSubject<string>('unknown');
 
   constructor() {
-    this.initializeNetworkMonitoring();
-  }
-
-  private initializeNetworkMonitoring(): void {
-    window.addEventListener('online', () => {
-      this.isOnlineSubject.next(true);
-      this.updateConnectionType();
-    });
-
-    window.addEventListener('offline', () => {
-      this.isOnlineSubject.next(false);
-      this.connectionTypeSubject.next('offline');
-    });
-
-    // Monitor connection changes
-    if ('connection' in navigator) {
-      const connection = (navigator as any).connection;
-      connection.addEventListener('change', () => {
-        this.updateConnectionType();
-      });
-      this.updateConnectionType();
-    }
-  }
-
-  private updateConnectionType(): void {
-    if ('connection' in navigator) {
-      const connection = (navigator as any).connection;
-      this.connectionTypeSubject.next(connection.effectiveType || 'unknown');
-    }
+    this.initializeNetworkStatus();
   }
 
   get isOnline$(): Observable<boolean> {
@@ -48,11 +20,14 @@ export class NetworkStatusService {
     return this.isOnlineSubject.value;
   }
 
-  get connectionType$(): Observable<string> {
-    return this.connectionTypeSubject.asObservable();
-  }
+  private initializeNetworkStatus(): void {
+    const online$ = fromEvent(window, 'online').pipe(map(() => true));
+    const offline$ = fromEvent(window, 'offline').pipe(map(() => false));
 
-  get connectionType(): string {
-    return this.connectionTypeSubject.value;
+    merge(online$, offline$)
+      .pipe(startWith(navigator.onLine))
+      .subscribe(isOnline => {
+        this.isOnlineSubject.next(isOnline);
+      });
   }
 }

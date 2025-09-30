@@ -1,177 +1,106 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
+import { catchError, map, switchMap, withLatestFrom } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { map, mergeMap, catchError } from 'rxjs/operators';
-
+import { Store } from '@ngrx/store';
+import { ProjectService } from '../../core/services/project.service';
 import * as ProjectsActions from './projects.actions';
-import { NotificationService } from '../../../core/services/notification.service';
-import { Project } from '../../../core/models/project.model';
-
-
+import * as ProjectsSelectors from './projects.selectors';
 
 @Injectable()
 export class ProjectsEffects {
-  private readonly actions$ = inject(Actions);
-  private readonly store = inject(Store);
-  private readonly notificationService: NotificationService = inject(NotificationService);
 
-  // Загрузка проектов
+  constructor(
+    private readonly actions$: Actions,
+    private readonly store: Store,
+    private readonly projectService: ProjectService
+  ) {}
+
+  // Load Projects Effect
   loadProjects$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProjectsActions.loadProjects),
-      mergeMap(() => {
-        // Здесь будет реальный API вызов
-        // Пока используем моковые данные
-        const mockProjects = [
-          {
-            id: '1',
-            name: 'Веб-сайт компании',
-            description: 'Разработка корпоративного сайта',
-            status: 'active' as const,
-            ownerId: 'user1',
-            members: ['user1', 'user2'],
-            settings: {
-              allowGuestAccess: false,
-              defaultTaskPriority: 'medium' as const,
-              autoAssignTasks: true,
-              requireTimeTracking: true
-            },
-            createdAt: new Date(),
-            updatedAt: new Date()
-          },
-          {
-            id: '2',
-            name: 'Мобильное приложение',
-            description: 'iOS и Android приложение',
-            status: 'active' as const,
-            ownerId: 'user1',
-            members: ['user1', 'user3'],
-            settings: {
-              allowGuestAccess: true,
-              defaultTaskPriority: 'high' as const,
-              autoAssignTasks: false,
-              requireTimeTracking: true
-            },
-            createdAt: new Date(),
-            updatedAt: new Date()
-          }
-        ];
-
-        return of(mockProjects).pipe(
+      switchMap(() =>
+        this.projectService.getProjects().pipe(
           map(projects => ProjectsActions.loadProjectsSuccess({ projects })),
-          catchError(error => {
-            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
-            if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.showError('Ошибка', 'Не удалось загрузить проекты');
-            }
-            return of(ProjectsActions.loadProjectsFailure({ error: error.message }));
-          })
-        );
-      })
+          catchError(error => of(ProjectsActions.loadProjectsFailure({ 
+            error: error.message || 'Failed to load projects' 
+          })))
+        )
+      )
     )
   );
 
-  // Создание проекта
+  // Load Project by ID Effect
+  loadProject$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProjectsActions.loadProject),
+      switchMap(({ id }) =>
+        this.projectService.getProject(id).pipe(
+          map(project => ProjectsActions.loadProjectSuccess({ project })),
+          catchError(error => of(ProjectsActions.loadProjectFailure({ 
+            error: error.message || 'Failed to load project' 
+          })))
+        )
+      )
+    )
+  );
+
+  // Create Project Effect
   createProject$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProjectsActions.createProject),
-      mergeMap(({ project }) => {
-        // Здесь будет реальный API вызов
-        const newProject: Project = {
-          ...project,
-          id: Date.now().toString(),
-          name: project.name ?? '',
-          description: project.description ?? '',
-          status: project.status ?? 'active',
-          ownerId: project.ownerId ?? '',
-          members: project.members ?? [],
-          settings: project.settings ?? {
-            allowGuestAccess: false,
-            defaultTaskPriority: 'medium',
-            autoAssignTasks: false,
-            requireTimeTracking: false
-          },
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-
-        return of(newProject).pipe(
-          map(createdProject => {
-            this.notificationService.showSuccess('Успех', 'Проект создан');
-            return ProjectsActions.createProjectSuccess({ project: createdProject });
-          }),
-          catchError(error => {
-            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
-            if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.showError('Ошибка', 'Не удалось создать проект');
-            }
-            return of(ProjectsActions.createProjectFailure({ error: error.message }));
-          })
-        );
-      })
+      switchMap(({ request }) =>
+        this.projectService.createProject(request).pipe(
+          map(project => ProjectsActions.createProjectSuccess({ project })),
+          catchError(error => of(ProjectsActions.createProjectFailure({ 
+            error: error.message || 'Failed to create project' 
+          })))
+        )
+      )
     )
   );
 
-  // Обновление проекта
+  // Update Project Effect
   updateProject$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProjectsActions.updateProject),
-      mergeMap(({ project }) => {
-        // Здесь будет реальный API вызов
-        const updatedProject: Project = {
-          ...project,
-          name: project.name ?? '',
-          description: project.description ?? '',
-          status: project.status ?? 'active',
-          ownerId: project.ownerId ?? '',
-          members: project.members ?? [],
-          settings: project.settings ?? {
-            allowGuestAccess: false,
-            defaultTaskPriority: 'medium',
-            autoAssignTasks: false,
-            requireTimeTracking: false
-          },
-          createdAt: project.createdAt ?? new Date(),
-          updatedAt: new Date()
-        };
-
-        return of(updatedProject).pipe(
-          map(project => {
-            this.notificationService.showSuccess('Успех', 'Проект обновлен');
-            return ProjectsActions.updateProjectSuccess({ project });
-          }),
-          catchError(error => {
-            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
-            if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.showError('Ошибка', 'Не удалось обновить проект');
-            }
-            return of(ProjectsActions.updateProjectFailure({ error: error.message }));
-          })
-        );
-      })
+      switchMap(({ id, request }) =>
+        this.projectService.updateProject(id, request).pipe(
+          map(project => ProjectsActions.updateProjectSuccess({ project })),
+          catchError(error => of(ProjectsActions.updateProjectFailure({ 
+            error: error.message || 'Failed to update project' 
+          })))
+        )
+      )
     )
   );
 
-  // Удаление проекта
+  // Delete Project Effect
   deleteProject$ = createEffect(() =>
     this.actions$.pipe(
       ofType(ProjectsActions.deleteProject),
-      mergeMap(({ projectId }) => {
-        // Здесь будет реальный API вызов
-        return of(projectId).pipe(
-          map(id => {
-            this.notificationService.showSuccess('Успех', 'Проект удален');
-            return ProjectsActions.deleteProjectSuccess({ projectId: id });
-          }),
-          catchError(error => {
-            // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
-            if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.showError('Ошибка', 'Не удалось удалить проект');
-            }
-            return of(ProjectsActions.deleteProjectFailure({ error: error.message }));
-          })
-        );
+      switchMap(({ id }) =>
+        this.projectService.deleteProject(id).pipe(
+          map(() => ProjectsActions.deleteProjectSuccess({ id })),
+          catchError(error => of(ProjectsActions.deleteProjectFailure({ 
+            error: error.message || 'Failed to delete project' 
+          })))
+        )
+      )
+    )
+  );
+
+  // Load Projects on App Init
+  loadProjectsOnInit$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(ProjectsActions.loadProjects),
+      withLatestFrom(this.store.select(ProjectsSelectors.selectProjectsLoaded)),
+      switchMap(([action, loaded]) => {
+        if (loaded) {
+          return of(ProjectsActions.loadProjectsSuccess({ projects: [] }));
+        }
+        return of(action);
       })
     )
   );

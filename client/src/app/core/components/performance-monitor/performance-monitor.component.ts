@@ -43,7 +43,7 @@ export class PerformanceMonitorComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   private readonly updateTimer$ = timer(0, 5000); // Update every 5 seconds
   
-  constructor(private readonly performanceService: PerformanceService) {
+  constructor(public readonly performanceService: PerformanceService) {
     this.performanceReport$ = this.updateTimer$.pipe(
       map(() => this.performanceService.getPerformanceReport())
     );
@@ -141,5 +141,16 @@ export class PerformanceMonitorComponent implements OnInit, OnDestroy {
   
   trackByOperationName(index: number, operation: {name: string, count: number, average: number}): string {
     return operation.name;
+  }
+
+  getObjectKeysLength(obj: any): number {
+    return Object.keys(obj || {}).length;
+  }
+
+  getProgressBarValue(metricName: string, averages: any): number {
+    if (!averages || !averages[metricName]) return 0;
+    const value = averages[metricName];
+    // Normalize to 0-100 scale, assuming max reasonable time is 1000ms
+    return Math.min((value / 1000) * 100, 100);
   }
 }

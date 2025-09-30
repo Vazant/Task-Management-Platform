@@ -1,0 +1,120 @@
+<div class="project-create-dialog">
+  <h2 mat-dialog-title>Создать новый проект</h2>
+  
+  <mat-dialog-content>
+    <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+      <div class="form-fields">
+        <!-- Project Name -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Название проекта *</mat-label>
+          <input 
+            matInput 
+            formControlName="name" 
+            placeholder="Введите название проекта"
+            [class.mat-form-field-invalid]="isFieldInvalid('name')">
+          <mat-error *ngIf="isFieldInvalid('name')">
+            {{ getFieldError('name') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Project Description -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Описание проекта</mat-label>
+          <textarea 
+            matInput 
+            formControlName="description" 
+            placeholder="Опишите цель и задачи проекта"
+            rows="3"
+            [class.mat-form-field-invalid]="isFieldInvalid('description')">
+          </textarea>
+          <mat-error *ngIf="isFieldInvalid('description')">
+            {{ getFieldError('description') }}
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Priority and Color Row -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Приоритет *</mat-label>
+            <mat-select formControlName="priority">
+              <mat-option *ngFor="let priority of priorities" [value]="priority">
+                {{ priorityLabels[priority] }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Цвет проекта</mat-label>
+            <input 
+              matInput 
+              type="color" 
+              formControlName="color"
+              placeholder="Выберите цвет">
+          </mat-form-field>
+        </div>
+
+        <!-- Date Range Row -->
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Дата начала</mat-label>
+            <input 
+              matInput 
+              [matDatepicker]="startPicker" 
+              formControlName="startDate"
+              placeholder="Выберите дату начала">
+            <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+            <mat-datepicker #startPicker></mat-datepicker>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>Дата окончания</mat-label>
+            <input 
+              matInput 
+              [matDatepicker]="endPicker" 
+              formControlName="endDate"
+              placeholder="Выберите дату окончания">
+            <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+            <mat-datepicker #endPicker></mat-datepicker>
+          </mat-form-field>
+        </div>
+
+        <!-- Tags -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Теги проекта</mat-label>
+          <mat-chip-grid #chipGrid aria-label="Теги проекта">
+            <mat-chip-row 
+              *ngFor="let tag of projectForm.get('tags')?.value; let i = index"
+              (removed)="removeTag(i)">
+              {{ tag }}
+              <button matChipRemove [attr.aria-label]="'Удалить ' + tag">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip-row>
+          </mat-chip-grid>
+          <input 
+            placeholder="Добавить тег..."
+            [matChipInputFor]="chipGrid"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)">
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button 
+      mat-button 
+      (click)="onCancel()"
+      [disabled]="loading">
+      Отмена
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onSubmit()"
+      [disabled]="projectForm.invalid || loading">
+      <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+      <span *ngIf="!loading">Создать проект</span>
+    </button>
+  </mat-dialog-actions>
+</div>
