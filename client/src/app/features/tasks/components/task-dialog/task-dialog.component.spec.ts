@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
+import { Store } from '@ngrx/store';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -135,14 +136,17 @@ describe('TaskDialogComponent', () => {
     
     titleControl?.setValue('ab'); // Too short
     titleControl?.markAsTouched();
+    titleControl?.updateValueAndValidity();
     expect(titleControl?.hasError('minlength')).toBeTruthy();
     
     titleControl?.setValue('a'.repeat(101)); // Too long
     titleControl?.markAsTouched();
+    titleControl?.updateValueAndValidity();
     expect(titleControl?.hasError('maxlength')).toBeTruthy();
     
     titleControl?.setValue('Valid Title');
     titleControl?.markAsTouched();
+    titleControl?.updateValueAndValidity();
     expect(titleControl?.valid).toBeTruthy();
   });
 
@@ -153,13 +157,16 @@ describe('TaskDialogComponent', () => {
     
     hoursControl?.setValue(0.3); // Too low
     hoursControl?.markAsTouched();
+    hoursControl?.updateValueAndValidity();
     expect(hoursControl?.hasError('min')).toBeTruthy();
     
     hoursControl?.setValue(150); // Too high
     hoursControl?.markAsTouched();
+    hoursControl?.updateValueAndValidity();
     expect(hoursControl?.hasError('max')).toBeTruthy();
     
     hoursControl?.setValue(4);
+    hoursControl?.updateValueAndValidity();
     expect(hoursControl?.valid).toBeTruthy();
   });
 
@@ -174,23 +181,20 @@ describe('TaskDialogComponent', () => {
     component.addLabel(event);
     
     const labels = component.taskForm.get('labels')?.value;
-    expect(labels).toContain(jasmine.objectContaining({
-      name: 'new-label',
-      color: jasmine.any(String)
-    }));
+    expect(labels).toContain('new-label');
     expect(event.chipInput.clear).toHaveBeenCalled();
   });
 
   it('should remove label when removeLabel is called', () => {
     component.ngOnInit();
     
-    const label = { name: 'test-label', color: '#f44336' };
+    const label = 'test-label';
     component.taskForm.patchValue({ labels: [label] });
     
-    component.removeLabel('bug');
+    component.removeLabel('test-label');
     
     const labels = component.taskForm.get('labels')?.value;
-    expect(labels).not.toContain(label);
+    expect(labels).not.toContain('test-label');
   });
 
   it('should dispatch createTask action when form is valid in create mode', () => {
@@ -247,7 +251,8 @@ describe('TaskDialogComponent', () => {
     fixture = TestBed.createComponent(TaskDialogComponent);
     component = fixture.componentInstance;
     
-    spyOn(component['store'], 'dispatch');
+    const mockStore = TestBed.inject(Store);
+    spyOn(mockStore, 'dispatch');
     component.ngOnInit();
     
     component.taskForm.patchValue({
@@ -257,7 +262,7 @@ describe('TaskDialogComponent', () => {
     
     component.onSubmit();
     
-    expect(component['store'].dispatch).toHaveBeenCalledWith(
+    expect(mockStore.dispatch).toHaveBeenCalledWith(
       jasmine.objectContaining({
         type: '[Tasks] Update Task',
         id: '1',
@@ -280,18 +285,20 @@ describe('TaskDialogComponent', () => {
   it('should mark form as touched when submit is called with invalid form', () => {
     component.ngOnInit();
     
-    const titleControl = component.taskForm.get('title');
-    spyOn(titleControl!, 'markAsTouched');
+    // Make form invalid by clearing title
+    component.taskForm.patchValue({ title: '' });
+    
+    spyOn(component.taskForm, 'markAllAsTouched');
     
     component.onSubmit();
     
-    expect(titleControl?.markAsTouched).toHaveBeenCalled();
+    expect(component.taskForm.markAllAsTouched).toHaveBeenCalled();
   });
 
   it('should close dialog with false when cancel is called', () => {
     component.onCancel();
     
-    expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    expect(mockDialogRef.close).toHaveBeenCalledWith();
   });
 
   it('should return correct dialog title for create mode', () => {

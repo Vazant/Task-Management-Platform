@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { TaskDialogService } from './task-dialog.service';
 import { TaskDialogComponent } from '../components/task-dialog/task-dialog.component';
 import { Task } from '@models';
@@ -226,7 +226,7 @@ describe('TaskDialogService', () => {
     });
 
     it('should handle afterClosed errors gracefully', () => {
-      const mockDialogRef = { afterClosed: () => of().pipe(() => { throw new Error('AfterClosed error'); }) };
+      const mockDialogRef = { afterClosed: () => throwError(() => new Error('AfterClosed error')) };
       mockDialog.open.and.returnValue(mockDialogRef as any);
 
       const result$ = service.openCreateDialog();

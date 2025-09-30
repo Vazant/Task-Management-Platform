@@ -106,13 +106,8 @@ describe('TaskCardComponent', () => {
     fixture.detectChanges();
     
     const subtitle = fixture.debugElement.query(By.css('mat-card-subtitle'));
-    // In compact mode, the subtitle should not be present in DOM
-    // If it's still present, check that it's hidden via CSS
-    if (subtitle) {
-      expect(subtitle.nativeElement.style.display).toBe('none');
-    } else {
-      expect(subtitle).toBeFalsy();
-    }
+    // In compact mode, the subtitle should not be present in DOM due to *ngIf="!compact"
+    expect(subtitle).toBeFalsy();
   });
 
   it('should format date correctly', () => {
