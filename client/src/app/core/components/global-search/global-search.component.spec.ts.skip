@@ -47,22 +47,10 @@ describe('GlobalSearchComponent', () => {
     ]);
     
     // Set up observables as properties
-    Object.defineProperty(searchServiceSpy, 'searchResults$', {
-      value: of(mockSearchResults),
-      writable: true
-    });
-    Object.defineProperty(searchServiceSpy, 'searchHistory$', {
-      value: of(mockSearchHistory),
-      writable: true
-    });
-    Object.defineProperty(searchServiceSpy, 'suggestions$', {
-      value: of(mockSuggestions),
-      writable: true
-    });
-    Object.defineProperty(searchServiceSpy, 'loading$', {
-      value: of(false),
-      writable: true
-    });
+    searchServiceSpy.searchResults$ = of(mockSearchResults);
+    searchServiceSpy.searchHistory$ = of(mockSearchHistory);
+    searchServiceSpy.suggestions$ = of(mockSuggestions);
+    searchServiceSpy.loading$ = of(false);
     
     searchServiceSpy.search = jasmine.createSpy('search');
 
