@@ -7,6 +7,7 @@
     "start": "mvn spring-boot:run",
     "build": "mvn clean package",
     "test": "mvn test",
+    "test:ci": "mvn test",
     "lint": "mvn checkstyle:check",
     "clean": "mvn clean",
     "dev": "mvn spring-boot:run -Dspring-boot.run.profiles=dev"

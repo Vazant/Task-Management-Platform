@@ -28,7 +28,11 @@
     "install:all": "npm install && npm install --workspace=client && npm install --workspace=server",
     "clean": "npm run clean --workspaces",
     "clean:client": "npm run clean --workspace=client",
-    "clean:server": "npm run clean --workspace=server"
+    "clean:server": "npm run clean --workspace=server",
+    "test:ci": "npm run test:ci --workspaces",
+    "test:ci:client": "npm run test:ci --workspace=client",
+    "test:ci:server": "npm run test:ci --workspace=server",
+    "test:e2e:ci": "npm run test:e2e:ci --workspace=client"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
