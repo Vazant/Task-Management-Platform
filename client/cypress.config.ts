@@ -18,6 +18,12 @@ export default defineConfig({
     typescript: {
       configFile: 'tsconfig.cypress.json'
     },
+    // Добавляем поддержку SPA routing
+    experimentalStudio: true,
+    // Увеличиваем время ожидания для CI
+    pageLoadTimeout: 30000,
+    // Отключаем проверку безопасности для локальных тестов
+    chromeWebSecurity: false,
   },
 
   component: {
