@@ -14,15 +14,11 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatNativeDateModule } from '@angular/material/core';
-import { StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
 
 import { ProjectsRoutingModule } from './projects-routing.module';
 import { ProjectListComponent } from './components/project-list/project-list.component';
 import { ProjectCreateDialogComponent } from './components/project-create-dialog/project-create-dialog.component';
 import { ProjectEditDialogComponent } from './components/project-edit-dialog/project-edit-dialog.component';
-import { projectsReducer } from './store/projects.reducer';
-import { ProjectsEffects } from './store/projects.effects';
 
 @NgModule({
   declarations: [
@@ -35,8 +31,6 @@ import { ProjectsEffects } from './store/projects.effects';
     ReactiveFormsModule,
     FormsModule,
     ProjectsRoutingModule,
-    StoreModule.forFeature('projects', projectsReducer),
-    EffectsModule.forFeature([ProjectsEffects]),
     MatCardModule,
     MatButtonModule,
     MatIconModule,
