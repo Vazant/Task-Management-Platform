@@ -70,14 +70,17 @@ describe('TaskFormComponent', () => {
   });
 
   it('should initialize form with task values when editing', () => {
-    component.task = mockTask;
-    component.ngOnInit();
-    fixture.detectChanges();
+    // Create a new component instance with task
+    const testFixture = TestBed.createComponent(TaskFormComponent);
+    const testComponent = testFixture.componentInstance;
+    testComponent.task = mockTask;
+    testComponent.ngOnInit();
+    testFixture.detectChanges();
 
-    expect(component.taskForm.get('title')?.value).toBe('Test Task');
-    expect(component.taskForm.get('status')?.value).toBe('in-progress');
-    expect(component.taskForm.get('priority')?.value).toBe('high');
-    expect(component.taskForm.get('projectId')?.value).toBe('p1');
+    expect(testComponent.taskForm.get('title')?.value).toBe('Test Task');
+    expect(testComponent.taskForm.get('status')?.value).toBe('in-progress');
+    expect(testComponent.taskForm.get('priority')?.value).toBe('high');
+    expect(testComponent.taskForm.get('projectId')?.value).toBe('p1');
   });
 
   it('should validate required fields', () => {
@@ -218,6 +221,8 @@ describe('TaskFormComponent', () => {
     component.taskForm.patchValue({
       title: 'Changed Title'
     });
+    component.taskForm.markAsDirty();
+    fixture.detectChanges();
 
     expect(component.isFormDirty).toBeTruthy();
   });

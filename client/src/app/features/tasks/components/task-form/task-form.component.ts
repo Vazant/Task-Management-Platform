@@ -69,8 +69,8 @@ export class TaskFormComponent implements OnInit {
 
   private initializeForm(): void {
     this.taskForm = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
-      description: ['', [Validators.maxLength(1000)]],
+      title: [this.task?.title || '', [Validators.required, Validators.minLength(3), Validators.maxLength(100)]],
+      description: [this.task?.description || '', [Validators.maxLength(1000)]],
       status: [this.task?.status || 'backlog', Validators.required],
       priority: [this.task?.priority || 'medium', Validators.required],
       projectId: [this.task?.projectId || '', Validators.required],
@@ -161,6 +161,9 @@ export class TaskFormComponent implements OnInit {
   onSubmit(): void {
     if (this.taskForm.valid) {
       const formData: TaskFormData = this.taskForm.value;
+      // Convert null to undefined for optional fields
+      if (formData.dueDate === null) formData.dueDate = undefined;
+      if (formData.estimatedHours === null) formData.estimatedHours = undefined;
       this.save.emit(formData);
     } else {
       this.markFormGroupTouched(this.taskForm);

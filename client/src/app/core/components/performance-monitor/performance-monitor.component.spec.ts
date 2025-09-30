@@ -316,7 +316,7 @@ describe('PerformanceMonitorComponent', () => {
 
   it('should handle edge case with zero duration', () => {
     const formatted = component.formatDuration(0);
-    expect(formatted).toBe('0.0ms');
+    expect(formatted).toBe('0.0μs');
   });
 
   it('should handle edge case with very large duration', () => {
