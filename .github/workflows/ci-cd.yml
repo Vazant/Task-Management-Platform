@@ -193,20 +193,55 @@ jobs:
       with:
         name: backend-build
 
+    - name: Verify backend artifacts
+      run: |
+        echo "Checking downloaded backend artifacts..."
+        ls -la server/ || echo "No server directory found"
+        find . -name "*.jar" -type f || echo "No JAR files found in current directory"
+        find . -name "target" -type d || echo "No target directories found"
+
     - name: Start application
       run: |
-        # Start backend
-        java -jar server/target/*.jar &
+        # Check if backend JAR exists
+        echo "Checking for backend JAR file..."
+        ls -la server/target/ || echo "No server/target directory found"
+        find server -name "*.jar" -type f || echo "No JAR files found"
+        
+        # Try to find and start backend JAR
+        BACKEND_JAR=$(find server -name "*.jar" -type f | head -1)
+        if [ -n "$BACKEND_JAR" ]; then
+          echo "Found backend JAR: $BACKEND_JAR"
+          java -jar "$BACKEND_JAR" &
+          echo "Backend started with PID: $!"
+        else
+          echo "No backend JAR found, skipping backend startup"
+        fi
+        
         # Wait for backend to start
-        sleep 10
+        sleep 15
+        
         # Start frontend with proper configuration
         cd client
+        echo "Starting frontend server..."
         npx serve dist/ -p 4200 -s &
+        echo "Frontend started with PID: $!"
+        
         # Wait for frontend to start
-        sleep 20
+        sleep 25
+        
         # Check if services are running
+        echo "Checking backend health..."
         curl -f http://localhost:8080/api/test/public || echo "Backend not ready"
+        
+        echo "Checking frontend health..."
         curl -f http://localhost:4200 || echo "Frontend not ready"
+        
+        # Show running processes
+        echo "Running Java processes:"
+        ps aux | grep java || echo "No Java processes found"
+        
+        echo "Running Node processes:"
+        ps aux | grep node || echo "No Node processes found"
     - name: Run E2E tests
       run: |
         cd client

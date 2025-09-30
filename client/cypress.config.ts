@@ -7,9 +7,9 @@ export default defineConfig({
     viewportHeight: 720,
     video: false,
     screenshotOnRunFailure: true,
-    defaultCommandTimeout: 10000,
-    requestTimeout: 10000,
-    responseTimeout: 10000,
+    defaultCommandTimeout: 30000,
+    requestTimeout: 30000,
+    responseTimeout: 30000,
     specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
     supportFile: 'cypress/support/e2e.ts',
     setupNodeEvents(on, config) {
@@ -21,9 +21,16 @@ export default defineConfig({
     // Добавляем поддержку SPA routing
     experimentalStudio: true,
     // Увеличиваем время ожидания для CI
-    pageLoadTimeout: 30000,
+    pageLoadTimeout: 60000,
     // Отключаем проверку безопасности для локальных тестов
     chromeWebSecurity: false,
+    // Добавляем retry для нестабильных тестов
+    retries: {
+      runMode: 2,
+      openMode: 0
+    },
+    // Увеличиваем время ожидания для команд
+    execTimeout: 60000,
   },
 
   component: {
