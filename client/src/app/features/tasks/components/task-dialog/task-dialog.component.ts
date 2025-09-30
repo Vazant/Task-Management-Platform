@@ -242,11 +242,25 @@ export class TaskDialogComponent implements OnInit, OnDestroy {
       }
 
       this.dialogRef.close();
+    } else {
+      // Mark all form controls as touched to show validation errors
+      this.markFormGroupTouched(this.taskForm);
     }
   }
 
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  private markFormGroupTouched(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      const control = formGroup.get(key);
+      control?.markAsTouched();
+      
+      if (control instanceof FormGroup) {
+        this.markFormGroupTouched(control);
+      }
+    });
   }
 
   addLabel(event: any): void {
