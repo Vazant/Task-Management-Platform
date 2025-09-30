@@ -170,8 +170,11 @@ jobs:
         cache-dependency-path: package-lock.json
         
     - name: Install dependencies
-      run: npm ci
-      
+      run: |
+        npm ci
+        cd client && npm ci
+        npm install -g serve
+        
     - name: Download frontend artifacts
       uses: actions/download-artifact@v4
       with:
@@ -194,7 +197,7 @@ jobs:
     - name: Run E2E tests
       run: |
         cd client
-        npm run test:e2e:ci
+        npx cypress run --headless
         
   # Deploy to Staging
   deploy-staging:
