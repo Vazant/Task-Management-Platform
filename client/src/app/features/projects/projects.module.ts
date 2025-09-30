@@ -16,9 +16,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatNativeDateModule } from '@angular/material/core';
 
 import { ProjectsRoutingModule } from './projects-routing.module';
-import { ProjectListComponent } from './components/project-list/project-list.component';
-import { ProjectCreateDialogComponent } from './components/project-create-dialog/project-create-dialog.component';
-import { ProjectEditDialogComponent } from './components/project-edit-dialog/project-edit-dialog.component';
 
 @NgModule({
   declarations: [
