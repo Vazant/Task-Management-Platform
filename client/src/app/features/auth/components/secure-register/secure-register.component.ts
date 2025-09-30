@@ -475,10 +475,10 @@ export class SecureRegisterComponent implements OnInit {
       // Dispatch registration action
       this.store.dispatch(AuthActions.register({
         userData: {
-          username: formData.username,
           email: formData.email,
           password: formData.password,
-          confirmPassword: formData.password // Using same password for confirmation
+          firstName: formData.firstName,
+          lastName: formData.lastName
         }
       }));
     } else {

@@ -105,10 +105,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     if (this.registerForm.valid) {
       const userData: RegisterRequest = {
-        username: this.registerForm.value.username,
         email: this.registerForm.value.email,
         password: this.registerForm.value.password,
-        confirmPassword: this.registerForm.value.confirmPassword
+        firstName: this.registerForm.value.firstName,
+        lastName: this.registerForm.value.lastName
       };
 
       this.store.dispatch(AuthActions.register({ userData }));
