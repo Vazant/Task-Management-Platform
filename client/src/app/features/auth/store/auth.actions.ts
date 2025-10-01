@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
-import { User, LoginRequest, RegisterRequest } from '@models';
+import { User } from '../../../core/models/user.model';
+import { LoginRequest, RegisterRequest } from '../../../core/models/api-response.model';
 
 // Login Actions
 export const login = createAction(

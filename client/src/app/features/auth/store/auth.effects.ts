@@ -17,6 +17,7 @@ export class AuthEffects {
   login$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.login),
+      tap(({ credentials }) => console.log('Login effect triggered with credentials:', credentials)),
       switchMap(({ credentials }) =>
         this.authService.login(credentials).pipe(
           map((response) => {
@@ -33,10 +34,26 @@ export class AuthEffects {
             });
           }),
           catchError((error) => {
-            const errorMessage = error.message ?? 'Ошибка входа';
+            let errorMessage = 'Ошибка входа';
+            
+            // Определяем конкретное сообщение об ошибке
+            if (error.status === 401) {
+              errorMessage = 'Неверный email или пароль';
+            } else if (error.status === 400) {
+              errorMessage = 'Некорректные данные';
+            } else if (error.status === 403) {
+              errorMessage = 'Доступ запрещен';
+            } else if (error.status === 0) {
+              errorMessage = 'Сервер недоступен';
+            } else if (error.status >= 500) {
+              errorMessage = 'Ошибка сервера';
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+            
             // Показываем уведомление только для 4xx ошибок (кроме 0 и 5xx)
             if (error.status && error.status >= 400 && error.status < 500) {
-              this.notificationService.showError('Ошибка', errorMessage);
+              this.notificationService.showError('Ошибка входа', errorMessage);
             }
             return of(AuthActions.loginFailure({ error: errorMessage }));
           })
@@ -48,6 +65,7 @@ export class AuthEffects {
   register$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(AuthActions.register),
+      tap(({ userData }) => console.log('Register effect triggered with userData:', userData)),
       switchMap(({ userData }) =>
         this.authService.register(userData).pipe(
           map((response) => {

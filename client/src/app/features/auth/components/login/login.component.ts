@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
-import { LucideAngularModule, Loader2, Eye, EyeOff, Mail, Lock, Github } from 'lucide-angular';
+import { Subscription } from 'rxjs';
+import { LucideAngularModule, Loader2, Eye, EyeOff, Mail, Lock } from 'lucide-angular';
 
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoginRequest } from '../../../../core/models/api-response.model';
@@ -29,7 +29,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   readonly EyeOff = EyeOff;
   readonly Mail = Mail;
   readonly Lock = Lock;
-  readonly Github = Github;
 
   loginForm!: FormGroup;
   loading$ = this.store.select(AuthSelectors.selectIsLoading);
@@ -65,13 +64,21 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
+    console.log('Login form submitted');
+    console.log('Form valid:', this.loginForm.valid);
+    console.log('Form value:', this.loginForm.value);
+    console.log('Form errors:', this.loginForm.errors);
+    
     if (this.loginForm.valid) {
       const credentials: LoginRequest = {
         email: this.loginForm.value.email,
         password: this.loginForm.value.password
       };
 
+      console.log('Dispatching login action with credentials:', credentials);
       this.store.dispatch(AuthActions.login({ credentials }));
+    } else {
+      console.log('Login form is invalid');
     }
   }
 

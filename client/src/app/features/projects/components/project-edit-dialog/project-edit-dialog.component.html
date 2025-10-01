@@ -89,9 +89,9 @@
         </div>
 
         <!-- Tags -->
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Теги проекта</mat-label>
-          <mat-chip-grid #chipGrid aria-label="Теги проекта">
+        <div class="tags-container full-width">
+          <label class="tags-label" for="tags-input-edit">Теги проекта</label>
+          <mat-chip-grid #chipGrid aria-label="Теги проекта" class="tags-chip-grid">
             <mat-chip-row 
               *ngFor="let tag of projectForm.get('tags')?.value; let i = index"
               (removed)="removeTag(i)">
@@ -102,11 +102,14 @@
             </mat-chip-row>
           </mat-chip-grid>
           <input 
+            matInput
+            id="tags-input-edit"
             placeholder="Добавить тег..."
             [matChipInputFor]="chipGrid"
             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addTag($event)">
-        </mat-form-field>
+            (matChipInputTokenEnd)="addTag($event)"
+            class="tags-input">
+        </div>
       </div>
     </form>
   </mat-dialog-content>

@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -477,8 +477,8 @@ export class SecureRegisterComponent implements OnInit {
         userData: {
           email: formData.email,
           password: formData.password,
-          firstName: formData.firstName,
-          lastName: formData.lastName
+          username: formData.username,
+          confirmPassword: formData.confirmPassword
         }
       }));
     } else {

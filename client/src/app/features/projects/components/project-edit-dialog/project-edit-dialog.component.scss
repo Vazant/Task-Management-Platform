@@ -30,6 +30,45 @@
     width: 100%;
   }
   
+  // Tags container styles
+  .tags-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    
+    .tags-label {
+      font-size: 12px;
+      color: rgba(0, 0, 0, 0.6);
+      font-weight: 400;
+      margin-bottom: 4px;
+    }
+    
+    .tags-chip-grid {
+      min-height: 40px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 8px;
+      background-color: #fafafa;
+      
+      &:focus-within {
+        border-color: #1976d2;
+        border-width: 2px;
+      }
+    }
+    
+    .tags-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      padding: 4px 0;
+      font-size: 14px;
+      
+      &::placeholder {
+        color: rgba(0, 0, 0, 0.4);
+      }
+    }
+  }
+  
   mat-dialog-actions {
     padding: 16px 24px;
     border-top: 1px solid #e0e0e0;

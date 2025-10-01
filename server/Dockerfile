@@ -1,5 +1,5 @@
 # Multi-stage build for production
-FROM maven:3.9-openjdk-17 AS builder
+FROM maven:3.9-eclipse-temurin-17 AS builder
 
 # Set working directory
 WORKDIR /app
@@ -17,7 +17,7 @@ COPY server/src ./src
 RUN mvn clean package -DskipTests
 
 # Production stage
-FROM openjdk:17-jre-alpine
+FROM eclipse-temurin:17-jre-alpine
 
 # Create app user
 RUN addgroup -g 1001 -S appgroup && \

@@ -1,196 +1,203 @@
-<div class="analytics-dashboard">
-  <div class="dashboard-header">
-    <div class="header-content">
-      <h1 class="dashboard-title">
-        <mat-icon>analytics</mat-icon>
-        Task Analytics Dashboard
-      </h1>
-      <p class="dashboard-subtitle">
-        Comprehensive insights into task performance, team productivity, and project metrics
-      </p>
-    </div>
-    <div class="header-actions">
-      <button mat-raised-button color="primary" matTooltip="Refresh analytics data">
-        <mat-icon>refresh</mat-icon>
-        Refresh
-      </button>
-      <button mat-stroked-button matTooltip="Export dashboard data">
-        <mat-icon>download</mat-icon>
-        Export
-      </button>
-    </div>
-  </div>
+<app-layout [showHeader]="true" [showFooter]="true">
+  <main class="analytics-main">
+    
+    <div class="analytics-container">
+      <!-- Заголовок страницы -->
+      <section class="page-header">
+        <div class="page-header-content">
+          <h1 class="page-title">Аналитика</h1>
+          <p class="page-subtitle">Комплексная аналитика производительности задач, командной работы и метрик проектов</p>
+        </div>
+        <div class="page-actions">
+          <button mat-raised-button color="primary" matTooltip="Обновить данные аналитики">
+            <mat-icon>refresh</mat-icon>
+            Обновить
+          </button>
+          <button mat-stroked-button matTooltip="Экспортировать данные дашборда">
+            <mat-icon>download</mat-icon>
+            Экспорт
+          </button>
+        </div>
+      </section>
 
-  <div class="dashboard-content" *ngIf="loading$ | async; else dashboardBody">
-    <div class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading analytics data...</p>
-    </div>
-  </div>
+      <!-- Контент аналитики -->
+      <section class="analytics-content">
 
-  <ng-template #dashboardBody>
-    <div class="dashboard-content" *ngIf="error$ | async as error; else analyticsContent">
-      <div class="error-container">
-        <mat-icon class="error-icon">error</mat-icon>
-        <h3>Error Loading Analytics</h3>
-        <p>{{ error }}</p>
-        <button mat-raised-button color="primary" (click)="ngOnInit()">
-          <mat-icon>refresh</mat-icon>
-          Retry
-        </button>
-      </div>
-    </div>
-
-    <ng-template #analyticsContent>
-      <div class="dashboard-content" *ngIf="analytics$ | async as analytics">
-        <!-- Key Metrics Cards -->
-        <div class="metrics-overview">
-          <mat-card class="metric-card">
-            <mat-card-content>
-              <div class="metric-header">
-                <mat-icon class="metric-icon total">assignment</mat-icon>
-                <div class="metric-info">
-                  <h3 class="metric-value">{{ analytics.totalTasks }}</h3>
-                  <p class="metric-label">Total Tasks</p>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="metric-card">
-            <mat-card-content>
-              <div class="metric-header">
-                <mat-icon class="metric-icon completed">check_circle</mat-icon>
-                <div class="metric-info">
-                  <h3 class="metric-value">{{ analytics.completedTasks }}</h3>
-                  <p class="metric-label">Completed</p>
-                </div>
-              </div>
-              <div class="metric-progress">
-                <div class="progress-bar">
-                  <div class="progress-fill" [style.width.%]="analytics.completionRate"></div>
-                </div>
-                <span class="progress-text">{{ analytics.completionRate | number:'1.1-1' }}%</span>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="metric-card">
-            <mat-card-content>
-              <div class="metric-header">
-                <mat-icon class="metric-icon in-progress">pending</mat-icon>
-                <div class="metric-info">
-                  <h3 class="metric-value">{{ analytics.inProgressTasks }}</h3>
-                  <p class="metric-label">In Progress</p>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="metric-card">
-            <mat-card-content>
-              <div class="metric-header">
-                <mat-icon class="metric-icon blocked">block</mat-icon>
-                <div class="metric-info">
-                  <h3 class="metric-value">{{ analytics.blockedTasks }}</h3>
-                  <p class="metric-label">Blocked</p>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="metric-card">
-            <mat-card-content>
-              <div class="metric-header">
-                <mat-icon class="metric-icon overdue">warning</mat-icon>
-                <div class="metric-info">
-                  <h3 class="metric-value">{{ analytics.overdueTasks }}</h3>
-                  <p class="metric-label">Overdue</p>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="metric-card">
-            <mat-card-content>
-              <div class="metric-header">
-                <mat-icon class="metric-icon upcoming">schedule</mat-icon>
-                <div class="metric-info">
-                  <h3 class="metric-value">{{ analytics.upcomingDeadlines }}</h3>
-                  <p class="metric-label">Due This Week</p>
-                </div>
-              </div>
-            </mat-card-content>
-          </mat-card>
+        <!-- Загрузка -->
+        <div class="analytics-loading" *ngIf="loading$ | async; else dashboardBody">
+          <div class="loading-container">
+            <mat-spinner diameter="40"></mat-spinner>
+            <p>Загрузка данных аналитики...</p>
+          </div>
         </div>
 
-        <!-- Analytics Tabs -->
-        <mat-tab-group class="analytics-tabs" animationDuration="300ms">
-          <mat-tab label="Charts & Trends">
-            <app-task-charts [analytics]="analytics"></app-task-charts>
-          </mat-tab>
-
-          <mat-tab label="Team Performance">
-            <app-team-performance [analytics]="analytics"></app-team-performance>
-          </mat-tab>
-
-          <mat-tab label="Time Tracking">
-            <app-time-tracking [analytics]="analytics"></app-time-tracking>
-          </mat-tab>
-
-          <mat-tab label="Detailed Metrics">
-            <app-task-metrics [analytics]="analytics"></app-task-metrics>
-          </mat-tab>
-
-          <mat-tab label="Export Reports">
-            <app-export-reports [analytics]="analytics"></app-export-reports>
-          </mat-tab>
-        </mat-tab-group>
-
-        <!-- Recent Activity -->
-        <mat-card class="recent-activity-card">
-          <mat-card-header>
-            <mat-card-title>
-              <mat-icon>history</mat-icon>
-              Recent Activity
-            </mat-card-title>
-          </mat-card-header>
-          <mat-card-content>
-            <div class="activity-list" *ngIf="analytics.recentActivity.length > 0; else noActivity">
-              <div 
-                class="activity-item" 
-                *ngFor="let task of analytics.recentActivity; trackBy: trackByTaskId"
-              >
-                <div class="activity-icon">
-                  <mat-icon [class]="'status-' + task.status">{{ getStatusIcon(task.status) }}</mat-icon>
-                </div>
-                <div class="activity-content">
-                  <h4 class="activity-title">{{ task.title }}</h4>
-                  <p class="activity-meta">
-                    <span class="assignee" *ngIf="task.assigneeId">Assigned to {{ task.assigneeId }}</span>
-                    <span class="priority" *ngIf="task.priority">
-                      <mat-chip-set>
-                        <mat-chip [class]="'priority-' + task.priority" size="small">
-                          {{ task.priority }}
-                        </mat-chip>
-                      </mat-chip-set>
-                    </span>
-                  </p>
-                  <p class="activity-time">
-                    Updated {{ task.updatedAt | date:'short' }}
-                  </p>
-                </div>
-              </div>
+        <ng-template #dashboardBody>
+          <!-- Ошибка -->
+          <div class="analytics-error" *ngIf="error$ | async as error; else analyticsContent">
+            <div class="error-container">
+              <mat-icon class="error-icon">error</mat-icon>
+              <h3>Ошибка загрузки аналитики</h3>
+              <p>{{ error }}</p>
+              <button mat-raised-button color="primary" (click)="ngOnInit()">
+                <mat-icon>refresh</mat-icon>
+                Повторить
+              </button>
             </div>
-            <ng-template #noActivity>
-              <div class="no-activity">
-                <mat-icon>info</mat-icon>
-                <p>No recent activity to display</p>
+          </div>
+
+          <ng-template #analyticsContent>
+            <div class="analytics-data" *ngIf="analytics$ | async as analytics">
+              <!-- Key Metrics Cards -->
+              <div class="metrics-overview">
+                <mat-card class="metric-card">
+                  <mat-card-content>
+                    <div class="metric-header">
+                      <mat-icon class="metric-icon total">assignment</mat-icon>
+                      <div class="metric-info">
+                        <h3 class="metric-value">{{ analytics.totalTasks }}</h3>
+                        <p class="metric-label">Всего задач</p>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <mat-card class="metric-card">
+                  <mat-card-content>
+                    <div class="metric-header">
+                      <mat-icon class="metric-icon completed">check_circle</mat-icon>
+                      <div class="metric-info">
+                        <h3 class="metric-value">{{ analytics.completedTasks }}</h3>
+                        <p class="metric-label">Завершено</p>
+                      </div>
+                    </div>
+                    <div class="metric-progress">
+                      <div class="progress-bar">
+                        <div class="progress-fill" [style.width.%]="analytics.completionRate"></div>
+                      </div>
+                      <span class="progress-text">{{ analytics.completionRate | number:'1.1-1' }}%</span>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <mat-card class="metric-card">
+                  <mat-card-content>
+                    <div class="metric-header">
+                      <mat-icon class="metric-icon in-progress">pending</mat-icon>
+                      <div class="metric-info">
+                        <h3 class="metric-value">{{ analytics.inProgressTasks }}</h3>
+                        <p class="metric-label">В работе</p>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <mat-card class="metric-card">
+                  <mat-card-content>
+                    <div class="metric-header">
+                      <mat-icon class="metric-icon blocked">block</mat-icon>
+                      <div class="metric-info">
+                        <h3 class="metric-value">{{ analytics.blockedTasks }}</h3>
+                        <p class="metric-label">Заблокировано</p>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <mat-card class="metric-card">
+                  <mat-card-content>
+                    <div class="metric-header">
+                      <mat-icon class="metric-icon overdue">warning</mat-icon>
+                      <div class="metric-info">
+                        <h3 class="metric-value">{{ analytics.overdueTasks }}</h3>
+                        <p class="metric-label">Просрочено</p>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
+
+                <mat-card class="metric-card">
+                  <mat-card-content>
+                    <div class="metric-header">
+                      <mat-icon class="metric-icon upcoming">schedule</mat-icon>
+                      <div class="metric-info">
+                        <h3 class="metric-value">{{ analytics.upcomingDeadlines }}</h3>
+                        <p class="metric-label">Срок на этой неделе</p>
+                      </div>
+                    </div>
+                  </mat-card-content>
+                </mat-card>
               </div>
-            </ng-template>
-          </mat-card-content>
-        </mat-card>
-      </div>
-    </ng-template>
-  </ng-template>
-</div>
+
+              <!-- Analytics Tabs -->
+              <mat-tab-group class="analytics-tabs" animationDuration="300ms">
+                <mat-tab label="Графики и тренды">
+                  <app-task-charts [analytics]="analytics"></app-task-charts>
+                </mat-tab>
+
+                <mat-tab label="Производительность команды">
+                  <app-team-performance [analytics]="analytics"></app-team-performance>
+                </mat-tab>
+
+                <mat-tab label="Учет времени">
+                  <app-time-tracking [analytics]="analytics"></app-time-tracking>
+                </mat-tab>
+
+                <mat-tab label="Детальные метрики">
+                  <app-task-metrics [analytics]="analytics"></app-task-metrics>
+                </mat-tab>
+
+                <mat-tab label="Экспорт отчетов">
+                  <app-export-reports [analytics]="analytics"></app-export-reports>
+                </mat-tab>
+              </mat-tab-group>
+
+              <!-- Recent Activity -->
+              <mat-card class="recent-activity-card">
+                <mat-card-header>
+                  <mat-card-title>
+                    <mat-icon>history</mat-icon>
+                    Последняя активность
+                  </mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="activity-list" *ngIf="analytics.recentActivity.length > 0; else noActivity">
+                    <div 
+                      class="activity-item" 
+                      *ngFor="let task of analytics.recentActivity; trackBy: trackByTaskId"
+                    >
+                      <div class="activity-icon">
+                        <mat-icon [class]="'status-' + task.status">{{ getStatusIcon(task.status) }}</mat-icon>
+                      </div>
+                      <div class="activity-content">
+                        <h4 class="activity-title">{{ task.title }}</h4>
+                        <p class="activity-meta">
+                          <span class="assignee" *ngIf="task.assigneeId">Назначено: {{ task.assigneeId }}</span>
+                          <span class="priority" *ngIf="task.priority">
+                            <mat-chip-set>
+                              <mat-chip [class]="'priority-' + task.priority" size="small">
+                                {{ task.priority }}
+                              </mat-chip>
+                            </mat-chip-set>
+                          </span>
+                        </p>
+                        <p class="activity-time">
+                          Обновлено {{ task.updatedAt | date:'short' }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <ng-template #noActivity>
+                    <div class="no-activity">
+                      <mat-icon>info</mat-icon>
+                      <p>Нет недавней активности для отображения</p>
+                    </div>
+                  </ng-template>
+                </mat-card-content>
+              </mat-card>
+            </div>
+          </ng-template>
+        </ng-template>
+      </section>
+    </div>
+  </main>
+</app-layout>

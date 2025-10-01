@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, combineLatest, map } from 'rxjs';
 import { MatCardModule } from '@angular/material/card';
@@ -9,16 +10,20 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
-import { Task } from '@core/models/task.model';
-import { TaskStatus, TaskPriority } from '@models';
-import * as TasksSelectors from '@features/tasks/store/tasks.selectors';
-import * as TasksActions from '@features/tasks/store/tasks.actions';
+import { Task } from '../../../../core/models/task.model';
+import { TaskStatus, TaskPriority } from '../../../../core/models';
+import * as TasksSelectors from '../../../tasks/store/tasks.selectors';
+import * as TasksActions from '../../../tasks/store/tasks.actions';
 import { TaskMetricsComponent } from '../task-metrics/task-metrics.component';
 import { TaskChartsComponent } from '../task-charts/task-charts.component';
 import { TeamPerformanceComponent } from '../team-performance/team-performance.component';
 import { TimeTrackingComponent } from '../time-tracking/time-tracking.component';
 import { ExportReportsComponent } from '../export-reports/export-reports.component';
+import { LayoutComponent } from '../../../../shared/components/layout/layout.component';
 
 export interface TaskAnalytics {
   totalTasks: number;
@@ -40,6 +45,7 @@ export interface TaskAnalytics {
   standalone: true,
   imports: [
     CommonModule,
+    RouterModule,
     MatCardModule,
     MatIconModule,
     MatButtonModule,
@@ -47,11 +53,15 @@ export interface TaskAnalytics {
     MatProgressSpinnerModule,
     MatChipsModule,
     MatTooltipModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
     TaskMetricsComponent,
     TaskChartsComponent,
     TeamPerformanceComponent,
     TimeTrackingComponent,
-    ExportReportsComponent
+    ExportReportsComponent,
+    LayoutComponent
   ],
   templateUrl: './analytics-dashboard.component.html',
   styleUrls: ['./analytics-dashboard.component.scss'],
@@ -116,9 +126,9 @@ export class AnalyticsDashboardComponent implements OnInit {
           return acc;
         }, {} as Record<string, number>);
 
-        const recentActivity = tasks
-          .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
-          .slice(0, 10);
+        const tasksCopy = [...tasks];
+        tasksCopy.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        const recentActivity = tasksCopy.slice(0, 10);
 
         const now = new Date();
         const overdueTasks = tasks.filter(task => 

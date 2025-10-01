@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { ApiResponse, PaginatedResponse } from '@models';
 import { environment } from '../../../environments/environment';
 
@@ -62,9 +62,11 @@ export class ApiService {
   }
 
   post<T>(endpoint: string, data: unknown): Observable<ApiResponse<T>> {
+    console.log(`ApiService.post called: ${this.baseUrl}${endpoint}`, data);
     return this.http.post<ApiResponse<T>>(`${this.baseUrl}${endpoint}`, data, {
       headers: this.getHeaders()
     }).pipe(
+      tap(response => console.log(`ApiService.post response for ${endpoint}:`, response)),
       catchError(this.handleError)
     );
   }

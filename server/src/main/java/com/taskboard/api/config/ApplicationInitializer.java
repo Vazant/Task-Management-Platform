@@ -18,10 +18,15 @@ public class ApplicationInitializer implements CommandLineRunner {
 
     @Value("${app.user.default-avatar-url}")
     private String defaultAvatarUrl;
+    
+    @Value("${app.user.avatar.generate-default:true}")
+    private boolean generateDefault;
 
     @Override
     public void run(String... args) throws Exception {
-        generateDefaultAvatarIfNotExists();
+        if (generateDefault) {
+            generateDefaultAvatarIfNotExists();
+        }
     }
 
     private void generateDefaultAvatarIfNotExists() {

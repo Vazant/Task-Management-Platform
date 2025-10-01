@@ -94,7 +94,7 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(
-      withInterceptors([authInterceptor, loadingInterceptor, errorHandlerInterceptor, securityInterceptor])
+      withInterceptors([securityInterceptor, authInterceptor, loadingInterceptor, errorHandlerInterceptor])
     ),
     provideNativeDateAdapter(),
     provideAnimations(),
@@ -115,9 +115,9 @@ export const appConfig: ApplicationConfig = {
     }),
     // Core Module
     importProvidersFrom(CoreModule),
-    // Service Worker for PWA
+    // Service Worker for PWA - только в production
     provideServiceWorker('ngsw-worker.js', {
-      enabled: true,
+      enabled: false, // Отключаем в development
       registrationStrategy: 'registerWhenStable:30000'
     }),
     // Lucide Icons - выбираем конкретные иконки для оптимизации

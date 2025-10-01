@@ -27,10 +27,21 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split(",")));
+        
+        // Используем setAllowedOrigins вместо setAllowedOriginPatterns
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
         configuration.setAllowedMethods(Arrays.asList(allowedMethods.split(",")));
-        configuration.setAllowedHeaders(Arrays.asList(allowedHeaders.split(",")));
+        
+        // Явно указываем необходимые заголовки вместо *
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Authorization", "Content-Type", "X-Requested-With", "Accept", 
+            "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers",
+            "X-Content-Type-Options", "X-Frame-Options", "X-XSS-Protection",
+            "Referrer-Policy", "X-CSRF-TOKEN"
+        ));
+        
         configuration.setAllowCredentials(allowCredentials);
+        configuration.setMaxAge(3600L); // Кэширование preflight запросов на 1 час
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

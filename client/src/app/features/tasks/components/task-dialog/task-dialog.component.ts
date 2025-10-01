@@ -14,7 +14,8 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Store } from '@ngrx/store';
 import { Subject, takeUntil } from 'rxjs';
 
-import { Task, TaskStatus, TaskPriority } from '@models';
+import { Task } from '../../../../core/models/task.model';
+import { TaskStatus } from '../../../../core/models';
 import * as TaskActions from '../../store/tasks.actions';
 
 export interface TaskDialogData {
@@ -98,9 +99,9 @@ export interface TaskDialogData {
         </div>
 
         <div class="form-row">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Метки</mat-label>
-            <mat-chip-grid #chipGrid>
+          <div class="labels-container full-width">
+            <label class="labels-label" for="labels-input">Метки</label>
+            <mat-chip-grid #chipGrid class="labels-chip-grid">
               <mat-chip-row *ngFor="let label of selectedLabels" 
                            (removed)="removeLabel(label)">
                 {{ label }}
@@ -109,10 +110,13 @@ export interface TaskDialogData {
                 </button>
               </mat-chip-row>
             </mat-chip-grid>
-            <input placeholder="Добавить метку..."
+            <input matInput
+                   id="labels-input"
+                   placeholder="Добавить метку..."
                    [matChipInputFor]="chipGrid"
-                   (matChipInputTokenEnd)="addLabel($event)">
-          </mat-form-field>
+                   (matChipInputTokenEnd)="addLabel($event)"
+                   class="labels-input">
+          </div>
         </div>
 
         <div class="form-row">

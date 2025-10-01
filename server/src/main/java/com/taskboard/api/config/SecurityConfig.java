@@ -17,11 +17,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 import lombok.extern.slf4j.Slf4j;
 
@@ -93,6 +93,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(permitAllPaths).permitAll()
                 .requestMatchers("/api/profile/**").authenticated()
+                .requestMatchers("/api/projects/**").authenticated()
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 .requestMatchers("/api/webauthn/register/**").authenticated()
                 .requestMatchers("/api/webauthn/credentials/**").authenticated()
@@ -122,6 +123,10 @@ public class SecurityConfig {
                 )
             );
             log.info("OAuth2 Resource Server configured");
+        } else {
+            // Use custom JWT filter instead of OAuth2
+            http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            log.info("Custom JWT Authentication Filter added");
         }
 
         // Configure OAuth2 Client if enabled
