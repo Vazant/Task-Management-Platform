@@ -276,7 +276,6 @@ export class NotificationBellComponent {
 
   viewAllNotifications(): void {
     // Navigate to notifications page
-    console.log('Navigate to notifications page');
   }
 }
 

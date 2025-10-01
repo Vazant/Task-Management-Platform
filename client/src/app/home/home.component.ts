@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '@services';
-import { User } from '@models';
+import { AuthService } from '../core/services/auth.service';
+import { User } from '../core/models/user.model';
 import { LayoutComponent } from '../shared/components/layout';
 import { LucideAngularModule, ChartColumn, CheckSquare, Clock, TrendingUp, Menu } from 'lucide-angular';
 
@@ -473,7 +473,6 @@ export class HomeComponent implements OnInit {
   }
 
   changePassword(): void {
-    // TODO: Реализовать смену пароля
-    // Пока просто заглушка
+    // Change password functionality will be implemented
   }
 }

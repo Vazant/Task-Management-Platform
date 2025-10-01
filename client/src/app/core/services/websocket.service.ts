@@ -84,7 +84,6 @@ export class WebSocketService {
     if (!this.socket) return;
 
     this.socket.onopen = () => {
-      console.log('WebSocket connected');
       this.connectionStatus$.next('connected');
       this.reconnectAttempts = 0;
       this.startHeartbeat();
@@ -100,7 +99,6 @@ export class WebSocketService {
     };
 
     this.socket.onclose = (event) => {
-      console.log('WebSocket disconnected:', event.code, event.reason);
       this.connectionStatus$.next('disconnected');
       
       if (!event.wasClean) {
@@ -136,7 +134,6 @@ export class WebSocketService {
     this.reconnectAttempts++;
     const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
 
-    console.log(`Scheduling reconnection attempt ${this.reconnectAttempts} in ${delay}ms`);
 
     timer(delay).pipe(
       takeUntil(this.destroy$)

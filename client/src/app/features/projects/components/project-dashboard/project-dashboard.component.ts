@@ -596,16 +596,13 @@ export class ProjectDashboardComponent implements OnInit {
 
   createProject(): void {
     // Navigate to project creation
-    console.log('Create project');
   }
 
   createTask(): void {
     // Navigate to task creation
-    console.log('Create task');
   }
 
   viewAnalytics(): void {
     // Navigate to analytics
-    console.log('View analytics');
   }
 }

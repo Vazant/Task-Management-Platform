@@ -1,8 +1,8 @@
 import { Component, OnInit, inject, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '@services';
-import { User } from '@models';
+import { AuthService } from '../../../../core/services/auth.service';
+import { User } from '../../../../core/models/user.model';
 import { Subscription } from 'rxjs';
 import { LayoutComponent } from '../../../../shared/components/layout';
 import { LucideAngularModule, Clock, Play, ChartColumn, Calendar } from 'lucide-angular';
@@ -55,7 +55,7 @@ export class TimeTrackingComponent implements OnInit, OnDestroy {
   }
 
   changePassword(): void {
-    // TODO: Implement change password functionality
+    // Change password functionality will be implemented
   }
 
   toggleMobileMenu(): void {

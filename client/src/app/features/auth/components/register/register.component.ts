@@ -1,16 +1,29 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { LucideAngularModule, User, Mail, Eye, EyeOff, Loader2, Lock, Github } from 'lucide-angular';
+import { LucideAngularModule, User, Mail, Eye, EyeOff, Loader2, Lock } from 'lucide-angular';
 
-import { ValidationUtils } from '../../../../core/utils/validation.utils';
 import { RegisterRequest } from '../../../../core/models/api-response.model';
 import * as AuthActions from '../../store/auth.actions';
 import * as AuthSelectors from '../../store/auth.selectors';
+import { AuthTextService } from '../../services/auth-text.service';
+import { 
+  usernameValidator, 
+  emailValidator, 
+  passwordValidator, 
+  passwordConfirmationValidator, 
+  termsAgreementValidator,
+  getValidationErrorMessage 
+} from '../../validators/auth.validators';
+import { 
+  calculatePasswordStrength, 
+  getPasswordStrengthClass, 
+  getPasswordStrengthPercentage, 
+  getPasswordStrengthText 
+} from '../../utils/password.utils';
 
 @Component({
   selector: 'app-register',
@@ -22,6 +35,7 @@ import * as AuthSelectors from '../../store/auth.selectors';
 export class RegisterComponent implements OnInit, OnDestroy {
   private readonly fb = inject(FormBuilder);
   private readonly store = inject(Store);
+  private readonly authTextService = inject(AuthTextService);
 
   readonly User = User;
   readonly Mail = Mail;
@@ -29,7 +43,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   readonly EyeOff = EyeOff;
   readonly Loader2 = Loader2;
   readonly Lock = Lock;
-  readonly Github = Github;
 
   registerForm!: FormGroup;
   loading$!: Observable<boolean>;
@@ -37,6 +50,9 @@ export class RegisterComponent implements OnInit, OnDestroy {
   hidePassword = true;
   hideConfirmPassword = true;
   private readonly destroy$ = new Subject<void>();
+
+  // Texts
+  texts$ = this.authTextService.getTexts();
 
   constructor() {
     this.loading$ = this.store.select(AuthSelectors.selectIsLoading);
@@ -56,63 +72,69 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.registerForm = this.fb.group({
       username: ['', [
         Validators.required,
-        Validators.minLength(3),
-        Validators.maxLength(20),
-        Validators.pattern(/^[a-zA-Z0-9_]+$/)
+        usernameValidator
       ]],
       email: ['', [
         Validators.required,
-        Validators.email
+        emailValidator
       ]],
       password: ['', [
         Validators.required,
-        Validators.minLength(8),
-        this.passwordStrengthValidator.bind(this)
+        passwordValidator
       ]],
       confirmPassword: ['', [
-        Validators.required
+        Validators.required,
+        passwordConfirmationValidator('password')
       ]],
       agreeToTerms: [false, [
-        Validators.requiredTrue
+        termsAgreementValidator
       ]]
-    }, {
-      validators: this.passwordMatchValidator
     });
   }
 
-  private passwordStrengthValidator(control: AbstractControl): { [key: string]: boolean } | null {
-    if (!control.value) return null;
-
-    const strength = ValidationUtils.getPasswordStrength(control.value);
-    if (strength === 'weak') {
-      return { weakPassword: true };
-    }
-    return null;
+  // Password strength methods
+  getPasswordStrength(): string {
+    const password = this.registerForm.get('password')?.value;
+    if (!password) return '';
+    
+    const strength = calculatePasswordStrength(password);
+    return getPasswordStrengthClass(strength);
   }
 
-  private passwordMatchValidator(group: AbstractControl): { [key: string]: boolean } | null {
-    const password = group.get('password');
-    const confirmPassword = group.get('confirmPassword');
+  getPasswordStrengthPercentage(): number {
+    const password = this.registerForm.get('password')?.value;
+    if (!password) return 0;
+    
+    const strength = calculatePasswordStrength(password);
+    return getPasswordStrengthPercentage(strength);
+  }
 
-    if (!password || !confirmPassword) return null;
-
-    if (password.value !== confirmPassword.value) {
-      return { passwordMismatch: true };
-    }
-    return null;
+  getPasswordStrengthText(): string {
+    const password = this.registerForm.get('password')?.value;
+    if (!password) return '';
+    
+    const strength = calculatePasswordStrength(password);
+    return getPasswordStrengthText(strength);
   }
 
   onSubmit(): void {
+    console.log('Register form submitted');
+    console.log('Form valid:', this.registerForm.valid);
+    console.log('Form value:', this.registerForm.value);
+    console.log('Form errors:', this.registerForm.errors);
+    
     if (this.registerForm.valid) {
       const userData: RegisterRequest = {
-        username: this.registerForm.value.username,
         email: this.registerForm.value.email,
         password: this.registerForm.value.password,
+        username: this.registerForm.value.username,
         confirmPassword: this.registerForm.value.confirmPassword
       };
 
+      console.log('Dispatching register action with data:', userData);
       this.store.dispatch(AuthActions.register({ userData }));
     } else {
+      console.log('Form is invalid, marking fields as touched');
       this.markFormGroupTouched();
     }
   }
@@ -128,80 +150,17 @@ export class RegisterComponent implements OnInit, OnDestroy {
     const control = this.registerForm.get(controlName);
     if (!control?.errors) return '';
 
-    if (control.errors['required']) {
-      return 'Это поле обязательно для заполнения';
-    }
-    if (control.errors['email']) {
-      return 'Введите корректный email';
-    }
-    if (control.errors['minlength']) {
-      const requiredLength = control.errors['minlength'].requiredLength;
-      if (controlName === 'username') {
-        return `Имя пользователя должно содержать минимум ${requiredLength} символа`;
-      }
-      return `Минимальная длина ${requiredLength} символов`;
-    }
-    if (control.errors['maxlength']) {
-      const requiredLength = control.errors['maxlength'].requiredLength;
-      return `Максимальная длина ${requiredLength} символов`;
-    }
-    if (control.errors['pattern']) {
-      if (controlName === 'username') {
-        return 'Имя пользователя может содержать только буквы, цифры и знак подчеркивания';
-      }
-      return 'Неверный формат';
-    }
-    if (control.errors['weakPassword']) {
-      return 'Пароль слишком слабый. Используйте буквы, цифры и специальные символы';
-    }
-    if (control.errors['requiredTrue']) {
-      return 'Необходимо согласиться с условиями использования';
-    }
-
-    return 'Неверное значение';
+    return getValidationErrorMessage(control.errors);
   }
 
-  getPasswordStrength(): string {
-    const password = this.registerForm.get('password')?.value;
-    if (!password) return '';
-    
-    const strength = ValidationUtils.getPasswordStrength(password);
-    return strength;
-  }
-
-  getPasswordStrengthPercentage(): number {
-    const password = this.registerForm.get('password')?.value;
-    if (!password) return 0;
-    
-    const strength = ValidationUtils.getPasswordStrength(password);
-    switch (strength) {
-      case 'weak': return 33;
-      case 'medium': return 66;
-      case 'strong': return 100;
-      default: return 0;
-    }
-  }
-
-  getPasswordStrengthText(): string {
-    const password = this.registerForm.get('password')?.value;
-    if (!password) return '';
-    
-    const strength = ValidationUtils.getPasswordStrength(password);
-    switch (strength) {
-      case 'weak': return 'Слабый пароль';
-      case 'medium': return 'Средний пароль';
-      case 'strong': return 'Сильный пароль';
-      default: return '';
-    }
-  }
 
   isFieldInvalid(fieldName: string): boolean {
     const field = this.registerForm.get(fieldName);
     return !!(field && field.invalid && (field.dirty || field.touched));
   }
 
-    hasPasswordMismatch(): boolean {
-    return !!(this.registerForm.hasError('passwordMismatch') &&
+  hasPasswordMismatch(): boolean {
+    return !!(this.registerForm.get('confirmPassword')?.hasError('passwordMismatch') &&
            this.registerForm.get('confirmPassword')?.touched);
   }
 }

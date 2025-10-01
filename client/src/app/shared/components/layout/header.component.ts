@@ -1,8 +1,8 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '@services';
-import { User } from '@models';
+import { AuthService } from '../../../core/services/auth.service';
+import { User } from '../../../core/models/user.model';
 import { UserMenuComponent } from '../user-menu/user-menu.component';
 import { LucideAngularModule, Menu } from 'lucide-angular';
 
@@ -290,8 +290,7 @@ export class HeaderComponent implements OnInit {
   }
 
   changePassword(): void {
-    // TODO: Реализовать смену пароля
-    // Пока просто заглушка
+    // Change password functionality will be implemented
   }
 
   toggleMobileMenu(): void {

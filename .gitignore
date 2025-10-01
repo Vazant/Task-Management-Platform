@@ -9,6 +9,9 @@
 # Cursor IDE
 .cursor/
 
+# Audit files
+.audit/
+
 # IntelliJ IDEA
 .idea/
 
@@ -414,3 +417,4 @@ reports/
 # ===========================================
 
 *storybook.log
+nohup.out

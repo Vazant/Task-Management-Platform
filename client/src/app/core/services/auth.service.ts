@@ -36,19 +36,28 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<LoginResponse> {
+    console.log('AuthService.login called with credentials:', credentials);
     return this.apiService.post<LoginResponse>('/auth/login', credentials).pipe(
-      map(response => response.data),
+      map(response => {
+        console.log('Login response received:', response);
+        return response.data;
+      }),
       tap(response => {
+        console.log('Setting user after login:', response.user);
         this.setUser(response.user, response.token, response.refreshToken);
       })
     );
   }
 
   register(userData: RegisterRequest): Observable<LoginResponse> {
-    console.log('Sending registration data:', userData);
+    console.log('AuthService.register called with userData:', userData);
     return this.apiService.post<LoginResponse>('/auth/register', userData).pipe(
-      map(response => response.data),
+      map(response => {
+        console.log('Register response received:', response);
+        return response.data;
+      }),
       tap(response => {
+        console.log('Setting user after register:', response.user);
         this.setUser(response.user, response.token, response.refreshToken);
       })
     );

@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { Observable, catchError, map, of, tap } from 'rxjs';
+import { Observable, catchError, map, of, tap, switchMap } from 'rxjs';
 import { ApiService, NotificationService } from '@services';
+import { AvatarService } from '../../../core/services/avatar.service';
 import { UserProfile, UpdateProfileRequest, UpdateAvatarRequest } from '../models/user-profile.model';
 
 export interface ProfileState {
@@ -16,6 +17,7 @@ export interface ProfileState {
 export class ProfileService {
   private readonly apiService = inject(ApiService);
   private readonly notificationService = inject(NotificationService);
+  private readonly avatarService = inject(AvatarService);
 
   // Сигналы для состояния
   private readonly _profile = signal<UserProfile | null>(null);
@@ -96,24 +98,50 @@ export class ProfileService {
   }
 
   /**
-   * Обновляет аватар пользователя
+   * Обновляет аватар пользователя через новый AvatarService
    */
   updateAvatar(request: UpdateAvatarRequest): Observable<UserProfile | null> {
     this._isLoading.set(true);
     this._error.set(null);
     this._hasError.set(false);
 
-    // Создаем FormData для отправки файла
-    const formData = new FormData();
-    formData.append('avatar', request.avatar);
+    // Получаем текущий профиль для userId
+    const currentProfile = this._profile();
+    if (!currentProfile) {
+      this._isLoading.set(false);
+      this._hasError.set(true);
+      this._error.set('Профиль не загружен');
+      return of(null);
+    }
 
-    return this.apiService.postFile<UserProfile>('/profile/avatar', formData).pipe(
-      map(response => response.data),
-      tap(profile => {
-        this._profile.set(profile);
+    // Генерируем upload URL
+    const uploadRequest = {
+      fileName: request.avatar.name,
+      fileSize: request.avatar.size,
+      contentType: request.avatar.type
+    };
+
+    return this.avatarService.generateUploadUrl(uploadRequest.fileName, uploadRequest.fileSize, uploadRequest.contentType).pipe(
+      switchMap(uploadResponse => {
+        // Загружаем файл на presigned URL
+        return this.uploadFileToPresignedUrl(uploadResponse.uploadUrl, request.avatar).pipe(
+          switchMap(() => {
+            // Подтверждаем загрузку
+            return this.avatarService.confirmUpload(uploadResponse.storageKey);
+          })
+        );
+      }),
+      switchMap(confirmResponse => {
+        // Обновляем профиль с новым URL аватара
+        const updatedProfile = {
+          ...currentProfile,
+          avatar: confirmResponse.cdnUrl || confirmResponse.fullUrl
+        };
+        this._profile.set(updatedProfile);
         this._isLoading.set(false);
         this._hasError.set(false);
         this.notificationService.showSuccess('Успех', 'Аватар успешно обновлен');
+        return of(updatedProfile);
       }),
       catchError(error => {
         console.error('Ошибка обновления аватара:', error);
@@ -129,20 +157,61 @@ export class ProfileService {
   }
 
   /**
-   * Удаляет аватар пользователя
+   * Загружает файл на presigned URL
+   */
+  private uploadFileToPresignedUrl(presignedUrl: string, file: File): Observable<any> {
+    return new Observable(observer => {
+      const xhr = new XMLHttpRequest();
+      
+      xhr.open('PUT', presignedUrl);
+      xhr.setRequestHeader('Content-Type', file.type);
+      
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          observer.next(xhr.response);
+          observer.complete();
+        } else {
+          observer.error(new Error(`Upload failed with status: ${xhr.status}`));
+        }
+      };
+      
+      xhr.onerror = () => {
+        observer.error(new Error('Upload failed'));
+      };
+      
+      xhr.send(file);
+    });
+  }
+
+  /**
+   * Удаляет аватар пользователя через новый AvatarService
    */
   deleteAvatar(): Observable<UserProfile | null> {
     this._isLoading.set(true);
     this._error.set(null);
     this._hasError.set(false);
 
-    return this.apiService.delete<UserProfile>('/profile/avatar').pipe(
-      map(response => response.data),
-      tap(profile => {
-        this._profile.set(profile);
+    // Получаем текущий профиль для userId
+    const currentProfile = this._profile();
+    if (!currentProfile) {
+      this._isLoading.set(false);
+      this._hasError.set(true);
+      this._error.set('Профиль не загружен');
+      return of(null);
+    }
+
+    return this.avatarService.deleteAvatar(currentProfile.id.toString()).pipe(
+      map(() => {
+        // Обновляем профиль, убирая аватар
+        const updatedProfile = {
+          ...currentProfile,
+          avatar: undefined
+        };
+        this._profile.set(updatedProfile);
         this._isLoading.set(false);
         this._hasError.set(false);
         this.notificationService.showSuccess('Успех', 'Аватар успешно удален');
+        return updatedProfile;
       }),
       catchError(error => {
         console.error('Ошибка удаления аватара:', error);

@@ -106,9 +106,9 @@
       </div>
 
       <div class="form-row">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Labels</mat-label>
-          <mat-chip-grid #chipGrid>
+        <div class="labels-container full-width">
+          <label class="labels-label" for="labels-input">Labels</label>
+          <mat-chip-grid #chipGrid class="labels-chip-grid">
             <mat-chip-row *ngFor="let label of taskForm.get('labels')?.value" 
                          (removed)="removeLabel(label)">
               <span class="label-chip" [style.background-color]="label.color">
@@ -118,11 +118,14 @@
                 <mat-icon>cancel</mat-icon>
               </button>
             </mat-chip-row>
-            <input placeholder="New label..."
+            <input matInput
+                   id="labels-input"
+                   placeholder="New label..."
                    [matChipInputFor]="chipGrid"
-                   (matChipInputTokenEnd)="addLabel($event)">
+                   (matChipInputTokenEnd)="addLabel($event)"
+                   class="labels-input">
           </mat-chip-grid>
-        </mat-form-field>
+        </div>
       </div>
 
       <div class="form-row" *ngIf="error">

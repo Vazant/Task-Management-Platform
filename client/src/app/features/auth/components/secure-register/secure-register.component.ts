@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -475,10 +475,10 @@ export class SecureRegisterComponent implements OnInit {
       // Dispatch registration action
       this.store.dispatch(AuthActions.register({
         userData: {
-          username: formData.username,
           email: formData.email,
           password: formData.password,
-          confirmPassword: formData.password // Using same password for confirmation
+          username: formData.username,
+          confirmPassword: formData.confirmPassword
         }
       }));
     } else {

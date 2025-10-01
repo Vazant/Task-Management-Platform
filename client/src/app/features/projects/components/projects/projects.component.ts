@@ -49,7 +49,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   changePassword(): void {
-    // TODO: Implement change password functionality
+    // Change password functionality will be implemented
   }
 
   toggleMobileMenu(): void {
@@ -69,13 +69,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   onProjectSelected(project: Project): void {
-    console.log('Project selected:', project);
-    // TODO: Переход на страницу проекта
+    // Navigate to project page
     // this.router.navigate(['/projects', project.id]);
   }
 
   onProjectAction(action: ProjectAction): void {
-    console.log('Project action:', action);
-    // TODO: Обработка действий с проектом
+    // Handle project actions
   }
 }

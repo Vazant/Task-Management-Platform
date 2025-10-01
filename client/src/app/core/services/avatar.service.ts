@@ -5,7 +5,18 @@ import { ApiResponse } from '@models';
 import { environment } from '../../../environments/environment';
 
 export interface AvatarResponse {
-  avatarUrl: string;
+  id: number;
+  userId: number;
+  storageKey: string;
+  version: number;
+  contentType: string;
+  fileSize: number;
+  originalFilename: string;
+  cdnUrl: string;
+  fullUrl: string;
+  uploadedAt: string;
+  updatedAt: string;
+  isActive: boolean;
 }
 
 @Injectable({
@@ -15,18 +26,32 @@ export class AvatarService {
   private readonly apiService = inject(ApiService);
 
   /**
-   * Генерирует новый аватар для пользователя
+   * Генерирует presigned URL для загрузки аватара
    */
-  generateAvatar(userId: string, username: string): Observable<AvatarResponse> {
-    return this.apiService.post<AvatarResponse>(`/avatars/generate/${userId}?username=${encodeURIComponent(username)}`, {})
+  generateUploadUrl(fileName: string, fileSize: number, contentType: string): Observable<{uploadUrl: string, storageKey: string, expiresAt: string}> {
+    const request = {
+      fileName,
+      fileSize,
+      contentType
+    };
+    return this.apiService.post<{uploadUrl: string, storageKey: string, expiresAt: string}>('/avatars/upload-url', request)
+      .pipe(map((response: ApiResponse<{uploadUrl: string, storageKey: string, expiresAt: string}>) => response.data));
+  }
+
+  /**
+   * Подтверждает загрузку аватара
+   */
+  confirmUpload(storageKey: string): Observable<AvatarResponse> {
+    const request = { storageKey };
+    return this.apiService.post<AvatarResponse>('/avatars/confirm', request)
       .pipe(map((response: ApiResponse<AvatarResponse>) => response.data));
   }
 
   /**
-   * Получает дефолтный URL аватара
+   * Получает активный аватар пользователя
    */
-  getDefaultAvatar(): Observable<AvatarResponse> {
-    return this.apiService.get<AvatarResponse>('/avatars/default')
+  getActiveAvatar(userId: string): Observable<AvatarResponse> {
+    return this.apiService.get<AvatarResponse>(`/avatars/${userId}`)
       .pipe(map((response: ApiResponse<AvatarResponse>) => response.data));
   }
 
@@ -35,11 +60,16 @@ export class AvatarService {
    */
   getAvatarUrl(avatarPath: string | null | undefined): string {
     if (!avatarPath) {
-      return '/images/default-avatar.png';
+      return 'assets/images/default-avatar.svg';
     }
 
     // Если это уже полный URL, возвращаем как есть
     if (avatarPath.startsWith('http')) {
+      return avatarPath;
+    }
+
+    // Если это CDN URL или полный URL, возвращаем как есть
+    if (avatarPath.startsWith('https://') || avatarPath.startsWith('http://')) {
       return avatarPath;
     }
 
@@ -54,7 +84,7 @@ export class AvatarService {
     }
 
     // По умолчанию возвращаем дефолтный аватар
-    return '/images/default-avatar.png';
+    return 'assets/images/default-avatar.svg';
   }
 
   /**

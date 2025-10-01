@@ -93,6 +93,10 @@ function getUserFriendlyMessage(error: HttpErrorResponse): string {
     case 400:
       return 'Неверный запрос. Проверьте введенные данные.';
     case 401:
+      // Для эндпоинта логина показываем специальное сообщение
+      if (error.url?.includes('/auth/login')) {
+        return 'Неверный email или пароль';
+      }
       return 'Необходима авторизация. Войдите в систему.';
     case 403:
       return 'Доступ запрещен. У вас недостаточно прав.';

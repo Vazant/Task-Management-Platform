@@ -10,6 +10,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 
 import { TaskAnalytics } from '../analytics-dashboard/analytics-dashboard.component';
@@ -49,6 +50,7 @@ export interface ExportTemplate {
     MatCheckboxModule,
     MatChipsModule,
     MatTooltipModule,
+    MatInputModule,
     FormsModule
   ],
   templateUrl: './export-reports.component.html',

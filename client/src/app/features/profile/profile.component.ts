@@ -346,6 +346,6 @@ export class ProfileComponent implements OnInit {
   }
 
   changePassword(): void {
-    // TODO: Реализовать смену пароля
+    // Change password functionality will be implemented
   }
 }

@@ -6,6 +6,7 @@
         <h2>TaskBoard Pro</h2>
       </div>
       <h1 id="auth-title">Войти в TaskBoard Pro</h1>
+      <p class="auth-subtitle">Рады видеть вас снова 👋</p>
     </div>
 
     <!-- Форма входа -->
@@ -87,6 +88,14 @@
         </a>
       </div>
 
+      <!-- Общая ошибка аутентификации -->
+      <div 
+        *ngIf="error$ | async as error" 
+        class="error-message auth-error" 
+        role="alert">
+        {{ error }}
+      </div>
+
       <!-- Кнопка входа -->
       <button
         type="submit"
@@ -103,16 +112,6 @@
       </button>
     </form>
 
-    <!-- Социальный вход (опционально) -->
-    <div class="social-auth">
-      <div class="divider">
-        <span>или</span>
-      </div>
-      <button type="button" class="btn btn-outline social-btn">
-        <i-lucide [img]="Github" [size]="20" class="social-icon"></i-lucide>
-        <span>Войти через GitHub</span>
-      </button>
-    </div>
 
     <!-- Футер формы -->
     <div class="auth-footer">

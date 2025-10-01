@@ -70,8 +70,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // Update last login
-        user.setLastLogin(new Date());
-        userRepository.save(user);
+        updateLastLogin(user.getId());
 
         // Generate tokens
         String token = jwtService.generateToken(user.getUsername());
@@ -107,7 +106,7 @@ public class UserServiceImpl implements UserService {
         UserEntity user = userMapper.fromRegisterRequest(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(UserRole.USER);
-        user.setLastLogin(new Date());
+        // Don't set lastLogin on registration - it should be null until first login
 
         user = userRepository.save(user);
 
@@ -462,5 +461,12 @@ public class UserServiceImpl implements UserService {
                 .stream()
                 .map(userMapper::toDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public void updateLastLogin(String userId) {
+        log.debug("Updating last login for user: {}", userId);
+        userRepository.updateLastLogin(userId, new Date());
     }
 }

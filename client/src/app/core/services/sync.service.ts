@@ -94,22 +94,16 @@ export class SyncService implements OnDestroy {
   private async processSyncItem(item: SyncQueueItem): Promise<void> {
     switch (item.action.type) {
       case '[Tasks] Create Task':
-        console.log('Processing create task:', item.action.payload);
         break;
       case '[Tasks] Update Task':
-        console.log('Processing update task:', item.action.payload);
         break;
       case '[Tasks] Delete Task':
-        console.log('Processing delete task:', item.action.payload);
         break;
       case '[Projects] Create Project':
-        console.log('Processing create project:', item.action.payload);
         break;
       case '[Projects] Update Project':
-        console.log('Processing update project:', item.action.payload);
         break;
       case '[Projects] Delete Project':
-        console.log('Processing delete project:', item.action.payload);
         break;
       default:
         throw new Error(`Unknown action type: ${item.action.type}`);

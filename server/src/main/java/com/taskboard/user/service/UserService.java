@@ -201,4 +201,11 @@ public interface UserService {
      * @return list of matching users
      */
     List<UserDto> searchUsers(String query);
+
+    /**
+     * Update user's last login timestamp.
+     *
+     * @param userId the user ID
+     */
+    void updateLastLogin(String userId);
 }
