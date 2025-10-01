@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiResponse<String>> handleBadCredentials(BadCredentialsException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ApiResponse<>(null, messageService.getMessage("auth.login.failure.credentials"), false));
+                .body(new ApiResponse<>(null, ex.getMessage(), false));
     }
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
