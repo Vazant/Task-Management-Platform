@@ -9,6 +9,9 @@
 # Cursor IDE
 .cursor/
 
+# Audit files
+.audit/
+
 # IntelliJ IDEA
 .idea/
 
