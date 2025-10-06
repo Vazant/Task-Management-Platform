@@ -2,26 +2,23 @@ package com.taskboard.user.dto;
 
 import lombok.*;
 
-/**
- * DTO for simple message responses.
- */
-@Data
+/** DTO for simple message responses. */
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MessageResponse {
 
-    private String message;
+  private String message;
 
-    /**
-     * Static factory method for creating a message response.
-     *
-     * @param message the message
-     * @return MessageResponse instance
-     */
-    public static MessageResponse of(String message) {
-        return MessageResponse.builder()
-                .message(message)
-                .build();
-    }
+  /**
+   * Static factory method for creating a message response.
+   *
+   * @param message the message
+   * @return MessageResponse instance
+   */
+  public static MessageResponse of(String message) {
+    return MessageResponse.builder().message(message).build();
+  }
 }

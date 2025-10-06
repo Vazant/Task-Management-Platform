@@ -2,12 +2,17 @@ export interface User {
   id: string;
   email: string;
   username: string;
-  role: 'user' | 'admin';
+  displayName?: string;
   avatar?: string;
+  avatarUrl?: string; // может быть undefined
+  role: 'user' | 'admin';
   createdAt: Date;
-  lastLogin: Date;
-  preferences: UserPreferences;
+  updatedAt?: Date;
+  lastLogin?: Date;
 }
+
+// для совместимости старых импортов
+export type UserDto = User;
 
 export interface UserPreferences {
   theme: 'light' | 'dark';

@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { Observable, catchError, map, of, tap, switchMap } from 'rxjs';
 import { ApiService, NotificationService } from '@services';
 import { AvatarService } from '../../../core/services/avatar.service';
+import { User } from '../../../core/models/user.model';
 import { UserProfile, UpdateProfileRequest, UpdateAvatarRequest } from '../models/user-profile.model';
 
 export interface ProfileState {
@@ -121,27 +122,25 @@ export class ProfileService {
       contentType: request.avatar.type
     };
 
-    return this.avatarService.generateUploadUrl(uploadRequest.fileName, uploadRequest.fileSize, uploadRequest.contentType).pipe(
-      switchMap(uploadResponse => {
-        // Загружаем файл на presigned URL
-        return this.uploadFileToPresignedUrl(uploadResponse.uploadUrl, request.avatar).pipe(
-          switchMap(() => {
-            // Подтверждаем загрузку
-            return this.avatarService.confirmUpload(uploadResponse.storageKey);
-          })
-        );
-      }),
-      switchMap(confirmResponse => {
-        // Обновляем профиль с новым URL аватара
-        const updatedProfile = {
-          ...currentProfile,
-          avatar: confirmResponse.cdnUrl || confirmResponse.fullUrl
+    return this.avatarService.upload(request.avatar).pipe(
+      map((user: User) => {
+        // Преобразуем User в UserProfile
+        const updatedProfile: UserProfile = {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+          displayName: user.displayName,
+          avatar: user.avatarUrl,
+          role: user.role,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt || new Date()
         };
+        
         this._profile.set(updatedProfile);
         this._isLoading.set(false);
         this._hasError.set(false);
         this.notificationService.showSuccess('Успех', 'Аватар успешно обновлен');
-        return of(updatedProfile);
+        return updatedProfile;
       }),
       catchError(error => {
         console.error('Ошибка обновления аватара:', error);
@@ -149,7 +148,6 @@ export class ProfileService {
         this._error.set(errorMessage);
         this._isLoading.set(false);
         this._hasError.set(true);
-
         this.notificationService.showError('Ошибка обновления аватара', errorMessage);
         return of(null);
       })
@@ -200,7 +198,7 @@ export class ProfileService {
       return of(null);
     }
 
-    return this.avatarService.deleteAvatar(currentProfile.id.toString()).pipe(
+    return this.avatarService.deleteAvatar().pipe(
       map(() => {
         // Обновляем профиль, убирая аватар
         const updatedProfile = {

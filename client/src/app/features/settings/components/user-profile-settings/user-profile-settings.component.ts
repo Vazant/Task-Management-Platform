@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { LucideAngularModule, Loader2, AlertCircle, RefreshCw, Camera, User, Save } from 'lucide-angular';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -16,6 +17,7 @@ import { ProfileValidators } from '../../validators/profile.validators';
 import { DateUtils } from '../../utils/date.utils';
 import { UserProfile, UpdateProfileRequest, UpdateAvatarRequest } from '../../models/user-profile.model';
 import { AvatarService } from '../../../../core/services/avatar.service';
+import { AvatarCropDialogComponent, AvatarCropDialogData } from '../../../../shared/components/avatar-crop-dialog/avatar-crop-dialog.component';
 
 @Component({
   selector: 'app-user-profile-settings',
@@ -30,6 +32,7 @@ import { AvatarService } from '../../../../core/services/avatar.service';
     MatIconModule,
     MatProgressSpinnerModule,
     MatSnackBarModule,
+    MatDialogModule,
     LucideAngularModule
   ],
   templateUrl: './user-profile-settings.component.html',
@@ -40,6 +43,7 @@ export class UserProfileSettingsComponent implements OnInit, OnDestroy {
   private readonly profileService = inject(ProfileService);
   readonly avatarService = inject(AvatarService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
   private readonly destroy$ = new Subject<void>();
 
   // Document для доступа к DOM
@@ -146,24 +150,73 @@ export class UserProfileSettingsComponent implements OnInit, OnDestroy {
     const avatarControl = this.profileForm.get('avatar');
     if (!avatarControl) return;
 
-    avatarControl.setValue(file);
-
     const validation = ProfileValidators.avatar()(avatarControl);
     if (validation) {
       this.showError(Object.values(validation)[0]);
       return;
     }
 
-    // Создание превью
-    this.createAvatarPreview(file);
-
-    // Загрузка аватара
-    this.uploadAvatar(file);
+    // Открываем диалог обрезки
+    this.openCropDialog(file);
   }
 
   onAvatarError(event: Event): void {
     const img = event.target as HTMLImageElement;
-    img.src = this.avatarService.getAvatarUrl(null);
+    img.src = '/assets/img/avatar-placeholder.png';
+  }
+
+  getAvatarUrl(): string {
+    const currentProfile = this.profile();
+    if (!currentProfile) return '/assets/img/avatar-placeholder.png';
+    
+    // Преобразуем UserProfile в User для getAvatarUrl
+    const user = {
+      id: currentProfile.id,
+      email: currentProfile.email,
+      username: currentProfile.username,
+      displayName: currentProfile.displayName,
+      avatarUrl: currentProfile.avatar,
+      role: currentProfile.role,
+      createdAt: currentProfile.createdAt,
+      updatedAt: currentProfile.updatedAt
+    };
+    
+    return this.avatarService.getAvatarUrl(user);
+  }
+
+  private openCropDialog(file: File): void {
+    const dialogData: AvatarCropDialogData = {
+      imageFile: file,
+      options: {
+        aspectRatio: 1,
+        minSize: 32,
+        maxSize: 512,
+        quality: 0.9
+      }
+    };
+
+    const dialogRef = this.dialog.open(AvatarCropDialogComponent, {
+      data: dialogData,
+      width: '90vw',
+      height: '90vh',
+      maxWidth: '800px',
+      maxHeight: '600px',
+      disableClose: true
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.handleCroppedAvatar(result);
+      }
+    });
+  }
+
+  private handleCroppedAvatar(result: any): void {
+    // Создание превью
+    this.createAvatarPreview(result.file);
+
+    // Загрузка аватара
+    this.uploadAvatar(result.file);
   }
 
   private createAvatarPreview(file: File): void {

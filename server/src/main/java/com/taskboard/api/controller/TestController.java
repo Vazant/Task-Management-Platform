@@ -17,35 +17,32 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class TestController {
 
-    @Autowired
-    private MessageService messageService;
+  @Autowired private MessageService messageService;
 
-    @GetMapping("/auth")
-    public ResponseEntity<ApiResponse<String>> testAuth() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        log.info("Test auth endpoint called. Authentication: {}", auth);
+  @GetMapping("/auth")
+  public ResponseEntity<ApiResponse<String>> testAuth() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    log.info("Test auth endpoint called. Authentication: {}", auth);
 
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
-            return ResponseEntity.ok(new ApiResponse<>(
-                messageService.getMessage("info.test.auth", auth.getName()),
-                "Success",
-                true));
-        } else {
-            return ResponseEntity.ok(new ApiResponse<>(
-                messageService.getMessage("info.test.auth_failed"),
-                "No valid authentication",
-                false));
-        }
+    if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getName())) {
+      return ResponseEntity.ok(
+          new ApiResponse<>(
+              messageService.getMessage("info.test.auth", auth.getName()), "Success", true));
+    } else {
+      return ResponseEntity.ok(
+          new ApiResponse<>(
+              messageService.getMessage("info.test.auth_failed"),
+              "No valid authentication",
+              false));
     }
+  }
 
-    @GetMapping("/public")
-    public ResponseEntity<ApiResponse<String>> testPublic(@RequestParam(value = "lang", required = false) String lang) {
-        log.info("Test public endpoint called with lang: {}", lang);
-        // LocaleChangeInterceptor автоматически обрабатывает параметр lang
-        String message = messageService.getMessage("info.test.public");
-        return ResponseEntity.ok(new ApiResponse<>(
-            message,
-            "Success",
-            true));
-    }
+  @GetMapping("/public")
+  public ResponseEntity<ApiResponse<String>> testPublic(
+      @RequestParam(value = "lang", required = false) String lang) {
+    log.info("Test public endpoint called with lang: {}", lang);
+    // LocaleChangeInterceptor автоматически обрабатывает параметр lang
+    String message = messageService.getMessage("info.test.public");
+    return ResponseEntity.ok(new ApiResponse<>(message, "Success", true));
+  }
 }

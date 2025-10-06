@@ -74,7 +74,7 @@
         <div class="avatar-section">
           <div class="avatar-container">
             <img
-              [src]="avatarPreview() || avatarService.getAvatarUrl(profile()?.avatar)"
+              [src]="avatarPreview() || getAvatarUrl()"
               [alt]="displayName()"
               class="avatar-image"
               (error)="onAvatarError($event)">

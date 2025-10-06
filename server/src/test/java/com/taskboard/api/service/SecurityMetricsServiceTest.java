@@ -1,194 +1,193 @@
 package com.taskboard.api.service;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.Duration;
-
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-
 /**
- * Unit tests for Security Metrics Service
- * Tests metrics collection for security-related operations
+ * Unit tests for Security Metrics Service Tests metrics collection for security-related operations
  */
 @ExtendWith(MockitoExtension.class)
 @Disabled("Temporarily disabled due to Micrometer mocking issues")
 class SecurityMetricsServiceTest {
 
-    @Mock
-    private MeterRegistry meterRegistry;
+  @Mock private MeterRegistry meterRegistry;
 
-    @Mock
-    private Counter mockCounter;
+  @Mock private Counter mockCounter;
 
-    @Mock
-    private Timer mockTimer;
+  @Mock private Timer mockTimer;
 
-    private SecurityMetricsService securityMetricsService;
+  private SecurityMetricsService securityMetricsService;
 
-    @BeforeEach
-    void setUp() {
-        // Mock counter and timer creation
-        lenient().when(meterRegistry.counter(anyString(), anyString(), anyString())).thenReturn(mockCounter);
-        lenient().when(meterRegistry.counter(anyString())).thenReturn(mockCounter);
-        lenient().when(meterRegistry.timer(anyString())).thenReturn(mockTimer);
-        
-        // Mock timer creation with tags
-        lenient().when(meterRegistry.timer(anyString(), anyString(), anyString())).thenReturn(mockTimer);
-        
-        securityMetricsService = new SecurityMetricsService(meterRegistry);
-    }
+  @BeforeEach
+  void setUp() {
+    // Mock counter and timer creation
+    lenient()
+        .when(meterRegistry.counter(anyString(), anyString(), anyString()))
+        .thenReturn(mockCounter);
+    lenient().when(meterRegistry.counter(anyString())).thenReturn(mockCounter);
+    lenient().when(meterRegistry.timer(anyString())).thenReturn(mockTimer);
 
-    @Test
-    void testRecordDpopProofCreated() {
-        // When
-        securityMetricsService.recordDpopProofCreated();
+    // Mock timer creation with tags
+    lenient()
+        .when(meterRegistry.timer(anyString(), anyString(), anyString()))
+        .thenReturn(mockTimer);
 
-        // Then
-        verify(mockCounter).increment();
-    }
+    securityMetricsService = new SecurityMetricsService(meterRegistry);
+  }
 
-    @Test
-    void testRecordDpopProofValidatedSuccess() {
-        // Given
-        Duration duration = Duration.ofMillis(100);
+  @Test
+  void testRecordDpopProofCreated() {
+    // When
+    securityMetricsService.recordDpopProofCreated();
 
-        // When
-        securityMetricsService.recordDpopProofValidated(true, duration);
+    // Then
+    verify(mockCounter).increment();
+  }
 
-        // Then
-        verify(mockCounter, times(2)).increment(); // One for success, one for timer
-        verify(mockTimer).record(duration);
-    }
+  @Test
+  void testRecordDpopProofValidatedSuccess() {
+    // Given
+    Duration duration = Duration.ofMillis(100);
 
-    @Test
-    void testRecordDpopProofValidatedFailure() {
-        // Given
-        Duration duration = Duration.ofMillis(50);
+    // When
+    securityMetricsService.recordDpopProofValidated(true, duration);
 
-        // When
-        securityMetricsService.recordDpopProofValidated(false, duration);
+    // Then
+    verify(mockCounter, times(2)).increment(); // One for success, one for timer
+    verify(mockTimer).record(duration);
+  }
 
-        // Then
-        verify(mockCounter, times(2)).increment(); // One for failure, one for timer
-        verify(mockTimer).record(duration);
-    }
+  @Test
+  void testRecordDpopProofValidatedFailure() {
+    // Given
+    Duration duration = Duration.ofMillis(50);
 
-    @Test
-    void testRecordWebAuthnRegistrationAttempt() {
-        // When
-        securityMetricsService.recordWebAuthnRegistrationAttempt();
+    // When
+    securityMetricsService.recordDpopProofValidated(false, duration);
 
-        // Then
-        verify(mockCounter).increment();
-    }
+    // Then
+    verify(mockCounter, times(2)).increment(); // One for failure, one for timer
+    verify(mockTimer).record(duration);
+  }
 
-    @Test
-    void testRecordWebAuthnRegistrationSuccess() {
-        // Given
-        Duration duration = Duration.ofSeconds(2);
+  @Test
+  void testRecordWebAuthnRegistrationAttempt() {
+    // When
+    securityMetricsService.recordWebAuthnRegistrationAttempt();
 
-        // When
-        securityMetricsService.recordWebAuthnRegistrationSuccess(duration);
+    // Then
+    verify(mockCounter).increment();
+  }
 
-        // Then
-        verify(mockCounter, times(2)).increment(); // One for success, one for timer
-        verify(mockTimer).record(duration);
-    }
+  @Test
+  void testRecordWebAuthnRegistrationSuccess() {
+    // Given
+    Duration duration = Duration.ofSeconds(2);
 
-    @Test
-    void testRecordWebAuthnAuthenticationAttempt() {
-        // When
-        securityMetricsService.recordWebAuthnAuthenticationAttempt();
+    // When
+    securityMetricsService.recordWebAuthnRegistrationSuccess(duration);
 
-        // Then
-        verify(mockCounter).increment();
-    }
+    // Then
+    verify(mockCounter, times(2)).increment(); // One for success, one for timer
+    verify(mockTimer).record(duration);
+  }
 
-    @Test
-    void testRecordWebAuthnAuthenticationSuccess() {
-        // Given
-        Duration duration = Duration.ofMillis(500);
+  @Test
+  void testRecordWebAuthnAuthenticationAttempt() {
+    // When
+    securityMetricsService.recordWebAuthnAuthenticationAttempt();
 
-        // When
-        securityMetricsService.recordWebAuthnAuthenticationSuccess(duration);
+    // Then
+    verify(mockCounter).increment();
+  }
 
-        // Then
-        verify(mockCounter, times(2)).increment(); // One for success, one for timer
-        verify(mockTimer).record(duration);
-    }
+  @Test
+  void testRecordWebAuthnAuthenticationSuccess() {
+    // Given
+    Duration duration = Duration.ofMillis(500);
 
-    @Test
-    void testRecordOneTimeTokenGenerated() {
-        // When
-        securityMetricsService.recordOneTimeTokenGenerated();
+    // When
+    securityMetricsService.recordWebAuthnAuthenticationSuccess(duration);
 
-        // Then
-        verify(mockCounter).increment();
-    }
+    // Then
+    verify(mockCounter, times(2)).increment(); // One for success, one for timer
+    verify(mockTimer).record(duration);
+  }
 
-    @Test
-    void testRecordOneTimeTokenValidatedSuccess() {
-        // Given
-        Duration duration = Duration.ofMillis(75);
+  @Test
+  void testRecordOneTimeTokenGenerated() {
+    // When
+    securityMetricsService.recordOneTimeTokenGenerated();
 
-        // When
-        securityMetricsService.recordOneTimeTokenValidated(true, duration);
+    // Then
+    verify(mockCounter).increment();
+  }
 
-        // Then
-        verify(mockCounter, times(2)).increment(); // One for success, one for timer
-        verify(mockTimer).record(duration);
-    }
+  @Test
+  void testRecordOneTimeTokenValidatedSuccess() {
+    // Given
+    Duration duration = Duration.ofMillis(75);
 
-    @Test
-    void testRecordOneTimeTokenValidatedFailure() {
-        // Given
-        Duration duration = Duration.ofMillis(25);
+    // When
+    securityMetricsService.recordOneTimeTokenValidated(true, duration);
 
-        // When
-        securityMetricsService.recordOneTimeTokenValidated(false, duration);
+    // Then
+    verify(mockCounter, times(2)).increment(); // One for success, one for timer
+    verify(mockTimer).record(duration);
+  }
 
-        // Then
-        verify(mockCounter, times(2)).increment(); // One for failure, one for timer
-        verify(mockTimer).record(duration);
-    }
+  @Test
+  void testRecordOneTimeTokenValidatedFailure() {
+    // Given
+    Duration duration = Duration.ofMillis(25);
 
-    @Test
-    void testRecordOAuth2LoginAttempt() {
-        // When
-        securityMetricsService.recordOAuth2LoginAttempt();
+    // When
+    securityMetricsService.recordOneTimeTokenValidated(false, duration);
 
-        // Then
-        verify(mockCounter).increment();
-    }
+    // Then
+    verify(mockCounter, times(2)).increment(); // One for failure, one for timer
+    verify(mockTimer).record(duration);
+  }
 
-    @Test
-    void testRecordOAuth2LoginSuccess() {
-        // Given
-        Duration duration = Duration.ofSeconds(1);
+  @Test
+  void testRecordOAuth2LoginAttempt() {
+    // When
+    securityMetricsService.recordOAuth2LoginAttempt();
 
-        // When
-        securityMetricsService.recordOAuth2LoginSuccess(duration);
+    // Then
+    verify(mockCounter).increment();
+  }
 
-        // Then
-        verify(mockCounter, times(2)).increment(); // One for success, one for timer
-        verify(mockTimer).record(duration);
-    }
+  @Test
+  void testRecordOAuth2LoginSuccess() {
+    // Given
+    Duration duration = Duration.ofSeconds(1);
 
-    @Test
-    void testRecordOAuth2LoginFailed() {
-        // When
-        securityMetricsService.recordOAuth2LoginFailed();
+    // When
+    securityMetricsService.recordOAuth2LoginSuccess(duration);
 
-        // Then
-        verify(mockCounter).increment();
-    }
+    // Then
+    verify(mockCounter, times(2)).increment(); // One for success, one for timer
+    verify(mockTimer).record(duration);
+  }
+
+  @Test
+  void testRecordOAuth2LoginFailed() {
+    // When
+    securityMetricsService.recordOAuth2LoginFailed();
+
+    // Then
+    verify(mockCounter).increment();
+  }
 }

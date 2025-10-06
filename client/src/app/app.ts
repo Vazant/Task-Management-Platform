@@ -3,8 +3,6 @@ import { RouterOutlet } from '@angular/router';
 import { SharedModule } from './shared/shared.module';
 import { NotificationToastComponent } from './shared/components/notification-toast/notification-toast.component';
 
-
-
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, SharedModule, NotificationToastComponent],

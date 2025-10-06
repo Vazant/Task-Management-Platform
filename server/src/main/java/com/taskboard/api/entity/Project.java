@@ -1,57 +1,99 @@
 package com.taskboard.api.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
+import com.taskboard.api.constants.ProjectConstants;
+import com.taskboard.api.enums.ProjectPriority;
+import com.taskboard.api.enums.ProjectStatus;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import static lombok.AccessLevel.PROTECTED;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 @Entity
 @Table(name = "projects")
-@Data
+@Getter
+@Setter
+@NoArgsConstructor(access = PROTECTED)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(exclude = {"tags"})
 public class Project {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false, length = 100)
-    private String name;
-    
-    @Column(length = 500)
-    private String description;
-    
-    @Column(nullable = false)
-    private String status = "ACTIVE";
-    
-    @Column(nullable = false)
-    private String priority = "MEDIUM";
-    
-    @Column(length = 7)
-    private String color = "#1976d2";
-    
-    @Column(name = "start_date")
-    private LocalDateTime startDate;
-    
-    @Column(name = "end_date")
-    private LocalDateTime endDate;
-    
-    @ElementCollection
-    @CollectionTable(name = "project_tags", joinColumns = @JoinColumn(name = "project_id"))
-    @Column(name = "tag")
-    private List<String> tags = new ArrayList<>();
-    
-    @Column(name = "created_by", nullable = false)
-    private String createdBy;
-    
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt;
-    
-    @UpdateTimestamp
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
-}
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @EqualsAndHashCode.Include
+  private Long id;
+
+  @Column(nullable = false, length = ProjectConstants.MAX_NAME_LENGTH)
+  private String name;
+
+  @Column(length = ProjectConstants.MAX_DESCRIPTION_LENGTH)
+  private String description;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private ProjectStatus status = ProjectStatus.ACTIVE;
+
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private ProjectPriority priority = ProjectPriority.MEDIUM;
+
+  @Column(length = ProjectConstants.COLOR_LENGTH)
+  private String color = ProjectConstants.DEFAULT_COLOR;
+
+  @Column(name = "start_date")
+  private LocalDateTime startDate;
+
+  @Column(name = "end_date")
+  private LocalDateTime endDate;
+
+  @ElementCollection
+  @CollectionTable(name = "project_tags", joinColumns = @JoinColumn(name = "project_id"))
+  @Column(name = "tag")
+  private List<String> tags = new ArrayList<>();
+
+  @Column(name = "created_by", nullable = false)
+  private String createdBy;
+
+  @CreationTimestamp
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
+
+  @UpdateTimestamp
+  @Column(name = "updated_at", nullable = false)
+  private LocalDateTime updatedAt;
+
+  public static Project create(final String name, final String description, final ProjectStatus status, 
+                              final ProjectPriority priority, final String color, final LocalDateTime startDate, 
+                              final LocalDateTime endDate, final List<String> tags, final String createdBy) {
+    final Project project = new Project();
+    project.setName(name);
+    project.setDescription(description);
+    project.setStatus(status != null ? status : ProjectStatus.ACTIVE);
+    project.setPriority(priority != null ? priority : ProjectPriority.MEDIUM);
+    project.setColor(color != null ? color : ProjectConstants.DEFAULT_COLOR);
+    project.setStartDate(startDate);
+    project.setEndDate(endDate);
+    project.setTags(tags != null ? tags : new ArrayList<>());
+    project.setCreatedBy(createdBy);
+    return project;
+  }
+}

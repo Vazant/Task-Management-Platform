@@ -2,10 +2,11 @@ export interface UserProfile {
   id: string;
   username: string;
   email: string;
+  displayName?: string;
   firstName?: string;
   lastName?: string;
   avatar?: string;
-  role?: string;
+  role: 'user' | 'admin';
   lastLogin?: Date;
   createdAt: Date;
   updatedAt: Date;

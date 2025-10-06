@@ -8,38 +8,33 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 
 /**
- * OAuth2 Client configuration with PKCE support for confidential clients
- * Implements Spring Security 6.5 OAuth2 client features
+ * OAuth2 Client configuration with PKCE support for confidential clients Implements Spring Security
+ * 6.5 OAuth2 client features
  */
 @Configuration
 public class OAuth2ClientConfig {
 
-    /**
-     * OAuth2 authorized client manager with PKCE support
-     */
-    @Bean
-    public OAuth2AuthorizedClientManager authorizedClientManager(
-            ClientRegistrationRepository clientRegistrationRepository,
-            OAuth2AuthorizedClientRepository authorizedClientRepository) {
+  /** OAuth2 authorized client manager with PKCE support */
+  @Bean
+  public OAuth2AuthorizedClientManager authorizedClientManager(
+      ClientRegistrationRepository clientRegistrationRepository,
+      OAuth2AuthorizedClientRepository authorizedClientRepository) {
 
-        OAuth2AuthorizedClientProvider authorizedClientProvider = 
-            OAuth2AuthorizedClientProviderBuilder.builder()
-                .authorizationCode()
-                .refreshToken()
-                .clientCredentials()
-                .build();
+    OAuth2AuthorizedClientProvider authorizedClientProvider =
+        OAuth2AuthorizedClientProviderBuilder.builder()
+            .authorizationCode()
+            .refreshToken()
+            .clientCredentials()
+            .build();
 
-        DefaultOAuth2AuthorizedClientManager authorizedClientManager = 
-            new DefaultOAuth2AuthorizedClientManager(
-                clientRegistrationRepository, 
-                authorizedClientRepository);
-        
-        authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
+    DefaultOAuth2AuthorizedClientManager authorizedClientManager =
+        new DefaultOAuth2AuthorizedClientManager(
+            clientRegistrationRepository, authorizedClientRepository);
 
-        return authorizedClientManager;
-    }
+    authorizedClientManager.setAuthorizedClientProvider(authorizedClientProvider);
 
+    return authorizedClientManager;
+  }
 }
