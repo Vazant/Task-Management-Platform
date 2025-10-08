@@ -42,6 +42,9 @@ microservices/
 # Перейти в папку с Docker конфигурацией
 cd microservices/infrastructure/docker
 
+# Скопировать пример конфигурации (опционально)
+cp env.example .env
+
 # Запустить все сервисы
 docker-compose up -d
 
@@ -51,6 +54,17 @@ docker-compose ps
 # Просмотр логов
 docker-compose logs -f [service-name]
 ```
+
+### Конфигурация окружения
+
+Система поддерживает гибкую конфигурацию через переменные окружения:
+
+- **Local**: `application-local.yml` - для локальной разработки
+- **Docker**: `application-docker.yml` - для Docker контейнеров
+- **Kubernetes**: `application-kubernetes.yml` - для Kubernetes
+- **Production**: `application-prod.yml` - для продакшена
+
+Все URL и настройки вынесены в переменные окружения для легкой адаптации к разным средам.
 
 ### 2. Запуск с Kubernetes
 

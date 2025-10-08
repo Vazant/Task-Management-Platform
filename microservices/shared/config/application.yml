@@ -1,0 +1,93 @@
+# Base configuration for all microservices
+spring:
+  application:
+    name: ${SERVICE_NAME:microservice}
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  
+  # Database Configuration
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/taskboard}
+    username: ${DATABASE_USERNAME:taskboard_user}
+    password: ${DATABASE_PASSWORD:taskboard_password}
+    driver-class-name: org.postgresql.Driver
+  
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  # Redis Configuration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: ${REDIS_TIMEOUT:2000ms}
+  
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP:taskboard-group}
+      auto-offset-reset: ${KAFKA_AUTO_OFFSET_RESET:earliest}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:}
+
+# Management/Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${ACTUATOR_ENDPOINTS:health,info,metrics,prometheus}
+      base-path: ${ACTUATOR_BASE_PATH:/actuator}
+  endpoint:
+    health:
+      show-details: ${ACTUATOR_HEALTH_DETAILS:always}
+      show-components: ${ACTUATOR_HEALTH_COMPONENTS:always}
+  metrics:
+    export:
+      prometheus:
+        enabled: ${PROMETHEUS_ENABLED:true}
+
+# Logging Configuration
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:INFO}
+    com.taskboard: ${LOG_LEVEL_TASKBOARD:DEBUG}
+  pattern:
+    console: ${LOG_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} - %msg%n}
+    file: ${LOG_PATTERN_FILE:%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n}
+
+# Service URLs (for inter-service communication)
+service:
+  urls:
+    user-service: ${USER_SERVICE_URL:http://localhost:8081}
+    task-service: ${TASK_SERVICE_URL:http://localhost:8082}
+    project-service: ${PROJECT_SERVICE_URL:http://localhost:8083}
+    time-service: ${TIME_SERVICE_URL:http://localhost:8084}
+    analytics-service: ${ANALYTICS_SERVICE_URL:http://localhost:8085}
+    notification-service: ${NOTIFICATION_SERVICE_URL:http://localhost:8086}
+    search-service: ${SEARCH_SERVICE_URL:http://localhost:8087}
+    file-service: ${FILE_SERVICE_URL:http://localhost:8088}
+    gateway-service: ${GATEWAY_SERVICE_URL:http://localhost:8000}
+
+# External Services
+external:
+  services:
+    prometheus: ${PROMETHEUS_URL:http://localhost:9090}
+    jaeger: ${JAEGER_URL:http://localhost:14268}
+    kafka-ui: ${KAFKA_UI_URL:http://localhost:8080}
+    grafana: ${GRAFANA_URL:http://localhost:3000}

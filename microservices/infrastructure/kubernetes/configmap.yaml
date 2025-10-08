@@ -11,11 +11,18 @@ data:
   # Redis Configuration
   REDIS_HOST: "redis-service"
   REDIS_PORT: "6379"
+  REDIS_PASSWORD: ""
   
   # Kafka Configuration
   KAFKA_BOOTSTRAP_SERVERS: "kafka-service:9092"
+  KAFKA_CONSUMER_GROUP: "taskboard-group"
   
-  # Service URLs
+  # Service Configuration
+  SPRING_PROFILES_ACTIVE: "kubernetes"
+  SERVER_PORT: "8080"
+  SERVER_CONTEXT_PATH: ""
+  
+  # Service URLs (for inter-service communication)
   USER_SERVICE_URL: "http://user-service:8080"
   TASK_SERVICE_URL: "http://task-service:8080"
   PROJECT_SERVICE_URL: "http://project-service:8080"
@@ -24,12 +31,29 @@ data:
   NOTIFICATION_SERVICE_URL: "http://notification-service:8080"
   SEARCH_SERVICE_URL: "http://search-service:8080"
   FILE_SERVICE_URL: "http://file-service:8080"
+  GATEWAY_SERVICE_URL: "http://kong-service:8000"
   
-  # Monitoring
+  # External Services
   PROMETHEUS_URL: "http://prometheus-service:9090"
   JAEGER_URL: "http://jaeger-service:14268"
+  KAFKA_UI_URL: "http://kafka-ui-service:8080"
+  GRAFANA_URL: "http://grafana-service:3000"
   
-  # Application Properties
-  SPRING_PROFILES_ACTIVE: "kubernetes"
-  LOGGING_LEVEL_ROOT: "INFO"
-  LOGGING_LEVEL_COM_TASKBOARD: "DEBUG"
+  # Actuator Configuration
+  ACTUATOR_BASE_PATH: "/actuator"
+  ACTUATOR_ENDPOINTS: "health,info,metrics,prometheus"
+  ACTUATOR_HEALTH_DETAILS: "always"
+  ACTUATOR_HEALTH_COMPONENTS: "always"
+  
+  # Logging Configuration
+  LOG_LEVEL_ROOT: "INFO"
+  LOG_LEVEL_TASKBOARD: "DEBUG"
+  LOG_PATTERN_CONSOLE: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+  LOG_PATTERN_FILE: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  
+  # JPA Configuration
+  JPA_DDL_AUTO: "update"
+  JPA_SHOW_SQL: "false"
+  
+  # Monitoring Configuration
+  PROMETHEUS_ENABLED: "true"

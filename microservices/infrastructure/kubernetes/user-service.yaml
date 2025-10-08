@@ -1,0 +1,175 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: taskboard-microservices
+  labels:
+    app: user-service
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+        version: v1
+    spec:
+      containers:
+      - name: user-service
+        image: taskboard/user-service:latest
+        ports:
+        - containerPort: 8080
+        env:
+        # Service Configuration
+        - name: SERVICE_NAME
+          value: "user-service"
+        - name: SPRING_PROFILES_ACTIVE
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: SPRING_PROFILES_ACTIVE
+        - name: SERVER_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: SERVER_PORT
+        
+        # Database Configuration
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: DATABASE_URL
+        - name: DATABASE_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: DATABASE_USERNAME
+        - name: DATABASE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: taskboard-secrets
+              key: DATABASE_PASSWORD
+        
+        # Redis Configuration
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: REDIS_HOST
+        - name: REDIS_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: REDIS_PORT
+        
+        # Kafka Configuration
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: KAFKA_BOOTSTRAP_SERVERS
+        - name: KAFKA_CONSUMER_GROUP
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: KAFKA_CONSUMER_GROUP
+        
+        # Service URLs
+        - name: USER_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: USER_SERVICE_URL
+        - name: TASK_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: TASK_SERVICE_URL
+        - name: PROJECT_SERVICE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: PROJECT_SERVICE_URL
+        
+        # External Services
+        - name: PROMETHEUS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: PROMETHEUS_URL
+        - name: JAEGER_URL
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: JAEGER_URL
+        
+        # Actuator Configuration
+        - name: ACTUATOR_BASE_PATH
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: ACTUATOR_BASE_PATH
+        - name: ACTUATOR_ENDPOINTS
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: ACTUATOR_ENDPOINTS
+        
+        # Logging Configuration
+        - name: LOG_LEVEL_ROOT
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: LOG_LEVEL_ROOT
+        - name: LOG_LEVEL_TASKBOARD
+          valueFrom:
+            configMapKeyRef:
+              name: taskboard-config
+              key: LOG_LEVEL_TASKBOARD
+        
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 3
+        
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: taskboard-microservices
+  labels:
+    app: user-service
+spec:
+  selector:
+    app: user-service
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+  type: ClusterIP

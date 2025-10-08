@@ -1,0 +1,107 @@
+# Production environment configuration
+spring:
+  profiles:
+    active: prod
+  
+  # Database Configuration for Production
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: ${DB_MIN_IDLE:5}
+      connection-timeout: ${DB_CONNECTION_TIMEOUT:20000}
+      idle-timeout: ${DB_IDLE_TIMEOUT:300000}
+      max-lifetime: ${DB_MAX_LIFETIME:1200000}
+  
+  # Redis Configuration for Production
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD}
+      timeout: ${REDIS_TIMEOUT:2000ms}
+      lettuce:
+        pool:
+          max-active: ${REDIS_POOL_MAX_ACTIVE:20}
+          max-idle: ${REDIS_POOL_MAX_IDLE:10}
+          min-idle: ${REDIS_POOL_MIN_IDLE:5}
+  
+  # Kafka Configuration for Production
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
+    consumer:
+      group-id: ${KAFKA_CONSUMER_GROUP}
+      auto-offset-reset: ${KAFKA_AUTO_OFFSET_RESET:earliest}
+      properties:
+        session.timeout.ms: ${KAFKA_SESSION_TIMEOUT:30000}
+        heartbeat.interval.ms: ${KAFKA_HEARTBEAT_INTERVAL:10000}
+    producer:
+      retries: ${KAFKA_PRODUCER_RETRIES:3}
+      batch-size: ${KAFKA_PRODUCER_BATCH_SIZE:16384}
+      linger-ms: ${KAFKA_PRODUCER_LINGER_MS:5}
+
+# Server Configuration for Production
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:}
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+
+# Management/Actuator Configuration for Production
+management:
+  endpoints:
+    web:
+      exposure:
+        include: ${ACTUATOR_ENDPOINTS:health,info,metrics,prometheus}
+      base-path: ${ACTUATOR_BASE_PATH:/actuator}
+  endpoint:
+    health:
+      show-details: ${ACTUATOR_HEALTH_DETAILS:when-authorized}
+      show-components: ${ACTUATOR_HEALTH_COMPONENTS:when-authorized}
+  metrics:
+    export:
+      prometheus:
+        enabled: ${PROMETHEUS_ENABLED:true}
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+        http.client.requests: true
+
+# Logging Configuration for Production
+logging:
+  level:
+    root: ${LOG_LEVEL_ROOT:WARN}
+    com.taskboard: ${LOG_LEVEL_TASKBOARD:INFO}
+  pattern:
+    console: ${LOG_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n}
+    file: ${LOG_PATTERN_FILE:%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n}
+  file:
+    name: ${LOG_FILE_PATH:/var/log/taskboard/application.log}
+    max-size: ${LOG_FILE_MAX_SIZE:100MB}
+    max-history: ${LOG_FILE_MAX_HISTORY:30}
+
+# Service URLs for Production (use environment variables)
+service:
+  urls:
+    user-service: ${USER_SERVICE_URL}
+    task-service: ${TASK_SERVICE_URL}
+    project-service: ${PROJECT_SERVICE_URL}
+    time-service: ${TIME_SERVICE_URL}
+    analytics-service: ${ANALYTICS_SERVICE_URL}
+    notification-service: ${NOTIFICATION_SERVICE_URL}
+    search-service: ${SEARCH_SERVICE_URL}
+    file-service: ${FILE_SERVICE_URL}
+    gateway-service: ${GATEWAY_SERVICE_URL}
+
+# External Services for Production
+external:
+  services:
+    prometheus: ${PROMETHEUS_URL}
+    jaeger: ${JAEGER_URL}
+    kafka-ui: ${KAFKA_UI_URL}
+    grafana: ${GRAFANA_URL}

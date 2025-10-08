@@ -39,37 +39,41 @@ mkdir -p "services/$SERVICE_NAME/src/main/java/com/taskboard/$SERVICE_NAME"
 mkdir -p "services/$SERVICE_NAME/src/main/resources"
 mkdir -p "services/$SERVICE_NAME/src/test/java/com/taskboard/$SERVICE_NAME"
 
-# Create application.properties
-cat > "services/$SERVICE_NAME/src/main/resources/application.properties" << EOF
-# $SERVICE_DISPLAY_NAME Configuration
-spring.application.name=$SERVICE_NAME
-server.port=8080
+# Copy configuration files
+cp "shared/config/application.yml" "services/$SERVICE_NAME/src/main/resources/"
+cp "shared/config/application-docker.yml" "services/$SERVICE_NAME/src/main/resources/"
+cp "shared/config/application-kubernetes.yml" "services/$SERVICE_NAME/src/main/resources/"
+cp "shared/config/application-prod.yml" "services/$SERVICE_NAME/src/main/resources/"
 
-# Database Configuration
-spring.datasource.url=\${DATABASE_URL:jdbc:postgresql://localhost:5432/taskboard}
-spring.datasource.username=\${DATABASE_USERNAME:taskboard_user}
-spring.datasource.password=\${DATABASE_PASSWORD:taskboard_password}
+# Create service-specific application.yml
+cat > "services/$SERVICE_NAME/src/main/resources/application-local.yml" << EOF
+# $SERVICE_DISPLAY_NAME Local Configuration
+spring:
+  application:
+    name: $SERVICE_NAME
+  profiles:
+    active: local
 
-# JPA Configuration
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=false
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect
+# Service URLs for local development
+service:
+  urls:
+    user-service: http://localhost:8081
+    task-service: http://localhost:8082
+    project-service: http://localhost:8083
+    time-service: http://localhost:8084
+    analytics-service: http://localhost:8085
+    notification-service: http://localhost:8086
+    search-service: http://localhost:8087
+    file-service: http://localhost:8088
+    gateway-service: http://localhost:8000
 
-# Redis Configuration
-spring.data.redis.host=\${REDIS_HOST:localhost}
-spring.data.redis.port=\${REDIS_PORT:6379}
-
-# Kafka Configuration
-spring.kafka.bootstrap-servers=\${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
-
-# Actuator Configuration
-management.endpoints.web.exposure.include=health,info,metrics,prometheus
-management.endpoint.health.show-details=always
-
-# Logging Configuration
-logging.level.com.taskboard.$SERVICE_NAME=DEBUG
-logging.pattern.console=%d{yyyy-MM-dd HH:mm:ss} - %msg%n
-logging.pattern.file=%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n
+# External Services for local development
+external:
+  services:
+    prometheus: http://localhost:9090
+    jaeger: http://localhost:16686
+    kafka-ui: http://localhost:8080
+    grafana: http://localhost:3000
 EOF
 
 # Create main application class
