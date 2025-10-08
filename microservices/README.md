@@ -43,7 +43,7 @@ microservices/
 cd microservices/infrastructure/docker
 
 # Скопировать пример конфигурации (опционально)
-cp env.example .env
+cp env.template .env
 
 # Запустить все сервисы
 docker-compose up -d
