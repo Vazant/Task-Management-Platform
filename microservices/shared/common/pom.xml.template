@@ -13,10 +13,10 @@
     </parent>
 
     <groupId>com.taskboard</groupId>
-    <artifactId>user-service</artifactId>
+    <artifactId>{{SERVICE_NAME}}</artifactId>
     <version>1.0.0</version>
-    <name>User Service</name>
-    <description>User Management Microservice</description>
+    <name>{{SERVICE_DISPLAY_NAME}}</name>
+    <description>{{SERVICE_DESCRIPTION}}</description>
 
     <properties>
         <java.version>21</java.version>

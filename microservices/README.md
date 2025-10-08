@@ -31,7 +31,7 @@ microservices/
 
 - Docker Desktop
 - Docker Compose
-- Java 17+
+- Java 21+
 - Maven 3.9+
 - kubectl (для Kubernetes)
 - minikube (для локального Kubernetes)

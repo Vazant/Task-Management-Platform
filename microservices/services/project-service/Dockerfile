@@ -1,4 +1,4 @@
-# Multi-stage build for User Service
+# Multi-stage build for Project Service
 FROM maven:3.9.4-openjdk-21-slim AS build
 
 # Set working directory

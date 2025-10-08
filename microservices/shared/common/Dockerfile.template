@@ -1,4 +1,6 @@
-# Multi-stage build for User Service
+# Multi-stage build template for Microservices
+# Replace {{SERVICE_NAME}} with actual service name
+
 FROM maven:3.9.4-openjdk-21-slim AS build
 
 # Set working directory
