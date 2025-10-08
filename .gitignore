@@ -392,6 +392,9 @@ api-docs/
 test-reports/
 reports/
 
+# Private documentation (not for Git)
+docs_private/
+
 # ===========================================
 # CUSTOM PROJECT SPECIFIC
 # ===========================================
