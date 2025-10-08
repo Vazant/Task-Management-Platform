@@ -1,25 +1,25 @@
 package com.taskboard.api.dto;
 
-import com.taskboard.user.model.UserEntity;
+import com.taskboard.api.model.User;
 
 public class LoginResponse {
-  private UserEntity user;
+  private User user;
   private String token;
   private String refreshToken;
 
   public LoginResponse() {}
 
-  public LoginResponse(UserEntity user, String token, String refreshToken) {
+  public LoginResponse(User user, String token, String refreshToken) {
     this.user = user;
     this.token = token;
     this.refreshToken = refreshToken;
   }
 
-  public UserEntity getUser() {
+  public User getUser() {
     return user;
   }
 
-  public void setUser(UserEntity user) {
+  public void setUser(User user) {
     this.user = user;
   }
 

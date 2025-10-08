@@ -8,17 +8,21 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+/**
+ * Response DTO for Project entity.
+ * Used for API responses and data exchange between frontend and backend.
+ */
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectDto {
-  private String id;
+  private Long id;
 
   @NotBlank(message = "Project name is required")
   @Size(min = 3, max = ProjectConstants.MAX_NAME_LENGTH, message = "Project name must be between 3 and 100 characters")

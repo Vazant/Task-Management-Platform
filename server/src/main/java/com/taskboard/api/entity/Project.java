@@ -18,10 +18,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -32,7 +34,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "projects")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor(access = PROTECTED)
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(exclude = {"tags"})
 public class Project {
@@ -84,16 +88,16 @@ public class Project {
   public static Project create(final String name, final String description, final ProjectStatus status, 
                               final ProjectPriority priority, final String color, final LocalDateTime startDate, 
                               final LocalDateTime endDate, final List<String> tags, final String createdBy) {
-    final Project project = new Project();
-    project.setName(name);
-    project.setDescription(description);
-    project.setStatus(status != null ? status : ProjectStatus.ACTIVE);
-    project.setPriority(priority != null ? priority : ProjectPriority.MEDIUM);
-    project.setColor(color != null ? color : ProjectConstants.DEFAULT_COLOR);
-    project.setStartDate(startDate);
-    project.setEndDate(endDate);
-    project.setTags(tags != null ? tags : new ArrayList<>());
-    project.setCreatedBy(createdBy);
-    return project;
+    return Project.builder()
+            .name(name)
+            .description(description)
+            .status(status != null ? status : ProjectStatus.ACTIVE)
+            .priority(priority != null ? priority : ProjectPriority.MEDIUM)
+            .color(color != null ? color : ProjectConstants.DEFAULT_COLOR)
+            .startDate(startDate)
+            .endDate(endDate)
+            .tags(tags != null ? tags : new ArrayList<>())
+            .createdBy(createdBy)
+            .build();
   }
 }

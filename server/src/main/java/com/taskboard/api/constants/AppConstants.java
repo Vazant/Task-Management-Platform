@@ -25,6 +25,7 @@ public final class AppConstants {
   // API Paths
   public static final String API_AUTH_PATH = "/api/auth";
   public static final String API_PROJECTS_PATH = "/api/projects";
+  public static final String API_TASKS_PATH = "/api/tasks";
   public static final String API_PROFILE_PATH = "/api/profile";
   public static final String API_WEBAUTHN_PATH = "/api/webauthn";
   public static final String API_ONE_TIME_TOKENS_PATH = "/api/one-time-tokens";

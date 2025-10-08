@@ -1,17 +1,18 @@
 package com.taskboard.api.enums;
 
 /**
- * Приоритеты проектов в системе.
+ * Task priority enumeration for the task management system.
+ * Defines the importance level of tasks for better organization and workflow.
  */
-public enum ProjectPriority {
+public enum TaskPriority {
     LOW("LOW"),
     MEDIUM("MEDIUM"),
     HIGH("HIGH"),
-    CRITICAL("CRITICAL");
+    URGENT("URGENT");
 
     private final String value;
 
-    ProjectPriority(String value) {
+    TaskPriority(String value) {
         this.value = value;
     }
 
@@ -25,16 +26,16 @@ public enum ProjectPriority {
     }
 
     /**
-     * Получить приоритет по строковому значению.
+     * Get task priority by string value.
      * 
-     * @param value строковое значение
-     * @return соответствующий enum или null если не найден
+     * @param value string value to match
+     * @return corresponding enum or null if not found
      */
-    public static ProjectPriority fromValue(String value) {
+    public static TaskPriority fromValue(String value) {
         if (value == null) {
             return null;
         }
-        for (ProjectPriority priority : ProjectPriority.values()) {
+        for (TaskPriority priority : TaskPriority.values()) {
             if (priority.value.equals(value)) {
                 return priority;
             }
@@ -42,9 +43,3 @@ public enum ProjectPriority {
         return null;
     }
 }
-
-
-
-
-
-

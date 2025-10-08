@@ -1,7 +1,9 @@
 package com.taskboard.user.dto;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 /** DTO representing user profile data. */
 @Getter
@@ -11,14 +13,20 @@ import lombok.*;
 @Builder
 public class UserProfileDto {
 
-  private String id;
+  private Long id;
   private String username;
   private String email;
   private String firstName;
   private String lastName;
   private String avatar;
   private String role;
-  private Date lastLogin;
-  private Date createdAt;
-  private Date updatedAt;
+  
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime lastLogin;
+  
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime createdAt;
+  
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+  private LocalDateTime updatedAt;
 }
