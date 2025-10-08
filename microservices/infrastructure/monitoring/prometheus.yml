@@ -1,0 +1,101 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # User Service
+  - job_name: 'user-service'
+    static_configs:
+      - targets: ['user-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # Task Service
+  - job_name: 'task-service'
+    static_configs:
+      - targets: ['task-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # Project Service
+  - job_name: 'project-service'
+    static_configs:
+      - targets: ['project-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # Time Service
+  - job_name: 'time-service'
+    static_configs:
+      - targets: ['time-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # Analytics Service
+  - job_name: 'analytics-service'
+    static_configs:
+      - targets: ['analytics-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # Notification Service
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['notification-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # Search Service
+  - job_name: 'search-service'
+    static_configs:
+      - targets: ['search-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # File Service
+  - job_name: 'file-service'
+    static_configs:
+      - targets: ['file-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # Gateway Service
+  - job_name: 'gateway-service'
+    static_configs:
+      - targets: ['gateway-service:8080']
+    metrics_path: '/actuator/prometheus'
+    scrape_interval: 5s
+
+  # Kong API Gateway
+  - job_name: 'kong-gateway'
+    static_configs:
+      - targets: ['kong:8001']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+
+  # PostgreSQL
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+
+  # Redis
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  # Kafka
+  - job_name: 'kafka'
+    static_configs:
+      - targets: ['kafka:9092']
+    scrape_interval: 30s
