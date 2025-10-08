@@ -189,13 +189,16 @@ bin/
 # ENVIRONMENT & CONFIGURATION
 # ===========================================
 
-# Environment variables
+# Environment variables and configuration files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 .env.staging
+*env*
+env.*
+*.env
 
 # Application properties (sensitive data)
 src/main/resources/application-prod.properties
@@ -394,6 +397,12 @@ reports/
 
 # Private documentation (not for Git)
 docs_private/
+
+# Generated documentation (not for Git)
+microservices/docs/
+docs/
+*.md
+!README.md
 
 # ===========================================
 # CUSTOM PROJECT SPECIFIC
