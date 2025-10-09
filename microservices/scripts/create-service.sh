@@ -77,17 +77,18 @@ external:
 EOF
 
 # Create main application class
-cat > "services/$SERVICE_NAME/src/main/java/com/taskboard/$SERVICE_NAME/${SERVICE_NAME^}Application.java" << EOF
+SERVICE_CLASS_NAME=$(echo $SERVICE_NAME | sed 's/-\([a-z]\)/\U\1/g' | sed 's/^\([a-z]\)/\U\1/' | sed 's/-//g')
+cat > "services/$SERVICE_NAME/src/main/java/com/taskboard/$SERVICE_NAME/${SERVICE_CLASS_NAME}Application.java" << EOF
 package com.taskboard.$SERVICE_NAME;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class ${SERVICE_NAME^}Application {
+public class ${SERVICE_CLASS_NAME}Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(${SERVICE_NAME^}Application.class, args);
+        SpringApplication.run(${SERVICE_CLASS_NAME}Application.class, args);
     }
 }
 EOF
