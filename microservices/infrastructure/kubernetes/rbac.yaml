@@ -67,3 +67,5 @@ roleRef:
   kind: ClusterRole
   name: taskboard-monitoring
   apiGroup: rbac.authorization.k8s.io
+
+

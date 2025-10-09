@@ -1,0 +1,12 @@
+# Environment files with secrets
+.env
+.env.local
+.env.*.local
+
+# Keep example files
+!.env.example
+
+# Keep environment-specific files for reference
+!.env.development
+!.env.docker
+!.env.production

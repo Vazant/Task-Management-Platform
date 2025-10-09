@@ -1,5 +1,6 @@
 package com.taskboard.common.util;
 
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
  * Provides methods to get configuration values with fallbacks
  */
 @Component
+@Getter
 public class ConfigUtils {
     
     @Value("${server.port:8080}")
@@ -19,12 +21,27 @@ public class ConfigUtils {
     @Value("${spring.application.name:microservice}")
     private String serviceName;
     
+    @Value("${server.host:localhost}")
+    private String serverHost;
+    
+    @Value("${management.endpoints.web.exposure.include:health,info}")
+    private String exposedEndpoints;
+    
     /**
      * Get the health check URL for the current service
      * @return Health check URL
      */
     public String getHealthCheckUrl() {
-        return String.format("http://localhost:%s%s/health", serverPort, actuatorBasePath);
+        return String.format("http://%s:%s%s/health", serverHost, serverPort, actuatorBasePath);
+    }
+    
+    /**
+     * Get the health check URL for the current service with custom host
+     * @param host Custom host name or IP
+     * @return Health check URL
+     */
+    public String getHealthCheckUrl(String host) {
+        return String.format("http://%s:%s%s/health", host, serverPort, actuatorBasePath);
     }
     
     /**
@@ -32,32 +49,9 @@ public class ConfigUtils {
      * @return Actuator base URL
      */
     public String getActuatorBaseUrl() {
-        return String.format("http://localhost:%s%s", serverPort, actuatorBasePath);
+        return String.format("http://%s:%s%s", serverHost, serverPort, actuatorBasePath);
     }
     
-    /**
-     * Get the service name
-     * @return Service name
-     */
-    public String getServiceName() {
-        return serviceName;
-    }
-    
-    /**
-     * Get the server port
-     * @return Server port
-     */
-    public String getServerPort() {
-        return serverPort;
-    }
-    
-    /**
-     * Get the actuator base path
-     * @return Actuator base path
-     */
-    public String getActuatorBasePath() {
-        return actuatorBasePath;
-    }
     
     /**
      * Build service URL with given host and port

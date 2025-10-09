@@ -43,6 +43,7 @@ spring:
 # Server Configuration
 server:
   port: ${SERVER_PORT:8080}
+  host: ${SERVER_HOST:localhost}
   servlet:
     context-path: ${SERVER_CONTEXT_PATH:}
 
