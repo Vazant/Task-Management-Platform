@@ -1,0 +1,69 @@
+# ServiceAccount for microservices
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: taskboard-microservices
+  namespace: taskboard-microservices
+automountServiceAccountToken: false
+
+---
+# Role for microservices (namespace-scoped permissions)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: taskboard-microservices-role
+  namespace: taskboard-microservices
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+
+---
+# RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: taskboard-microservices-binding
+  namespace: taskboard-microservices
+subjects:
+- kind: ServiceAccount
+  name: taskboard-microservices
+  namespace: taskboard-microservices
+roleRef:
+  kind: Role
+  name: taskboard-microservices-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# ClusterRole for monitoring (cluster-scoped permissions)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: taskboard-monitoring
+rules:
+- apiGroups: [""]
+  resources: ["nodes", "services", "endpoints", "pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+- nonResourceURLs: ["/metrics"]
+  verbs: ["get"]
+
+---
+# ClusterRoleBinding for monitoring
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: taskboard-monitoring
+subjects:
+- kind: ServiceAccount
+  name: taskboard-microservices
+  namespace: taskboard-microservices
+roleRef:
+  kind: ClusterRole
+  name: taskboard-monitoring
+  apiGroup: rbac.authorization.k8s.io

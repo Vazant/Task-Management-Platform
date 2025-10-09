@@ -1,0 +1,154 @@
+# Network Policy for microservices
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: taskboard-microservices-netpol
+  namespace: taskboard-microservices
+spec:
+  podSelector:
+    matchLabels:
+      app: user-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: taskboard-microservices
+    - podSelector:
+        matchLabels:
+          app: user-service
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to:
+    - podSelector:
+        matchLabels:
+          app: kafka
+    ports:
+    - protocol: TCP
+      port: 9092
+  - to: []  # DNS
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+# Network Policy for task service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: taskboard-task-service-netpol
+  namespace: taskboard-microservices
+spec:
+  podSelector:
+    matchLabels:
+      app: task-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: taskboard-microservices
+    - podSelector:
+        matchLabels:
+          app: task-service
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to:
+    - podSelector:
+        matchLabels:
+          app: kafka
+    ports:
+    - protocol: TCP
+      port: 9092
+  - to: []  # DNS
+    ports:
+    - protocol: UDP
+      port: 53
+
+---
+# Network Policy for project service
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: taskboard-project-service-netpol
+  namespace: taskboard-microservices
+spec:
+  podSelector:
+    matchLabels:
+      app: project-service
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: taskboard-microservices
+    - podSelector:
+        matchLabels:
+          app: project-service
+    ports:
+    - protocol: TCP
+      port: 8080
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+  - to:
+    - podSelector:
+        matchLabels:
+          app: redis
+    ports:
+    - protocol: TCP
+      port: 6379
+  - to:
+    - podSelector:
+        matchLabels:
+          app: kafka
+    ports:
+    - protocol: TCP
+      port: 9092
+  - to: []  # DNS
+    ports:
+    - protocol: UDP
+      port: 53

@@ -1,0 +1,37 @@
+# Pod Disruption Budget for user service
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: user-service-pdb
+  namespace: taskboard-microservices
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: user-service
+
+---
+# Pod Disruption Budget for task service
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: task-service-pdb
+  namespace: taskboard-microservices
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: task-service
+
+---
+# Pod Disruption Budget for project service
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: project-service-pdb
+  namespace: taskboard-microservices
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: project-service

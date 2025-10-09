@@ -39,3 +39,4 @@ external:
     jaeger: http://jaeger-service:14268
     kafka-ui: http://kafka-ui-service:8080
     grafana: http://grafana-service:3000
+

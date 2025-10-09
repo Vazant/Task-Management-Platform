@@ -1,10 +1,18 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
+  external_labels:
+    cluster: 'taskboard-microservices'
+    environment: 'development'
 
 rule_files:
-  # - "first_rules.yml"
-  # - "second_rules.yml"
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
 
 scrape_configs:
   # Prometheus itself
@@ -18,6 +26,14 @@ scrape_configs:
       - targets: ['user-service:8080']
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
+    scrape_timeout: 10s
+    honor_labels: true
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'user-service:8080'
+      - target_label: service
+        replacement: 'user-service'
 
   # Task Service
   - job_name: 'task-service'
@@ -25,6 +41,14 @@ scrape_configs:
       - targets: ['task-service:8080']
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
+    scrape_timeout: 10s
+    honor_labels: true
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'task-service:8080'
+      - target_label: service
+        replacement: 'task-service'
 
   # Project Service
   - job_name: 'project-service'
@@ -32,6 +56,14 @@ scrape_configs:
       - targets: ['project-service:8080']
     metrics_path: '/actuator/prometheus'
     scrape_interval: 5s
+    scrape_timeout: 10s
+    honor_labels: true
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'project-service:8080'
+      - target_label: service
+        replacement: 'project-service'
 
   # Time Service
   - job_name: 'time-service'
@@ -99,3 +131,4 @@ scrape_configs:
     static_configs:
       - targets: ['kafka:9092']
     scrape_interval: 30s
+

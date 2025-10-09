@@ -105,3 +105,4 @@ external:
     jaeger: ${JAEGER_URL}
     kafka-ui: ${KAFKA_UI_URL}
     grafana: ${GRAFANA_URL}
+

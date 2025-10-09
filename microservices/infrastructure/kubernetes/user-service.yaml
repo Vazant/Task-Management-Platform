@@ -17,11 +17,29 @@ spec:
         app: user-service
         version: v1
     spec:
+      serviceAccountName: taskboard-microservices
+      # Pod Security Standards
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
       - name: user-service
         image: taskboard/user-service:latest
         ports:
         - containerPort: 8080
+        # Container Security Context
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1001
+          capabilities:
+            drop:
+            - ALL
         env:
         # Service Configuration
         - name: SERVICE_NAME
@@ -130,6 +148,14 @@ spec:
             configMapKeyRef:
               name: taskboard-config
               key: LOG_LEVEL_TASKBOARD
+        - name: LOG_FILE_PATH
+          value: "/app/logs/application.log"
+        
+        volumeMounts:
+        - name: app-logs
+          mountPath: /app/logs
+        - name: tmp
+          mountPath: /tmp
         
         resources:
           requests:
@@ -143,19 +169,40 @@ spec:
           httpGet:
             path: /actuator/health
             port: 8080
+            scheme: HTTP
           initialDelaySeconds: 60
           periodSeconds: 30
           timeoutSeconds: 10
           failureThreshold: 3
+          successThreshold: 1
         
         readinessProbe:
           httpGet:
-            path: /actuator/health
+            path: /actuator/health/readiness
             port: 8080
+            scheme: HTTP
           initialDelaySeconds: 30
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 3
+          successThreshold: 1
+        
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 30
+          successThreshold: 1
+      
+      volumes:
+      - name: app-logs
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
 
 ---
 apiVersion: v1
@@ -173,3 +220,4 @@ spec:
     targetPort: 8080
     protocol: TCP
   type: ClusterIP
+

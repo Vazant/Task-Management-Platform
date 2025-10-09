@@ -10,9 +10,9 @@ services:
     image: postgres:15-alpine
     container_name: taskboard-postgres
     environment:
-      POSTGRES_DB: taskboard
-      POSTGRES_USER: taskboard_user
-      POSTGRES_PASSWORD: taskboard_password
+      POSTGRES_DB: ${POSTGRES_DB:-taskboard}
+      POSTGRES_USER: ${DATABASE_USERNAME:-taskboard_user}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-taskboard_password}
     ports:
       - "5432:5432"
     volumes:
@@ -198,6 +198,8 @@ services:
       context: ../../services/user-service
       dockerfile: Dockerfile
     container_name: taskboard-user-service
+    restart: unless-stopped
+    user: "1001:1001"  # Non-root user
     ports:
       - "8081:8080"
     environment:
@@ -208,12 +210,13 @@ services:
       
       # Database Configuration
       DATABASE_URL: jdbc:postgresql://postgres:5432/taskboard
-      DATABASE_USERNAME: taskboard_user
-      DATABASE_PASSWORD: taskboard_password
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-taskboard_user}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-taskboard_password}
       
       # Redis Configuration
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
       
       # Kafka Configuration
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
@@ -231,6 +234,14 @@ services:
       # Actuator Configuration
       ACTUATOR_BASE_PATH: /actuator
       ACTUATOR_ENDPOINTS: health,info,metrics,prometheus
+      
+      # Logging Configuration
+      LOG_FILE_PATH: /app/logs/application.log
+      LOG_LEVEL_ROOT: ${LOG_LEVEL_ROOT:-INFO}
+      LOG_LEVEL_TASKBOARD: ${LOG_LEVEL_TASKBOARD:-DEBUG}
+    volumes:
+      - user-service-logs:/app/logs:rw
+      - /tmp:/tmp:rw
     depends_on:
       postgres:
         condition: service_healthy
@@ -245,6 +256,15 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
 
   # Task Service
   task-service:
@@ -252,16 +272,50 @@ services:
       context: ../../services/task-service
       dockerfile: Dockerfile
     container_name: taskboard-task-service
+    restart: unless-stopped
+    user: "1001:1001"  # Non-root user
     ports:
       - "8082:8080"
     environment:
+      # Service Configuration
+      SERVICE_NAME: task-service
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskboard
-      SPRING_DATASOURCE_USERNAME: taskboard_user
-      SPRING_DATASOURCE_PASSWORD: taskboard_password
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+      SERVER_PORT: 8080
+      
+      # Database Configuration
+      DATABASE_URL: jdbc:postgresql://postgres:5432/taskboard
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-taskboard_user}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-taskboard_password}
+      
+      # Redis Configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      
+      # Kafka Configuration
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_CONSUMER_GROUP: taskboard-task-group
+      
+      # Service URLs
+      USER_SERVICE_URL: http://user-service:8080
+      TASK_SERVICE_URL: http://task-service:8080
+      PROJECT_SERVICE_URL: http://project-service:8080
+      
+      # External Services
+      PROMETHEUS_URL: http://prometheus:9090
+      JAEGER_URL: http://jaeger:14268
+      
+      # Actuator Configuration
+      ACTUATOR_BASE_PATH: /actuator
+      ACTUATOR_ENDPOINTS: health,info,metrics,prometheus
+      
+      # Logging Configuration
+      LOG_FILE_PATH: /app/logs/application.log
+      LOG_LEVEL_ROOT: ${LOG_LEVEL_ROOT:-INFO}
+      LOG_LEVEL_TASKBOARD: ${LOG_LEVEL_TASKBOARD:-DEBUG}
+    volumes:
+      - task-service-logs:/app/logs:rw
+      - /tmp:/tmp:rw
     depends_on:
       postgres:
         condition: service_healthy
@@ -276,6 +330,15 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
 
   # Project Service
   project-service:
@@ -283,16 +346,50 @@ services:
       context: ../../services/project-service
       dockerfile: Dockerfile
     container_name: taskboard-project-service
+    restart: unless-stopped
+    user: "1001:1001"  # Non-root user
     ports:
       - "8083:8080"
     environment:
+      # Service Configuration
+      SERVICE_NAME: project-service
       SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskboard
-      SPRING_DATASOURCE_USERNAME: taskboard_user
-      SPRING_DATASOURCE_PASSWORD: taskboard_password
-      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
-      SPRING_REDIS_HOST: redis
-      SPRING_REDIS_PORT: 6379
+      SERVER_PORT: 8080
+      
+      # Database Configuration
+      DATABASE_URL: jdbc:postgresql://postgres:5432/taskboard
+      DATABASE_USERNAME: ${DATABASE_USERNAME:-taskboard_user}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-taskboard_password}
+      
+      # Redis Configuration
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      
+      # Kafka Configuration
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_CONSUMER_GROUP: taskboard-project-group
+      
+      # Service URLs
+      USER_SERVICE_URL: http://user-service:8080
+      TASK_SERVICE_URL: http://task-service:8080
+      PROJECT_SERVICE_URL: http://project-service:8080
+      
+      # External Services
+      PROMETHEUS_URL: http://prometheus:9090
+      JAEGER_URL: http://jaeger:14268
+      
+      # Actuator Configuration
+      ACTUATOR_BASE_PATH: /actuator
+      ACTUATOR_ENDPOINTS: health,info,metrics,prometheus
+      
+      # Logging Configuration
+      LOG_FILE_PATH: /app/logs/application.log
+      LOG_LEVEL_ROOT: ${LOG_LEVEL_ROOT:-INFO}
+      LOG_LEVEL_TASKBOARD: ${LOG_LEVEL_TASKBOARD:-DEBUG}
+    volumes:
+      - project-service-logs:/app/logs:rw
+      - /tmp:/tmp:rw
     depends_on:
       postgres:
         condition: service_healthy
@@ -307,6 +404,15 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
 
 # ===========================================
 # VOLUMES
@@ -317,6 +423,10 @@ volumes:
   kafka_data:
   prometheus_data:
   grafana_data:
+  # Service logs
+  user-service-logs:
+  task-service-logs:
+  project-service-logs:
 
 # ===========================================
 # NETWORKS

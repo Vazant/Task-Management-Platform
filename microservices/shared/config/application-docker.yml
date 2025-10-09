@@ -6,8 +6,8 @@ spring:
   # Database Configuration for Docker
   datasource:
     url: jdbc:postgresql://postgres:5432/taskboard
-    username: taskboard_user
-    password: taskboard_password
+    username: ${DATABASE_USERNAME:-taskboard_user}
+    password: ${DATABASE_PASSWORD:-taskboard_password}
   
   # Redis Configuration for Docker
   data:
@@ -39,3 +39,4 @@ external:
     jaeger: http://jaeger:14268
     kafka-ui: http://kafka-ui:8080
     grafana: http://grafana:3000
+
