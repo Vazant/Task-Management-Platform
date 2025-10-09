@@ -1,9 +1,6 @@
 global:
   scrape_interval: 15s
   evaluation_interval: 15s
-  external_labels:
-    cluster: 'taskboard-microservices'
-    environment: 'development'
 
 rule_files:
   - "alert_rules.yml"
@@ -20,115 +17,132 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
-  # User Service
+  # Spring Boot Actuator endpoints
   - job_name: 'user-service'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['user-service:8080']
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
-    scrape_timeout: 10s
-    honor_labels: true
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-        replacement: 'user-service:8080'
-      - target_label: service
-        replacement: 'user-service'
+    scrape_interval: 30s
 
-  # Task Service
   - job_name: 'task-service'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['task-service:8080']
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
-    scrape_timeout: 10s
-    honor_labels: true
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-        replacement: 'task-service:8080'
-      - target_label: service
-        replacement: 'task-service'
+    scrape_interval: 30s
 
-  # Project Service
   - job_name: 'project-service'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['project-service:8080']
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
-    scrape_timeout: 10s
-    honor_labels: true
-    relabel_configs:
-      - source_labels: [__address__]
-        target_label: instance
-        replacement: 'project-service:8080'
-      - target_label: service
-        replacement: 'project-service'
+    scrape_interval: 30s
 
-  # Time Service
   - job_name: 'time-service'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['time-service:8080']
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
+    scrape_interval: 30s
 
-  # Analytics Service
   - job_name: 'analytics-service'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['analytics-service:8080']
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
+    scrape_interval: 30s
 
-  # Notification Service
   - job_name: 'notification-service'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['notification-service:8080']
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
+    scrape_interval: 30s
 
-  # Search Service
   - job_name: 'search-service'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['search-service:8080']
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
+    scrape_interval: 30s
 
-  # File Service
   - job_name: 'file-service'
+    metrics_path: '/actuator/prometheus'
     static_configs:
       - targets: ['file-service:8080']
-    metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
+    scrape_interval: 30s
 
-  # Gateway Service
   - job_name: 'gateway-service'
-    static_configs:
-      - targets: ['gateway-service:8080']
     metrics_path: '/actuator/prometheus'
-    scrape_interval: 5s
-
-  # Kong API Gateway
-  - job_name: 'kong-gateway'
     static_configs:
-      - targets: ['kong:8001']
-    metrics_path: '/metrics'
-    scrape_interval: 5s
+      - targets: ['gateway-service:8000']
+    scrape_interval: 30s
 
-  # PostgreSQL
+  # Infrastructure monitoring
   - job_name: 'postgres'
     static_configs:
-      - targets: ['postgres:5432']
+      - targets: ['postgres-exporter:9187']
     scrape_interval: 30s
 
-  # Redis
   - job_name: 'redis'
     static_configs:
-      - targets: ['redis:6379']
+      - targets: ['redis-exporter:9121']
     scrape_interval: 30s
 
-  # Kafka
   - job_name: 'kafka'
     static_configs:
-      - targets: ['kafka:9092']
+      - targets: ['kafka-exporter:9308']
     scrape_interval: 30s
 
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 30s
+
+  # Kubernetes monitoring (if running in K8s)
+  - job_name: 'kubernetes-apiservers'
+    kubernetes_sd_configs:
+      - role: endpoints
+    scheme: https
+    tls_config:
+      ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: default;kubernetes;https
+
+  - job_name: 'kubernetes-nodes'
+    kubernetes_sd_configs:
+      - role: node
+    scheme: https
+    tls_config:
+      ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+    bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+    relabel_configs:
+      - action: labelmap
+        regex: __meta_kubernetes_node_label_(.+)
+
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - action: labelmap
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: kubernetes_namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name

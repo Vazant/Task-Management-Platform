@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: taskboard-microservices
+  name: taskboard
   labels:
-    name: taskboard-microservices
-    app: taskboard
-    environment: development
+    name: taskboard
     pod-security.kubernetes.io/enforce: restricted
     pod-security.kubernetes.io/audit: restricted
     pod-security.kubernetes.io/warn: restricted
-
+  annotations:
+    description: "Namespace for Task Management Platform microservices"

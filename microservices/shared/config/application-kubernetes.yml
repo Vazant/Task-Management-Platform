@@ -1,16 +1,12 @@
-# Kubernetes environment configuration
+# Kubernetes конфигурация для микросервисов
 spring:
   profiles:
     active: kubernetes
-
-# Server Configuration for Kubernetes
-server:
-  host: 0.0.0.0  # Bind to all interfaces in Kubernetes
   
   # Database Configuration for Kubernetes
   datasource:
     url: jdbc:postgresql://postgres-service:5432/taskboard
-    username: taskboard_user
+    username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
   
   # Redis Configuration for Kubernetes
@@ -18,6 +14,7 @@ server:
     redis:
       host: redis-service
       port: 6379
+      password: ${REDIS_PASSWORD}
   
   # Kafka Configuration for Kubernetes
   kafka:
@@ -34,13 +31,34 @@ service:
     notification-service: http://notification-service:8080
     search-service: http://search-service:8080
     file-service: http://file-service:8080
-    gateway-service: http://kong-service:8000
+    gateway-service: http://gateway-service:8000
 
 # External Services for Kubernetes
 external:
   services:
     prometheus: http://prometheus-service:9090
-    jaeger: http://jaeger-service:14268
+    jaeger: http://jaeger-service:16686
     kafka-ui: http://kafka-ui-service:8080
     grafana: http://grafana-service:3000
 
+# Monitoring Configuration for Kubernetes
+monitoring:
+  jaeger:
+    endpoint: http://jaeger-service:14268/api/traces
+
+# Logging Configuration for Kubernetes
+logging:
+  level:
+    root: INFO
+    com.taskboard: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+
+# Kubernetes specific configuration
+kubernetes:
+  discovery:
+    enabled: true
+  config:
+    enabled: true
+  secrets:
+    enabled: true

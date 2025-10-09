@@ -1,26 +1,38 @@
-# Base configuration for all microservices
+# Базовая конфигурация для всех микросервисов
 spring:
   application:
-    name: ${SERVICE_NAME:microservice}
+    name: ${SERVICE_NAME:unknown-service}
+  
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
   
   # Database Configuration
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/taskboard}
-    username: ${DATABASE_USERNAME:taskboard_user}
-    password: ${DATABASE_PASSWORD}
+    username: ${DATABASE_USERNAME:taskboard}
+    password: ${DATABASE_PASSWORD:taskboard}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      connection-timeout: 20000
+      leak-detection-threshold: 60000
   
   # JPA Configuration
   jpa:
     hibernate:
-      ddl-auto: ${JPA_DDL_AUTO:update}
-    show-sql: ${JPA_SHOW_SQL:false}
+      ddl-auto: validate
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
+        format_sql: false
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
   
   # Redis Configuration
   data:
@@ -28,53 +40,129 @@ spring:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
-      timeout: ${REDIS_TIMEOUT:2000ms}
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
   
   # Kafka Configuration
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     consumer:
-      group-id: ${KAFKA_CONSUMER_GROUP:taskboard-group}
-      auto-offset-reset: ${KAFKA_AUTO_OFFSET_RESET:earliest}
+      group-id: ${SERVICE_NAME:unknown-service}
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.taskboard.*"
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 3
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+  
+  # Security Configuration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${JWT_JWK_SET_URI:http://localhost:8080/.well-known/jwks.json}
+  
+  # Jackson Configuration
+  jackson:
+    default-property-inclusion: non_null
+    serialization:
+      write-dates-as-timestamps: false
+      fail-on-empty-beans: false
+    deserialization:
+      fail-on-unknown-properties: false
 
 # Server Configuration
 server:
   port: ${SERVER_PORT:8080}
-  host: ${SERVER_HOST:localhost}
   servlet:
-    context-path: ${SERVER_CONTEXT_PATH:}
+    context-path: /
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+  error:
+    include-stacktrace: never
+    include-message: never
 
-# Management/Actuator Configuration
+# Management and Actuator
 management:
   endpoints:
     web:
       exposure:
-        include: ${ACTUATOR_ENDPOINTS:health,info,metrics,prometheus}
-      base-path: ${ACTUATOR_BASE_PATH:/actuator}
+        include: health,info,metrics,prometheus,env
+      base-path: /actuator
   endpoint:
     health:
-      show-details: ${ACTUATOR_HEALTH_DETAILS:always}
-      show-components: ${ACTUATOR_HEALTH_COMPONENTS:always}
+      show-details: when-authorized
+      show-components: always
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
   metrics:
     export:
       prometheus:
-        enabled: ${PROMETHEUS_ENABLED:true}
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+      slo:
+        http.server.requests: 50ms, 100ms, 200ms, 500ms
 
 # Logging Configuration
 logging:
   level:
-    root: ${LOG_LEVEL_ROOT:INFO}
-    com.taskboard: ${LOG_LEVEL_TASKBOARD:DEBUG}
+    root: INFO
+    com.taskboard: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
-    console: ${LOG_PATTERN_CONSOLE:%d{yyyy-MM-dd HH:mm:ss} - %msg%n}
-    file: ${LOG_PATTERN_FILE:%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n}
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
+  file:
+    name: logs/${spring.application.name}.log
+    max-size: 100MB
+    max-history: 30
 
-# Service URLs (for inter-service communication)
+# Service Configuration
 service:
-  urls:
+  name: ${SERVICE_NAME:unknown-service}
+  version: ${SERVICE_VERSION:1.0.0}
+  description: ${SERVICE_DESCRIPTION:Microservice}
+  
+  # Circuit Breaker Configuration
+  circuit-breaker:
+    failure-rate-threshold: 50
+    wait-duration-in-open-state: 30s
+    sliding-window-size: 10
+    minimum-number-of-calls: 5
+  
+  # Retry Configuration
+  retry:
+    max-attempts: 3
+    backoff-delay: 1000ms
+    max-backoff-delay: 10000ms
+
+# External Services Configuration
+external:
+  services:
     user-service: ${USER_SERVICE_URL:http://localhost:8081}
     task-service: ${TASK_SERVICE_URL:http://localhost:8082}
     project-service: ${PROJECT_SERVICE_URL:http://localhost:8083}
@@ -85,11 +173,23 @@ service:
     file-service: ${FILE_SERVICE_URL:http://localhost:8088}
     gateway-service: ${GATEWAY_SERVICE_URL:http://localhost:8000}
 
-# External Services
-external:
-  services:
-    prometheus: ${PROMETHEUS_URL:http://localhost:9090}
-    jaeger: ${JAEGER_URL:http://localhost:14268}
-    kafka-ui: ${KAFKA_UI_URL:http://localhost:8080}
-    grafana: ${GRAFANA_URL:http://localhost:3000}
+# Monitoring Configuration
+monitoring:
+  prometheus:
+    enabled: true
+    path: /actuator/prometheus
+  jaeger:
+    enabled: true
+    endpoint: ${JAEGER_ENDPOINT:http://localhost:14268/api/traces}
+  health-check:
+    interval: 30s
+    timeout: 10s
+    retries: 3
 
+# Feature Flags
+feature:
+  flags:
+    enable-caching: ${ENABLE_CACHING:true}
+    enable-metrics: ${ENABLE_METRICS:true}
+    enable-tracing: ${ENABLE_TRACING:true}
+    enable-security: ${ENABLE_SECURITY:true}

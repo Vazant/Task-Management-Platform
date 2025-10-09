@@ -1,27 +1,24 @@
-# Docker environment configuration
+# Docker конфигурация для микросервисов
 spring:
   profiles:
     active: docker
-
-# Server Configuration for Docker
-server:
-  host: 0.0.0.0  # Bind to all interfaces in Docker
   
   # Database Configuration for Docker
   datasource:
     url: jdbc:postgresql://postgres:5432/taskboard
-    username: ${DATABASE_USERNAME:-taskboard_user}
-    password: ${DATABASE_PASSWORD:-taskboard_password}
+    username: ${DATABASE_USERNAME:taskboard}
+    password: ${DATABASE_PASSWORD:taskboard}
   
   # Redis Configuration for Docker
   data:
     redis:
       host: redis
       port: 6379
+      password: ${REDIS_PASSWORD:}
   
   # Kafka Configuration for Docker
   kafka:
-    bootstrap-servers: kafka:29092
+    bootstrap-servers: kafka:9092
 
 # Service URLs for Docker environment
 service:
@@ -34,13 +31,25 @@ service:
     notification-service: http://notification-service:8080
     search-service: http://search-service:8080
     file-service: http://file-service:8080
-    gateway-service: http://kong:8000
+    gateway-service: http://gateway-service:8000
 
 # External Services for Docker
 external:
   services:
     prometheus: http://prometheus:9090
-    jaeger: http://jaeger:14268
+    jaeger: http://jaeger:16686
     kafka-ui: http://kafka-ui:8080
     grafana: http://grafana:3000
 
+# Monitoring Configuration for Docker
+monitoring:
+  jaeger:
+    endpoint: http://jaeger:14268/api/traces
+
+# Logging Configuration for Docker
+logging:
+  level:
+    root: INFO
+    com.taskboard: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
