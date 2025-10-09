@@ -3,9 +3,6 @@ package com.taskboard.userservice.domain.model;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 
@@ -332,31 +329,41 @@ class UserTest {
         @DisplayName("Should be equal when users have same id and username")
         void shouldBeEqualWhenUsersHaveSameIdAndUsername() {
             // Given
-            User user1 = new User("testuser", "test1@example.com", "hash1", "John", "Doe", UserRole.USER);
-            User user2 = new User("testuser", "test2@example.com", "hash2", "Jane", "Smith", UserRole.ADMIN);
-            
-            // Set same ID for both users
-            user1.setId(1L);
-            user2.setId(1L);
+            User user1 = createUserWithId("testuser", "test1@example.com", "hash1", "John", "Doe", UserRole.USER, 1L);
+            User user2 = createUserWithId("testuser", "test2@example.com", "hash2", "Jane", "Smith", UserRole.ADMIN, 1L);
             
             // When & Then
-            assertThat(user1).isEqualTo(user2);
-            assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
+            assertThat(user1)
+                .isEqualTo(user2)
+                .hasSameHashCodeAs(user2);
         }
         
         @Test
         @DisplayName("Should not be equal when users have different ids")
         void shouldNotBeEqualWhenUsersHaveDifferentIds() {
             // Given
-            User user1 = new User("testuser", "test1@example.com", "hash1", "John", "Doe", UserRole.USER);
-            User user2 = new User("testuser", "test2@example.com", "hash2", "Jane", "Smith", UserRole.ADMIN);
-            
-            // Set different IDs
-            user1.setId(1L);
-            user2.setId(2L);
+            User user1 = createUserWithId("testuser", "test1@example.com", "hash1", "John", "Doe", UserRole.USER, 1L);
+            User user2 = createUserWithId("testuser", "test2@example.com", "hash2", "Jane", "Smith", UserRole.ADMIN, 2L);
             
             // When & Then
             assertThat(user1).isNotEqualTo(user2);
+        }
+        
+        /**
+         * Helper method to create a User with a specific ID for testing.
+         * Uses reflection to set the protected setId method.
+         */
+        private User createUserWithId(String username, String email, String passwordHash, 
+                                    String firstName, String lastName, UserRole role, Long id) {
+            User user = new User(username, email, passwordHash, firstName, lastName, role);
+            try {
+                java.lang.reflect.Method setIdMethod = User.class.getDeclaredMethod("setId", Long.class);
+                setIdMethod.setAccessible(true);
+                setIdMethod.invoke(user, id);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to set user ID", e);
+            }
+            return user;
         }
     }
 }

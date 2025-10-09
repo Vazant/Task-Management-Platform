@@ -46,6 +46,23 @@ class UserDomainServiceTest {
         userDomainService = new UserDomainService(userRepository);
     }
     
+    /**
+     * Helper method to create a User with a specific ID for testing.
+     * Uses reflection to set the protected setId method.
+     */
+    private User createUserWithId(String username, String email, String passwordHash, 
+                                String firstName, String lastName, UserRole role, Long id) {
+        User user = new User(username, email, passwordHash, firstName, lastName, role);
+        try {
+            java.lang.reflect.Method setIdMethod = User.class.getDeclaredMethod("setId", Long.class);
+            setIdMethod.setAccessible(true);
+            setIdMethod.invoke(user, id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to set user ID", e);
+        }
+        return user;
+    }
+    
     @Nested
     @DisplayName("User Creation Tests")
     class UserCreationTests {
@@ -178,8 +195,7 @@ class UserDomainServiceTest {
         void shouldUpdateUserProfileSuccessfully() {
             // Given
             Long userId = 1L;
-            User existingUser = new User("testuser", "old@example.com", "hash", "John", "Doe", UserRole.USER);
-            existingUser.setId(userId);
+            User existingUser = createUserWithId("testuser", "old@example.com", "hash", "John", "Doe", UserRole.USER, userId);
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
             when(userRepository.existsByEmail("new@example.com")).thenReturn(false);
@@ -220,8 +236,7 @@ class UserDomainServiceTest {
         void shouldThrowUserAlreadyExistsExceptionWhenEmailIsAlreadyInUse() {
             // Given
             Long userId = 1L;
-            User existingUser = new User("testuser", "old@example.com", "hash", "John", "Doe", UserRole.USER);
-            existingUser.setId(userId);
+            User existingUser = createUserWithId("testuser", "old@example.com", "hash", "John", "Doe", UserRole.USER, userId);
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(existingUser));
             when(userRepository.existsByEmail("existing@example.com")).thenReturn(true);
@@ -246,8 +261,7 @@ class UserDomainServiceTest {
         void shouldActivateUserSuccessfully() {
             // Given
             Long userId = 1L;
-            User user = new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-            user.setId(userId);
+            User user = createUserWithId("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER, userId);
             user.deactivate();
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(user));
@@ -269,8 +283,7 @@ class UserDomainServiceTest {
         void shouldDeactivateUserSuccessfully() {
             // Given
             Long userId = 1L;
-            User user = new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-            user.setId(userId);
+            User user = createUserWithId("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER, userId);
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(user));
             when(userRepository.save(any(User.class))).thenReturn(user);
@@ -291,11 +304,8 @@ class UserDomainServiceTest {
         void shouldBlockUserSuccessfullyWhenUserHasPermission() {
             // Given
             Long userId = 1L;
-            User userToBlock = new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-            userToBlock.setId(userId);
-            
-            User adminUser = new User("admin", "admin@example.com", "hash", "Admin", "User", UserRole.ADMIN);
-            adminUser.setId(2L);
+            User userToBlock = createUserWithId("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER, userId);
+            User adminUser = createUserWithId("admin", "admin@example.com", "hash", "Admin", "User", UserRole.ADMIN, 2L);
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(userToBlock));
             when(userRepository.save(any(User.class))).thenReturn(userToBlock);
@@ -316,8 +326,7 @@ class UserDomainServiceTest {
         void shouldThrowUserDomainExceptionWhenUserTriesToBlockThemselves() {
             // Given
             Long userId = 1L;
-            User user = new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-            user.setId(userId);
+            User user = createUserWithId("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER, userId);
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(user));
             
@@ -335,11 +344,8 @@ class UserDomainServiceTest {
         void shouldThrowUserDomainExceptionWhenNonAdminTriesToBlockUser() {
             // Given
             Long userId = 1L;
-            User userToBlock = new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-            userToBlock.setId(userId);
-            
-            User regularUser = new User("regular", "regular@example.com", "hash", "Regular", "User", UserRole.USER);
-            regularUser.setId(2L);
+            User userToBlock = createUserWithId("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER, userId);
+            User regularUser = createUserWithId("regular", "regular@example.com", "hash", "Regular", "User", UserRole.USER, 2L);
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(userToBlock));
             
@@ -362,11 +368,8 @@ class UserDomainServiceTest {
         void shouldUpdateUserRoleSuccessfullyWhenUserHasPermission() {
             // Given
             Long userId = 1L;
-            User userToUpdate = new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-            userToUpdate.setId(userId);
-            
-            User adminUser = new User("admin", "admin@example.com", "hash", "Admin", "User", UserRole.ADMIN);
-            adminUser.setId(2L);
+            User userToUpdate = createUserWithId("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER, userId);
+            User adminUser = createUserWithId("admin", "admin@example.com", "hash", "Admin", "User", UserRole.ADMIN, 2L);
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(userToUpdate));
             when(userRepository.save(any(User.class))).thenReturn(userToUpdate);
@@ -387,8 +390,7 @@ class UserDomainServiceTest {
         void shouldThrowUserDomainExceptionWhenUserTriesToChangeTheirOwnRole() {
             // Given
             Long userId = 1L;
-            User user = new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-            user.setId(userId);
+            User user = createUserWithId("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER, userId);
             
             when(userRepository.findById(userId)).thenReturn(Optional.of(user));
             
