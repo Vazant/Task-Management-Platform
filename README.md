@@ -1,256 +1,158 @@
 # Task Management Platform
 
-A comprehensive task and project management platform built with Angular 20 and Spring Boot 3, featuring real-time collaboration, advanced analytics, and enterprise-grade security.
+Современная платформа для управления задачами и проектами с микросервисной архитектурой.
 
-## 🚀 Quick Start
+[![Build Status](https://github.com/your-org/task-management/workflows/CI/badge.svg)](https://github.com/your-org/task-management/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+## 🚀 Быстрый старт
+
+### Предварительные требования
+- Java 17+
+- Node.js 18+
+- Docker & Docker Compose
+- PostgreSQL 13+
+
+### Запуск
+```bash
+# Клонирование
+git clone https://github.com/your-org/task-management.git
+cd task-management
+
+# Запуск с Docker
+cd microservices/infrastructure/docker
+./run-with-env.sh development up -d
+```
+
+Приложение будет доступно по адресу: http://localhost:4200
+
+## ✨ Возможности
+
+- 📋 **Управление задачами** - Полный CRUD функционал с Kanban досками
+- 👥 **Командная работа** - Совместное редактирование в реальном времени
+- 📊 **Аналитика** - Детальные отчеты и метрики производительности
+- 🔐 **Безопасность** - Enterprise-уровень с JWT аутентификацией
+- 🏗️ **Микросервисы** - Масштабируемая архитектура
+- 📱 **Responsive** - Адаптивный дизайн для всех устройств
+
+## 🛠 Технологии
+
+| Компонент | Технология | Версия |
+|-----------|------------|--------|
+| Frontend | Angular | 17+ |
+| Backend | Spring Boot | 3.x |
+| Database | PostgreSQL | 15+ |
+| Cache | Redis | 7+ |
+| Message Queue | Kafka | 3+ |
+| Container | Docker | 24+ |
+| Orchestration | Kubernetes | 1.28+ |
+
+## 📁 Структура проекта
+
+```
+├── client/                    # Angular Frontend
+├── server/                    # Spring Boot Backend (Legacy)
+├── microservices/            # Микросервисная архитектура
+│   ├── services/             # Микросервисы
+│   ├── shared/               # Общие компоненты
+│   └── infrastructure/       # Docker, K8s, мониторинг
+└── docs/                     # Документация
+```
+
+## 🔧 Конфигурация
+
+### Переменные окружения
+```bash
+# Загрузка конфигурации
+source microservices/shared/config/load-env.sh development
+
+# Основные переменные
+export SPRING_PROFILES_ACTIVE=development
+export DATABASE_URL=postgresql://localhost:5432/taskboard
+export JWT_SECRET=your-secret-key
+```
+
+### Docker Compose
+```bash
+# Разработка
+./run-with-env.sh development up -d
+
+# Продакшен
+./run-with-env.sh production up -d
+```
+
+## 🧪 Тестирование
 
 ```bash
-# Clone the repository
-git clone https://github.com/your-org/task-management-platform.git
-cd task-management-platform
+# Backend тесты
+cd server && mvn test
 
-# Start the entire system
-./scripts/quick-start.sh
+# Frontend тесты
+cd client && npm test
 
-# Open your browser to http://localhost:4200
+# E2E тесты
+cd client && npm run e2e
+
+# Интеграционные тесты
+mvn test -Dtest="*IntegrationTest"
 ```
 
-## ✨ Features
+## 🚀 Развертывание
 
-### 🎯 Core Functionality
-- **Task Management**: Create, assign, and track tasks with full lifecycle management
-- **Project Management**: Organize tasks into projects with team collaboration
-- **Real-time Updates**: WebSocket-based live updates for team collaboration
-- **Advanced Analytics**: Comprehensive reporting and performance metrics
-- **Kanban Boards**: Visual task management with drag-and-drop functionality
-
-### 🔧 Technical Features
-- **Modern Stack**: Angular 20 + Spring Boot 3 + PostgreSQL
-- **PWA Support**: Offline functionality and mobile app-like experience
-- **Security**: JWT authentication, role-based access control, and data encryption
-- **Testing**: Comprehensive test suite with Unit, Integration, E2E, and Load tests
-- **Monitoring**: Built-in health checks, metrics, and performance monitoring
-
-### 📊 Analytics & Reporting
-- **Task Analytics**: Completion rates, time tracking, and productivity metrics
-- **Project Reports**: Progress tracking, team performance, and deadline management
-- **Custom Dashboards**: Personalized views and real-time data visualization
-- **Export Options**: PDF, Excel, and CSV export capabilities
-
-## 🏗️ Project Structure
-
-```
-/
-├── .gitignore
-├── README.md
-├── package.json              # Root workspace configuration
-│
-├── docs/                     # Documentation
-│   └── DEVELOPMENT_ROADMAP.md
-│
-├── config/                   # Shared configuration files
-│   ├── .editorconfig
-│   ├── .eslintrc.json
-│   ├── .prettierrc
-│   ├── tsconfig.json
-│   ├── tsconfig.app.json
-│   └── tsconfig.spec.json
-│
-├── scripts/                  # Build and utility scripts
-│   └── check-imports.js
-│
-├── client/                   # Angular Frontend
-│   ├── package.json
-│   ├── angular.json
-│   └── src/
-│       ├── index.html
-│       ├── main.ts
-│       ├── styles.scss
-│       └── app/
-│           ├── core/         # Singleton services, guards, interceptors
-│           ├── shared/       # Reusable components, pipes, directives
-│           └── features/     # Feature modules (projects, auth, profile, etc.)
-│
-├── server/                   # Spring Boot Backend
-│   ├── package.json
-│   └── src/
-│       ├── main/
-│       │   ├── java/
-│       │   │   └── com/taskboard/
-│       │   │       ├── api/          # Controllers, services, models
-│       │   │       └── user/         # User management
-│       │   └── resources/
-│       └── test/
-│
-└── backend/                  # Legacy backend (to be migrated)
-    └── src/
-        └── main/
-            └── java/
-                └── com/taskboard/
-```
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Node.js >= 18.0.0
-- npm >= 9.0.0
-- Java 17+ (for Spring Boot backend)
-- Maven or Gradle
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/task-management-platform.git
-   cd task-management-platform
-   ```
-
-2. **Install dependencies**
-   ```bash
-   # Install root dependencies
-   npm install
-   
-   # Install client dependencies
-   npm install --workspace=client
-   
-   # Install server dependencies (if any)
-   npm install --workspace=server
-   ```
-
-3. **Start development servers**
-   ```bash
-   # Start both frontend and backend
-   npm run dev
-   
-   # Or start individually
-   npm run dev:client    # Angular dev server (http://localhost:4200)
-   npm run dev:server    # Spring Boot server (http://localhost:8080)
-   ```
-
-## 📦 Available Scripts
-
-### Root Level (Monorepo)
-
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start both frontend and backend in development mode |
-| `npm run dev:client` | Start Angular development server |
-| `npm run dev:server` | Start Spring Boot development server |
-| `npm run build` | Build both frontend and backend |
-| `npm run test` | Run tests for both frontend and backend |
-| `npm run lint` | Run linting for both frontend and backend |
-| `npm run format` | Format all code with Prettier |
-| `npm run install:all` | Install dependencies for all workspaces |
-
-### Client (Angular)
-
-| Script | Description |
-|--------|-------------|
-| `npm run start` | Start Angular development server |
-| `npm run build` | Build Angular application for production |
-| `npm run test` | Run Angular unit tests |
-| `npm run lint` | Run ESLint on Angular code |
-| `npm run storybook` | Start Storybook development server |
-
-### Server (Spring Boot)
-
-| Script | Description |
-|--------|-------------|
-| `npm run start` | Start Spring Boot application |
-| `npm run build` | Build Spring Boot application |
-| `npm run test` | Run Spring Boot tests |
-
-## 🛠️ Development
-
-### Frontend Development
-
-The Angular application is located in the `client/` directory and follows a modular architecture:
-
-- **Core Module**: Singleton services, guards, interceptors, and core utilities
-- **Shared Module**: Reusable components, pipes, directives, and utilities
-- **Feature Modules**: Organized by business features (projects, auth, profile, etc.)
-
-### Backend Development
-
-The Spring Boot application follows Clean Architecture principles:
-
-- **Controllers**: Handle HTTP requests and responses
-- **Services**: Business logic and application services
-- **Repositories**: Data access layer
-- **Models**: Domain entities and DTOs
-
-### Configuration
-
-All configuration files are centralized in the `config/` directory:
-
-- **TypeScript**: `tsconfig.json`, `tsconfig.app.json`, `tsconfig.spec.json`
-- **ESLint**: `.eslintrc.json`
-- **Prettier**: `.prettierrc`
-- **EditorConfig**: `.editorconfig`
-
-## 🧪 Testing
-
-### Frontend Testing
+### Docker
 ```bash
-# Run unit tests
-npm run test --workspace=client
+# Сборка и запуск
+docker-compose up -d --build
 
-# Run tests with coverage
-npm run test --workspace=client -- --coverage
-
-# Run e2e tests
-npm run e2e --workspace=client
+# Проверка статуса
+docker-compose ps
 ```
 
-### Backend Testing
+### Kubernetes
 ```bash
-# Run unit tests
-mvn test
+# Применение манифестов
+kubectl apply -f microservices/infrastructure/kubernetes/
 
-# Run integration tests
-mvn verify
-
-# Run tests with coverage
-mvn jacoco:report
+# Проверка статуса
+kubectl get pods -n taskboard
 ```
 
-## 📚 Documentation
+## 📚 API Документация
 
-- [NgRx Entity](docs/ngrx-entity.md)
-- [Tasks Architecture](docs/tasks-architecture.md)
-- [Development Roadmap](docs/DEVELOPMENT_ROADMAP.md)
-- [API Documentation](docs/api/README.md)
-- [Architecture Guide](docs/architecture/README.md)
-- [Angular Documentation Patterns](docs/angular-documentation.md)
-- [User Guides and Technical Documentation](docs/user-guides.md)
-- [Angular Security](docs/angular-security.md)
-- [CI/CD Pipeline and Docker](docs/ci-cd-pipeline.md)
-- [Final Testing Strategies](docs/final-testing-strategies.md)
-- [Project Handover](docs/project-handover.md)
-- [Project Optimization](docs/project-optimization.md)
-- [Release Notes](RELEASE_NOTES.md)
+- **Swagger UI**: http://localhost:8080/swagger-ui.html
+- **OpenAPI Spec**: http://localhost:8080/v3/api-docs
 
-## 🤝 Contributing
+### Основные endpoints:
+- `GET /api/tasks` - Список задач
+- `POST /api/tasks` - Создание задачи
+- `PUT /api/tasks/{id}` - Обновление задачи
+- `DELETE /api/tasks/{id}` - Удаление задачи
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+## 🤝 Вклад в проект
 
-## 📄 License
+1. Форкните репозиторий
+2. Создайте feature ветку (`git checkout -b feature/amazing-feature`)
+3. Зафиксируйте изменения (`git commit -m 'Add amazing feature'`)
+4. Отправьте в ветку (`git push origin feature/amazing-feature`)
+5. Создайте Pull Request
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Стандарты кода
+- Следуйте правилам в `.cursor/rules/`
+- Покрывайте код тестами (минимум 80%)
+- Обновляйте документацию
+- Используйте conventional commits
 
-## 🆘 Support
+## 📄 Лицензия
 
-If you encounter any issues or have questions:
+MIT License - см. [LICENSE](LICENSE) для деталей.
 
-1. Check the [documentation](docs/)
-2. Search existing [issues](https://github.com/your-username/task-management-platform/issues)
-3. Create a new issue with detailed information
+## 🆘 Поддержка
+
+- 📖 [Документация](docs/)
+- 🐛 [Issues](https://github.com/your-org/task-management/issues)
+- 💬 [Discussions](https://github.com/your-org/task-management/discussions)
+- 📧 Email: support@example.com
 
 ---
 
-**Happy Coding! 🎉**
+*Версия: 1.0.0 | Последнее обновление: 2024-12-19*
