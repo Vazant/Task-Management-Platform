@@ -1,0 +1,125 @@
+# Test configuration for User Service
+# This file contains test-specific configuration for the User Service
+
+spring:
+  application:
+    name: user-service-test
+  
+  # Test Database Configuration (H2 in-memory)
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      connection-timeout: 20000
+  
+  # JPA Configuration for testing
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: false
+        jdbc:
+          batch_size: 20
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+  
+  # Flyway Configuration for testing
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+    baseline-version: 0
+    validate-on-migrate: false
+    clean-disabled: false
+  
+  # Security Configuration for testing
+  security:
+    jwt:
+      secret: test-secret-key-for-testing-purposes-only-must-be-at-least-32-characters
+      expiration: 3600
+      refresh-expiration: 86400
+  
+  # Kafka Configuration for testing (disabled)
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 0
+    consumer:
+      group-id: user-service-test-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+
+# Server Configuration for testing
+server:
+  port: 0  # Random port for testing
+
+# Management and Monitoring for testing
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+
+# Logging Configuration for testing
+logging:
+  level:
+    root: WARN
+    com.taskboard.userservice: DEBUG
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Application specific configuration for testing
+app:
+  user:
+    default-role: USER
+    password:
+      min-length: 6
+      require-uppercase: false
+      require-lowercase: false
+      require-digit: false
+      require-special-char: false
+    email:
+      verification-required: false
+      verification-token-expiry: 3600
+    profile:
+      max-image-size: 1048576 # 1MB for testing
+      allowed-image-types: jpg,jpeg,png
+  security:
+    cors:
+      allowed-origins: "*"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+    rate-limiting:
+      enabled: false
+      requests-per-minute: 1000
+      burst-capacity: 2000
