@@ -411,6 +411,14 @@ docs/
 # Project specific ignores
 # Add any project-specific files or directories here
 
+# Service-specific roadmaps (exclude from version control)
+microservices/services/*/USER_SERVICE_ROADMAP.md
+microservices/services/*/TASK_SERVICE_ROADMAP.md
+microservices/services/*/PROJECT_SERVICE_ROADMAP.md
+microservices/services/*/*_ROADMAP.md
+microservices/services/*/*_PLANNING.md
+microservices/services/*/*_NOTES.md
+
 # Backup files
 *.bak
 *.backup
