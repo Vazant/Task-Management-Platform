@@ -404,12 +404,21 @@ docs/
 *.md
 !README.md
 
+# Daily logs and reports (not for Git)
+daily-logs/
+daily-reports/
+logs/
+
 # ===========================================
 # CUSTOM PROJECT SPECIFIC
 # ===========================================
 
 # Project specific ignores
 # Add any project-specific files or directories here
+
+# Development scripts (local only)
+scripts/
+*.sh
 
 # Service-specific roadmaps (exclude from version control)
 microservices/services/*/USER_SERVICE_ROADMAP.md

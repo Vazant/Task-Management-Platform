@@ -9,19 +9,20 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Main application class for User Service.
- * 
- * <p>This service is responsible for user management, authentication, and authorization.
- * It follows hexagonal architecture principles with clear separation of concerns.</p>
- * 
- * <p>Key features:</p>
+ *
+ * <p>This service is responsible for user management, authentication, and authorization. It follows
+ * hexagonal architecture principles with clear separation of concerns.
+ *
+ * <p>Key features:
+ *
  * <ul>
- *   <li>User CRUD operations</li>
- *   <li>Authentication and authorization</li>
- *   <li>JWT token management</li>
- *   <li>Event publishing for user lifecycle events</li>
- *   <li>Integration with other microservices</li>
+ *   <li>User CRUD operations
+ *   <li>Authentication and authorization
+ *   <li>JWT token management
+ *   <li>Event publishing for user lifecycle events
+ *   <li>Integration with other microservices
  * </ul>
- * 
+ *
  * @author Task Management Platform Team
  * @version 1.0.0
  * @since 1.0.0
@@ -33,12 +34,12 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableFeignClients(basePackages = "com.taskboard.userservice.infrastructure.external")
 public class UserServiceApplication {
 
-    /**
-     * Main method to start the User Service application.
-     * 
-     * @param args command line arguments
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(UserServiceApplication.class, args);
-    }
+  /**
+   * Main method to start the User Service application.
+   *
+   * @param args command line arguments
+   */
+  public static void main(String[] args) {
+    SpringApplication.run(UserServiceApplication.class, args);
+  }
 }

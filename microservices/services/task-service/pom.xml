@@ -13,10 +13,10 @@
     </parent>
 
     <groupId>com.taskboard</groupId>
-    <artifactId>user-service</artifactId>
+    <artifactId>task-service</artifactId>
     <version>1.0.0</version>
-    <name>User Service</name>
-    <description>User Management Microservice</description>
+    <name>Task Service</name>
+    <description>Task Management Microservice</description>
 
     <properties>
         <java.version>21</java.version>
@@ -111,11 +111,6 @@
 
         <!-- Monitoring and Logging -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        
-        <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
@@ -130,7 +125,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-
 
         <!-- Tracing -->
         <dependency>
@@ -176,20 +170,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            
-            <!-- Google Java Format Plugin -->
-            <plugin>
-                <groupId>com.coveo</groupId>
-                <artifactId>fmt-maven-plugin</artifactId>
-                <version>2.13</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             
             <!-- Checkstyle Plugin -->
