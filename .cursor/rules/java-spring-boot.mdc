@@ -1,0 +1,499 @@
+---
+description: "Правила разработки для Java Spring Boot бэкенда"
+globs: ["server/**/*.java"]
+alwaysApply: true
+---
+
+# Java Spring Boot Backend Rules
+
+## Общие принципы
+
+### Архитектура и структура
+- Следуйте принципам Clean Architecture и SOLID
+- Используйте слоистую архитектуру: Controller → Service → Repository
+- Разделяйте бизнес-логику и инфраструктурный код
+- Применяйте Dependency Injection через конструкторы (не @Autowired на полях)
+
+### Именование и стиль кода
+- Классы: PascalCase (UserService, TaskController)
+- Методы и переменные: camelCase (getUserById, taskId)
+- Константы: UPPER_SNAKE_CASE (MAX_RETRY_COUNT)
+- Пакеты: lowercase с точками (com.taskboard.service)
+- Файлы: соответствуют именам классов
+
+### Аннотации Spring Boot
+- @RestController для REST контроллеров
+- @Service для бизнес-логики
+- @Repository для доступа к данным
+- @Component для общих компонентов
+- @Configuration для конфигурационных классов
+- @Transactional для транзакционных методов
+
+### Lombok аннотации
+- @Data для простых POJO (геттеры, сеттеры, toString, equals, hashCode)
+- @Getter/@Setter для отдельных полей
+- @NoArgsConstructor/@AllArgsConstructor для конструкторов
+- @Builder для создания объектов через builder pattern
+- @Slf4j для логирования
+- @Value для immutable объектов
+- @RequiredArgsConstructor для final полей
+
+### Когда использовать Lombok
+- ✅ Простые DTO без бизнес-логики
+- ✅ Value Objects и Data Classes
+- ✅ Конфигурационные классы
+- ✅ Тестовые классы и моки
+- ✅ Простые entity без сложной логики
+
+### Когда НЕ использовать Lombok
+- ❌ Классы с кастомной логикой в геттерах/сеттерах
+- ❌ Наследование с переопределением методов
+- ❌ Сложная валидация в сеттерах
+- ❌ Логика в equals/hashCode
+- ❌ Классы с performance-critical кодом
+
+## Контроллеры
+
+### Структура контроллера
+```java
+@RestController
+@RequestMapping("/api/v1/tasks")
+@Validated
+@Slf4j
+public class TaskController {
+    
+    private final TaskService taskService;
+    
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<TaskDto>> getAllTasks() {
+        // implementation
+    }
+}
+```
+
+### Правила для контроллеров
+- Используйте @Validated для валидации параметров
+- Возвращайте ResponseEntity с правильными HTTP статусами
+- Используйте @PathVariable, @RequestParam, @RequestBody
+- Добавляйте логирование через @Slf4j
+- Обрабатывайте исключения через @ControllerAdvice
+
+## Сервисы
+
+### Структура сервиса
+```java
+@Service
+@Transactional
+@Slf4j
+public class TaskService {
+    
+    private final TaskRepository taskRepository;
+    private final UserService userService;
+    
+    public TaskService(TaskRepository taskRepository, UserService userService) {
+        this.taskRepository = taskRepository;
+        this.userService = userService;
+    }
+    
+    @Transactional(readOnly = true)
+    public List<Task> findAll() {
+        return taskRepository.findAll();
+    }
+}
+```
+
+### Правила для сервисов
+- Используйте @Transactional для методов изменения данных
+- Используйте @Transactional(readOnly = true) для методов чтения
+- Инжектируйте зависимости через конструктор
+- Логируйте важные операции
+- Выбрасывайте специфичные исключения
+
+## Entity классы
+
+### ✅ DO: Простые Entity с Lombok
+```java
+@Entity
+@Table(name = "tasks")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Task {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @NotBlank
+    @Size(max = 100)
+    private String title;
+    
+    @Size(max = 500)
+    private String description;
+    
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+    
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+}
+```
+
+### ✅ DO: Entity с кастомной логикой (без Lombok)
+```java
+@Entity
+@Table(name = "users")
+public class User {
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    
+    @NotBlank
+    private String username;
+    
+    @Email
+    private String email;
+    
+    // Кастомный геттер с логикой
+    public String getDisplayName() {
+        return username != null ? username.toUpperCase() : "Unknown User";
+    }
+    
+    // Кастомный сеттер с валидацией
+    public void setEmail(String email) {
+        if (email != null && !email.contains("@")) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        this.email = email;
+    }
+    
+    // Остальные геттеры/сеттеры вручную
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    // ... остальные методы
+}
+```
+
+### Правила для Entity
+- Используйте `@Data` для простых entity без бизнес-логики
+- Применяйте `@Builder` для удобного создания объектов
+- Пишите геттеры/сеттеры вручную при наличии валидации или логики
+- Используйте JPA аннотации для маппинга
+- Применяйте `@CreationTimestamp` и `@UpdateTimestamp` для аудита
+
+## Репозитории
+
+### Структура репозитория
+```java
+@Repository
+public interface TaskRepository extends JpaRepository<Task, Long> {
+    
+    List<Task> findByStatus(TaskStatus status);
+    
+    @Query("SELECT t FROM Task t WHERE t.user.id = :userId")
+    List<Task> findByUserId(@Param("userId") Long userId);
+    
+    boolean existsByTitleAndUserId(String title, Long userId);
+}
+```
+
+### Правила для репозиториев
+- Наследуйтесь от JpaRepository или CrudRepository
+- Используйте Spring Data JPA методы поиска
+- Применяйте @Query для сложных запросов
+- Используйте @Param для именованных параметров
+- Создавайте методы для проверки существования
+
+## DTO и валидация
+
+### ✅ DO: Использование Lombok для простых DTO
+```java
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class TaskDto {
+    
+    @NotBlank(message = "Title is required")
+    @Size(min = 3, max = 100, message = "Title must be between 3 and 100 characters")
+    private String title;
+    
+    @Size(max = 500, message = "Description cannot exceed 500 characters")
+    private String description;
+    
+    @NotNull(message = "Status is required")
+    private TaskStatus status;
+    
+    @JsonIgnore
+    private String internalField;
+}
+```
+
+### ✅ DO: DTO с кастомной логикой (без Lombok)
+```java
+public class UserDto {
+    
+    @NotBlank(message = "Username is required")
+    private String username;
+    
+    @Email(message = "Email must be valid")
+    private String email;
+    
+    // Кастомный геттер с логикой
+    public String getDisplayName() {
+        return username != null ? username.toUpperCase() : "Unknown";
+    }
+    
+    // Кастомный сеттер с валидацией
+    public void setEmail(String email) {
+        if (email != null && !email.contains("@")) {
+            throw new IllegalArgumentException("Invalid email format");
+        }
+        this.email = email;
+    }
+    
+    // Остальные геттеры/сеттеры вручную
+}
+```
+
+### Правила для DTO
+- Используйте `@Data` для простых DTO без дополнительной логики
+- Применяйте `@Builder` для создания immutable объектов
+- Используйте `@NoArgsConstructor` и `@AllArgsConstructor` для фреймворков
+- Пишите геттеры/сеттеры вручную при наличии бизнес-логики
+- Используйте Bean Validation аннотации
+- Создавайте отдельные DTO для запросов и ответов
+- Применяйте `@JsonIgnore` для скрытия полей в JSON
+
+## Обработка исключений
+
+### Глобальный обработчик
+```java
+@ControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+    
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleEntityNotFound(EntityNotFoundException ex) {
+        log.warn("Entity not found: {}", ex.getMessage());
+        return ResponseEntity.notFound().build();
+    }
+    
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(ValidationException ex) {
+        log.warn("Validation error: {}", ex.getMessage());
+        return ResponseEntity.badRequest().build();
+    }
+}
+```
+
+### Правила для исключений
+- Создавайте специфичные исключения для разных типов ошибок
+- Используйте @ControllerAdvice для глобальной обработки
+- Логируйте исключения с соответствующим уровнем
+- Возвращайте понятные сообщения об ошибках
+
+## Конфигурация
+
+### ✅ DO: Конфигурационные классы с Lombok
+```java
+@Configuration
+@EnableJpaRepositories
+@EnableTransactionManagement
+@RequiredArgsConstructor
+@Slf4j
+public class DatabaseConfig {
+    
+    private final Environment environment;
+    
+    @Bean
+    @ConfigurationProperties("spring.datasource")
+    public DataSource dataSource() {
+        log.info("Configuring datasource for environment: {}", environment.getActiveProfiles());
+        return DataSourceBuilder.create().build();
+    }
+    
+    @Bean
+    @ConfigurationProperties("spring.redis")
+    public RedisConnectionFactory redisConnectionFactory() {
+        return new LettuceConnectionFactory();
+    }
+}
+```
+
+### ✅ DO: Properties классы с Lombok
+```java
+@ConfigurationProperties(prefix = "app.security")
+@Data
+@Component
+public class SecurityProperties {
+    
+    private String jwtSecret;
+    private int jwtExpirationMs;
+    private List<String> allowedOrigins;
+    private boolean enableCors;
+    
+    // Кастомная валидация
+    @PostConstruct
+    public void validate() {
+        if (jwtSecret == null || jwtSecret.length() < 32) {
+            throw new IllegalArgumentException("JWT secret must be at least 32 characters");
+        }
+    }
+}
+```
+
+### Правила для конфигурации
+- Используйте `@RequiredArgsConstructor` для инжекции зависимостей
+- Применяйте `@Data` для properties классов
+- Используйте `@Slf4j` для логирования в конфигурации
+- Применяйте `@ConfigurationProperties` для привязки свойств
+- Разделяйте конфигурацию по функциональности
+
+## Логирование
+
+### Правила логирования
+- Используйте @Slf4j от Lombok
+- Логируйте входные параметры и результаты важных методов
+- Используйте соответствующие уровни логирования (DEBUG, INFO, WARN, ERROR)
+- Не логируйте чувствительные данные (пароли, токены)
+
+## Тестирование
+
+### ✅ DO: Тестовые классы с Lombok
+```java
+@SpringBootTest
+@Transactional
+@RequiredArgsConstructor
+@Slf4j
+class TaskServiceTest {
+    
+    private final TaskService taskService;
+    
+    @MockBean
+    private TaskRepository taskRepository;
+    
+    @Test
+    void shouldCreateTask() {
+        // given
+        Task task = Task.builder()
+            .title("Test Task")
+            .description("Test Description")
+            .build();
+        when(taskRepository.save(any())).thenReturn(task);
+        
+        // when
+        Task result = taskService.create(task);
+        
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getTitle()).isEqualTo("Test Task");
+    }
+}
+```
+
+### ✅ DO: Test Data Builders с Lombok
+```java
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class TaskTestDataBuilder {
+    
+    @Builder.Default
+    private String title = "Default Task";
+    
+    @Builder.Default
+    private String description = "Default Description";
+    
+    @Builder.Default
+    private TaskStatus status = TaskStatus.TODO;
+    
+    @Builder.Default
+    private User user = null;
+    
+    public Task build() {
+        return Task.builder()
+            .title(title)
+            .description(description)
+            .status(status)
+            .user(user)
+            .build();
+    }
+    
+    public static TaskTestDataBuilder aTask() {
+        return TaskTestDataBuilder.builder().build();
+    }
+}
+```
+
+### Правила для тестов
+- Используйте `@RequiredArgsConstructor` для инжекции зависимостей
+- Применяйте `@Builder` для создания тестовых данных
+- Используйте `@Slf4j` для логирования в тестах
+- Создавайте Test Data Builders для переиспользования
+- Следуйте паттерну Given-When-Then
+- Покрывайте тестами критическую бизнес-логику
+
+## Безопасность
+
+### Правила безопасности
+- Используйте Spring Security для аутентификации и авторизации
+- Применяйте @PreAuthorize для проверки прав доступа
+- Валидируйте все входные данные
+- Используйте HTTPS в продакшене
+- Не логируйте чувствительные данные
+
+## Производительность
+
+### Правила производительности
+- Используйте @Transactional(readOnly = true) для операций чтения
+- Применяйте пагинацию для больших списков
+- Используйте @Cacheable для кэширования
+- Оптимизируйте SQL запросы
+- Мониторьте производительность приложения
+
+## Lombok Best Practices
+
+### ✅ DO: Правильное использование Lombok
+- Используйте `@Data` для простых POJO без бизнес-логики
+- Применяйте `@Builder` для создания immutable объектов
+- Используйте `@RequiredArgsConstructor` для final полей
+- Применяйте `@Slf4j` вместо создания logger вручную
+- Используйте `@Value` для immutable value objects
+
+### ❌ DON'T: Неправильное использование Lombok
+- Не используйте `@Data` в entity с lazy loading
+- Не применяйте `@Data` в классах с наследованием
+- Не используйте `@Data` в классах с кастомными equals/hashCode
+- Не применяйте `@Data` в performance-critical классах
+- Не используйте `@Data` в классах с кастомной логикой в геттерах/сеттерах
+
+### Чеклист использования Lombok
+- [ ] Класс содержит только простые поля без логики
+- [ ] Нет кастомных геттеров/сеттеров с бизнес-логикой
+- [ ] Нет наследования с переопределением методов
+- [ ] Нет кастомных equals/hashCode методов
+- [ ] Класс не является performance-critical
+- [ ] Команда знакома с Lombok аннотациями
+- [ ] IDE настроена для работы с Lombok
+- [ ] Lombok добавлен в зависимости проекта
+
+### Альтернативы Lombok
+- **MapStruct** для маппинга между объектами
+- **Record** (Java 14+) для immutable data classes
+- **Builder pattern** вручную для сложных объектов
+- **Constructor injection** вместо @RequiredArgsConstructor
