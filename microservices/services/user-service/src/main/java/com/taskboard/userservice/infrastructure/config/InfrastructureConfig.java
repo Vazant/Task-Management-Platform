@@ -1,5 +1,15 @@
 package com.taskboard.userservice.infrastructure.config;
 
+import com.taskboard.userservice.domain.event.UserEventPublisher;
+import com.taskboard.userservice.domain.repository.UserAuditRepository;
+import com.taskboard.userservice.domain.repository.UserRepository;
+import com.taskboard.userservice.domain.service.UserDomainService;
+import com.taskboard.userservice.infrastructure.persistence.adapter.UserAuditRepositoryAdapter;
+import com.taskboard.userservice.infrastructure.persistence.adapter.UserRepositoryAdapter;
+import com.taskboard.userservice.infrastructure.persistence.mapper.UserAuditEntityMapper;
+import com.taskboard.userservice.infrastructure.persistence.mapper.UserEntityMapper;
+import com.taskboard.userservice.infrastructure.persistence.repository.UserAuditJpaRepository;
+import com.taskboard.userservice.infrastructure.persistence.repository.UserJpaRepository;
 import java.util.Properties;
 import javax.sql.DataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,6 +18,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
+import org.springframework.context.annotation.Profile;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -15,11 +27,11 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Database configuration for User Service.
+ * Infrastructure configuration for User Service.
  *
- * <p>This configuration class sets up the database connection, JPA entity manager, and transaction
- * management for the User Service. It provides a clean separation between infrastructure concerns
- * and business logic.
+ * <p>This configuration class sets up the database connection, JPA entity manager, transaction
+ * management, Flyway migrations, repository adapters, and domain services for the User Service.
+ * It provides a clean separation between infrastructure concerns and business logic.
  *
  * <p>Key features:
  *
@@ -28,6 +40,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *   <li>JPA entity manager factory setup
  *   <li>Transaction management configuration
  *   <li>Hibernate properties optimization
+ *   <li>Flyway database migrations
+ *   <li>Repository adapter beans configuration
+ *   <li>Domain service beans configuration
  * </ul>
  *
  * @author Task Management Platform Team
@@ -40,7 +55,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager")
 @EnableTransactionManagement
-public class DatabaseConfig {
+public class InfrastructureConfig {
 
   /**
    * Creates and configures the primary data source.
@@ -145,5 +160,98 @@ public class DatabaseConfig {
         "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
 
     return properties;
+  }
+
+  /**
+   * Creates a UserRepository bean using the JPA adapter.
+   *
+   * @param jpaRepository the JPA repository
+   * @param mapper the entity mapper
+   * @return the UserRepository implementation
+   */
+  @Bean
+  public UserRepository userRepository(UserJpaRepository jpaRepository, UserEntityMapper mapper) {
+    return new UserRepositoryAdapter(jpaRepository, mapper);
+  }
+
+  /**
+   * Creates a UserAuditRepository bean using the JPA adapter.
+   *
+   * @param userAuditJpaRepository the JPA repository for user audit entities
+   * @param userAuditEntityMapper the mapper for converting between domain and entity models
+   * @return the UserAuditRepository implementation
+   */
+  @Bean
+  public UserAuditRepository userAuditRepository(UserAuditJpaRepository userAuditJpaRepository,
+                                                 UserAuditEntityMapper userAuditEntityMapper) {
+    return new UserAuditRepositoryAdapter(userAuditJpaRepository, userAuditEntityMapper);
+  }
+
+  /**
+   * Creates a UserDomainService bean.
+   *
+   * @param userRepository the user repository
+   * @param eventPublisher the event publisher
+   * @return the UserDomainService instance
+   */
+  @Bean
+  public UserDomainService userDomainService(UserRepository userRepository, UserEventPublisher eventPublisher) {
+    return new UserDomainService(userRepository, eventPublisher);
+  }
+
+  /**
+   * Custom Flyway migration strategy for development environment.
+   *
+   * <p>This strategy is used in development to ensure clean migrations and proper handling of
+   * schema changes during development.
+   *
+   * @return custom migration strategy for development
+   */
+  @Bean
+  @Profile("dev")
+  public FlywayMigrationStrategy devMigrationStrategy() {
+    return flyway -> {
+      // Clean and migrate for development
+      flyway.clean();
+      flyway.migrate();
+    };
+  }
+
+  /**
+   * Custom Flyway migration strategy for test environment.
+   *
+   * <p>This strategy is used in testing to ensure clean database state for each test run and proper
+   * migration handling.
+   *
+   * @return custom migration strategy for testing
+   */
+  @Bean
+  @Profile("test")
+  public FlywayMigrationStrategy testMigrationStrategy() {
+    return flyway -> {
+      // Clean and migrate for testing
+      flyway.clean();
+      flyway.migrate();
+    };
+  }
+
+  /**
+   * Custom Flyway migration strategy for production environment.
+   *
+   * <p>This strategy is used in production to ensure safe migrations without data loss and proper
+   * validation of schema changes.
+   *
+   * @return custom migration strategy for production
+   */
+  @Bean
+  @Profile("prod")
+  public FlywayMigrationStrategy prodMigrationStrategy() {
+    return flyway -> {
+      // Validate existing migrations first
+      flyway.validate();
+
+      // Apply new migrations
+      flyway.migrate();
+    };
   }
 }
