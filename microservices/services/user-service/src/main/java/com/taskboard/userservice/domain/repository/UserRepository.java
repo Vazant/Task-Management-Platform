@@ -3,6 +3,10 @@ package com.taskboard.userservice.domain.repository;
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
 import com.taskboard.userservice.domain.model.UserStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -117,10 +121,9 @@ public interface UserRepository {
    * Deletes a user by its unique identifier.
    *
    * @param id the user ID to delete
-   * @return true if the user was deleted, false if not found
    * @throws IllegalArgumentException if id is null
    */
-  boolean deleteById(Long id);
+  void deleteById(Long id);
 
   /**
    * Deletes a user entity.
@@ -154,4 +157,112 @@ public interface UserRepository {
    * @throws IllegalArgumentException if role is null
    */
   long countByRole(UserRole role);
+
+  /**
+   * Finds all users with pagination.
+   *
+   * @param pageable pagination information
+   * @return a page of users
+   */
+  Page<User> findAll(Pageable pageable);
+
+  /**
+   * Finds all users with the specified status and pagination.
+   *
+   * @param status the user status to filter by
+   * @param pageable pagination information
+   * @return a page of users with the specified status
+   */
+  Page<User> findByStatus(UserStatus status, Pageable pageable);
+
+  /**
+   * Finds all users with the specified role and pagination.
+   *
+   * @param role the user role to filter by
+   * @param pageable pagination information
+   * @return a page of users with the specified role
+   */
+  Page<User> findByRole(UserRole role, Pageable pageable);
+
+  /**
+   * Finds users by full name containing the given text.
+   *
+   * @param searchText the text to search for in first or last name
+   * @return list of users with matching name
+   */
+  List<User> findByFullNameContaining(String searchText);
+
+  /**
+   * Finds users by multiple criteria with pagination.
+   *
+   * @param status the user status (optional)
+   * @param role the user role (optional)
+   * @param searchText the text to search in names (optional)
+   * @param pageable pagination information
+   * @return page of users matching the criteria
+   */
+  Page<User> findByCriteria(UserStatus status, UserRole role, String searchText, Pageable pageable);
+
+  /**
+   * Finds users who haven't logged in since a specific date.
+   *
+   * @param date the date to check against
+   * @return list of users who haven't logged in since the date
+   */
+  List<User> findUsersNotLoggedInSince(LocalDateTime date);
+
+  /**
+   * Finds users by email verification status.
+   *
+   * @param verified the email verification status
+   * @return list of users with the specified verification status
+   */
+  List<User> findByEmailVerified(boolean verified);
+
+  /**
+   * Saves multiple users.
+   *
+   * @param users the list of users to save
+   * @return the list of saved users
+   */
+  List<User> saveAll(List<User> users);
+
+  /**
+   * Deletes multiple users.
+   *
+   * @param users the list of users to delete
+   */
+  void deleteAll(List<User> users);
+
+  /**
+   * Deletes users by status.
+   *
+   * @param status the user status
+   * @return number of deleted users
+   */
+  long deleteByStatus(UserStatus status);
+
+  /**
+   * Updates user's last login time.
+   *
+   * @param userId the user ID
+   * @param loginTime the login time
+   */
+  void updateLastLoginTime(Long userId, LocalDateTime loginTime);
+
+  /**
+   * Updates user's email verification status.
+   *
+   * @param userId the user ID
+   * @param verified the verification status
+   */
+  void updateEmailVerificationStatus(Long userId, boolean verified);
+
+  /**
+   * Checks if a user exists with the specified ID.
+   *
+   * @param id the user ID to check
+   * @return true if a user exists with the ID, false otherwise
+   */
+  boolean existsById(Long id);
 }
