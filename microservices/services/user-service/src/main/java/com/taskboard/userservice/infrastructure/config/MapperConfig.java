@@ -1,5 +1,6 @@
 package com.taskboard.userservice.infrastructure.config;
 
+import com.taskboard.userservice.infrastructure.persistence.mapper.UserAuditEntityMapper;
 import com.taskboard.userservice.infrastructure.persistence.mapper.UserEntityMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,5 +25,15 @@ public class MapperConfig {
   @Bean
   public UserEntityMapper userEntityMapper() {
     return new UserEntityMapper();
+  }
+
+  /**
+   * Creates a UserAuditEntityMapper bean.
+   *
+   * @return the UserAuditEntityMapper instance
+   */
+  @Bean
+  public UserAuditEntityMapper userAuditEntityMapper() {
+    return new UserAuditEntityMapper();
   }
 }
