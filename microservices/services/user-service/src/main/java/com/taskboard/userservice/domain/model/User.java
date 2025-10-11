@@ -280,6 +280,16 @@ public class User {
     this.profileImageUrl = profileImageUrl;
   }
 
+  /**
+   * Updates user's profile image URL.
+   *
+   * @param profileImageUrl new profile image URL
+   */
+  public void updateProfileImageUrl(String profileImageUrl) {
+    this.profileImageUrl = profileImageUrl;
+    this.updatedAt = LocalDateTime.now();
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -318,4 +328,35 @@ public class User {
         + createdAt
         + '}';
   }
+
+  /**
+   * Updates the user's email address.
+   *
+   * @param email the new email address
+   */
+  public void updateEmail(String email) {
+    this.email = email;
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  /**
+   * Updates the user's first name.
+   *
+   * @param firstName the new first name
+   */
+  public void updateFirstName(String firstName) {
+    this.firstName = firstName;
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  /**
+   * Updates the user's last name.
+   *
+   * @param lastName the new last name
+   */
+  public void updateLastName(String lastName) {
+    this.lastName = lastName;
+    this.updatedAt = LocalDateTime.now();
+  }
+
 }

@@ -197,6 +197,29 @@ public class SecurityAuditService {
   }
 
   /**
+   * Records a user creation event.
+   *
+   * @param userId The ID of the created user.
+   * @param username The username of the created user.
+   * @param email The email of the created user.
+   * @param role The role of the created user.
+   */
+  public void logUserCreated(Long userId, String username, String email, com.taskboard.userservice.domain.model.UserRole role) {
+    logger.info("User created - ID: {}, Username: {}, Email: {}, Role: {}", userId, username, email, role);
+  }
+
+  /**
+   * Records a failed user creation attempt.
+   *
+   * @param username The username that failed to be created.
+   * @param email The email that failed to be created.
+   * @param reason The reason for the failure.
+   */
+  public void logUserCreationFailed(String username, String email, String reason) {
+    logger.warn("User creation failed - Username: {}, Email: {}, Reason: {}", username, email, reason);
+  }
+
+  /**
    * Gets the number of failed attempts for an IP address.
    *
    * @param ipAddress The IP address to check.
@@ -211,5 +234,97 @@ public class SecurityAuditService {
     }
 
     return failedAttemptsByIp.getOrDefault(ipAddress, 0);
+  }
+
+  /**
+   * Logs successful user retrieval.
+   *
+   * @param userId the user ID
+   * @param username the username
+   */
+  public void logUserRetrieved(Long userId, String username) {
+    logger.info("User retrieved - User ID: {}, Username: {}", userId, username);
+  }
+
+  /**
+   * Logs failed user retrieval attempt.
+   *
+   * @param userId the user ID
+   * @param reason the reason for failure
+   */
+  public void logUserRetrievalFailed(Long userId, String reason) {
+    logger.warn("User retrieval failed - User ID: {}, Reason: {}", userId, reason);
+  }
+
+  /**
+   * Logs successful user update.
+   *
+   * @param userId the user ID
+   * @param username the username
+   */
+  public void logUserUpdated(Long userId, String username) {
+    logger.info("User updated - User ID: {}, Username: {}", userId, username);
+  }
+
+  /**
+   * Logs failed user update attempt.
+   *
+   * @param userId the user ID
+   * @param reason the reason for failure
+   */
+  public void logUserUpdateFailed(Long userId, String reason) {
+    logger.warn("User update failed - User ID: {}, Reason: {}", userId, reason);
+  }
+
+  /**
+   * Logs user deletion attempt.
+   *
+   * @param userId the user ID
+   * @param username the username
+   */
+  public void logUserDeletionAttempt(Long userId, String username) {
+    logger.info("User deletion attempted - User ID: {}, Username: {}", userId, username);
+  }
+
+  /**
+   * Logs successful user deletion.
+   *
+   * @param userId the user ID
+   * @param username the username
+   */
+  public void logUserDeleted(Long userId, String username) {
+    logger.info("User deleted - User ID: {}, Username: {}", userId, username);
+  }
+
+  /**
+   * Logs failed user deletion attempt.
+   *
+   * @param userId the user ID
+   * @param reason the reason for failure
+   */
+  public void logUserDeletionFailed(Long userId, String reason) {
+    logger.warn("User deletion failed - User ID: {}, Reason: {}", userId, reason);
+  }
+
+  /**
+   * Logs successful user authentication.
+   *
+   * @param userId the user ID
+   * @param username the username
+   */
+  public void logAuthenticationSuccess(Long userId, String username) {
+    logger.info("Authentication successful - User ID: {}, Username: {}", userId, username);
+    successfulLoginsCounter.increment();
+  }
+
+  /**
+   * Logs failed user authentication attempt.
+   *
+   * @param username the username
+   * @param reason the reason for failure
+   */
+  public void logAuthenticationFailed(String username, String reason) {
+    logger.warn("Authentication failed - Username: {}, Reason: {}", username, reason);
+    failedLoginAttemptsCounter.increment();
   }
 }

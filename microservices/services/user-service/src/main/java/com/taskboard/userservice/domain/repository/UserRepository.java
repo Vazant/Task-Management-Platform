@@ -123,6 +123,14 @@ public interface UserRepository {
   boolean deleteById(Long id);
 
   /**
+   * Deletes a user entity.
+   *
+   * @param user the user entity to delete
+   * @throws IllegalArgumentException if user is null
+   */
+  void delete(User user);
+
+  /**
    * Counts the total number of users.
    *
    * @return the total number of users

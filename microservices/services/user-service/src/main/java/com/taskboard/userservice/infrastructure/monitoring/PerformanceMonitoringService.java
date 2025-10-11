@@ -4,6 +4,7 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -163,6 +164,27 @@ public class PerformanceMonitoringService {
   }
 
   /**
+   * Records user creation time.
+   *
+   * @param executionTime The execution time in milliseconds.
+   */
+  public void recordUserCreationTime(long executionTime) {
+    userCreationTimer.record(Duration.ofMillis(executionTime));
+    userCreationCounter.increment();
+    logger.info("User creation time recorded: {}ms", executionTime);
+  }
+
+  /**
+   * Records user creation failure.
+   *
+   * @param executionTime The execution time in milliseconds.
+   */
+  public void recordUserCreationFailure(long executionTime) {
+    userCreationTimer.record(Duration.ofMillis(executionTime));
+    logger.warn("User creation failure recorded: {}ms", executionTime);
+  }
+
+  /**
    * Records an error event.
    *
    * @param errorType The type of error.
@@ -176,5 +198,117 @@ public class PerformanceMonitoringService {
         .increment();
 
     logger.error("Error recorded - Type: {}, Message: {}", errorType, errorMessage);
+  }
+
+  /**
+   * Records user retrieval performance metrics.
+   *
+   * @param duration the duration in milliseconds
+   */
+  public void recordUserRetrievalTime(long duration) {
+    Timer.builder("user.retrieval.duration")
+        .description("User retrieval operation duration")
+        .register(meterRegistry)
+        .record(duration, TimeUnit.MILLISECONDS);
+
+    logger.info("User retrieval recorded - Duration: {}ms", duration);
+  }
+
+  /**
+   * Records user retrieval failure.
+   *
+   * @param duration the duration in milliseconds
+   */
+  public void recordUserRetrievalFailure(long duration) {
+    Counter.builder("user.retrieval.failures")
+        .description("Number of failed user retrieval operations")
+        .register(meterRegistry)
+        .increment();
+
+    logger.warn("User retrieval failure recorded - Duration: {}ms", duration);
+  }
+
+  /**
+   * Records user update performance metrics.
+   *
+   * @param duration the duration in milliseconds
+   */
+  public void recordUserUpdateTime(long duration) {
+    Timer.builder("user.update.duration")
+        .description("User update operation duration")
+        .register(meterRegistry)
+        .record(duration, TimeUnit.MILLISECONDS);
+
+    logger.info("User update recorded - Duration: {}ms", duration);
+  }
+
+  /**
+   * Records user update failure.
+   *
+   * @param duration the duration in milliseconds
+   */
+  public void recordUserUpdateFailure(long duration) {
+    Counter.builder("user.update.failures")
+        .description("Number of failed user update operations")
+        .register(meterRegistry)
+        .increment();
+
+    logger.warn("User update failure recorded - Duration: {}ms", duration);
+  }
+
+  /**
+   * Records user deletion performance metrics.
+   *
+   * @param duration the duration in milliseconds
+   */
+  public void recordUserDeletionTime(long duration) {
+    Timer.builder("user.deletion.duration")
+        .description("User deletion operation duration")
+        .register(meterRegistry)
+        .record(duration, TimeUnit.MILLISECONDS);
+
+    logger.info("User deletion recorded - Duration: {}ms", duration);
+  }
+
+  /**
+   * Records user deletion failure.
+   *
+   * @param duration the duration in milliseconds
+   */
+  public void recordUserDeletionFailure(long duration) {
+    Counter.builder("user.deletion.failures")
+        .description("Number of failed user deletion operations")
+        .register(meterRegistry)
+        .increment();
+
+    logger.warn("User deletion failure recorded - Duration: {}ms", duration);
+  }
+
+  /**
+   * Records user authentication performance metrics.
+   *
+   * @param duration the duration in milliseconds
+   */
+  public void recordAuthenticationTime(long duration) {
+    Timer.builder("user.authentication.duration")
+        .description("User authentication operation duration")
+        .register(meterRegistry)
+        .record(duration, TimeUnit.MILLISECONDS);
+
+    logger.info("User authentication recorded - Duration: {}ms", duration);
+  }
+
+  /**
+   * Records user authentication failure.
+   *
+   * @param duration the duration in milliseconds
+   */
+  public void recordAuthenticationFailure(long duration) {
+    Counter.builder("user.authentication.failures")
+        .description("Number of failed user authentication operations")
+        .register(meterRegistry)
+        .increment();
+
+    logger.warn("User authentication failure recorded - Duration: {}ms", duration);
   }
 }

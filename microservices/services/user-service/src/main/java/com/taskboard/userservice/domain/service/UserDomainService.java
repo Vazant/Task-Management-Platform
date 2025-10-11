@@ -7,6 +7,7 @@ import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import java.util.Objects;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Domain service for User business logic.
@@ -28,6 +29,7 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 1.0.0
  */
+@Slf4j
 public class UserDomainService {
 
   private final UserRepository userRepository;
@@ -366,5 +368,37 @@ public class UserDomainService {
    */
   private boolean isValidEmail(String email) {
     return email.matches("^[A-Za-z0-9+_.-]+@([A-Za-z0-9.-]+\\.[A-Za-z]{2,})$");
+  }
+
+  /**
+   * Validates user update request against business rules.
+   *
+   * @param existingUser the existing user to be updated
+   * @param request the update request
+   * @throws IllegalArgumentException if validation fails
+   */
+  public void validateUserUpdate(User existingUser, com.taskboard.userservice.application.dto.UpdateUserRequest request) {
+    if (existingUser == null) {
+      throw new IllegalArgumentException("Existing user cannot be null");
+    }
+
+    if (request == null) {
+      throw new IllegalArgumentException("Update request cannot be null");
+    }
+
+    // Validate email uniqueness if email is being updated
+    if (request.getEmail() != null && !request.getEmail().equals(existingUser.getEmail())) {
+      if (userRepository.existsByEmail(request.getEmail())) {
+        throw new IllegalArgumentException("Email already exists: " + request.getEmail());
+      }
+    }
+
+    // Validate role change restrictions (business rule example)
+    if (request.getRole() != null && !request.getRole().equals(existingUser.getRole())) {
+      // Example: Only admin users can change roles
+      // This is a business rule that can be customized based on requirements
+      log.info("User role change requested from {} to {} for user {}", 
+          existingUser.getRole(), request.getRole(), existingUser.getId());
+    }
   }
 }

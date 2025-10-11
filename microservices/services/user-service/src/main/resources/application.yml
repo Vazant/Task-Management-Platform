@@ -111,6 +111,8 @@ management:
     health:
       show-details: when-authorized
       show-components: always
+      probes:
+        enabled: true
     metrics:
       enabled: true
     prometheus:
@@ -126,11 +128,6 @@ management:
         http.server.requests: 0.5, 0.95, 0.99
       slo:
         http.server.requests: 50ms, 100ms, 200ms, 500ms
-  endpoint:
-    health:
-      show-details: when-authorized
-      probes:
-        enabled: true
 
 # Logging Configuration
 logging:
@@ -141,33 +138,6 @@ logging:
     com.taskboard.userservice.infrastructure.monitoring: INFO
     org.springframework.security: DEBUG
     org.springframework.web: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
-    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%X{traceId:-},%X{spanId:-}] %logger{36} - %msg%n"
-    info:
-      enabled: true
-    metrics:
-      enabled: true
-  metrics:
-    export:
-      prometheus:
-        enabled: true
-    distribution:
-      percentiles-histogram:
-        http.server.requests: true
-      percentiles:
-        http.server.requests: 0.5, 0.95, 0.99
-      slo:
-        http.server.requests: 50ms, 100ms, 200ms, 500ms
-
-# Logging Configuration
-logging:
-  level:
-    root: INFO
-    com.taskboard.userservice: DEBUG
-    org.springframework.security: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
   pattern:
