@@ -3,9 +3,7 @@ package com.taskboard.userservice;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Main application class for User Service.
@@ -28,8 +26,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @since 1.0.0
  */
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.taskboard.userservice.infrastructure.persistence")
-@EnableTransactionManagement
 @EnableKafka
 @EnableFeignClients(basePackages = "com.taskboard.userservice.infrastructure.external")
 public class UserServiceApplication {
