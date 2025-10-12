@@ -1,5 +1,9 @@
 package com.taskboard.userservice.domain.service;
 
+import com.taskboard.userservice.domain.event.UserCreatedEvent;
+import com.taskboard.userservice.domain.event.UserDeletedEvent;
+import com.taskboard.userservice.domain.event.UserEventPublisher;
+import com.taskboard.userservice.domain.event.UserUpdatedEvent;
 import com.taskboard.userservice.domain.exception.UserAlreadyExistsException;
 import com.taskboard.userservice.domain.exception.UserDomainException;
 import com.taskboard.userservice.domain.exception.UserNotFoundException;
@@ -33,15 +37,18 @@ import lombok.extern.slf4j.Slf4j;
 public class UserDomainService {
 
   private final UserRepository userRepository;
+  private final UserEventPublisher eventPublisher;
 
   /**
-   * Constructs a new UserDomainService with the specified repository.
+   * Constructs a new UserDomainService with the specified repository and event publisher.
    *
    * @param userRepository the user repository
-   * @throws IllegalArgumentException if userRepository is null
+   * @param eventPublisher the event publisher
+   * @throws IllegalArgumentException if userRepository or eventPublisher is null
    */
-  public UserDomainService(UserRepository userRepository) {
+  public UserDomainService(UserRepository userRepository, UserEventPublisher eventPublisher) {
     this.userRepository = Objects.requireNonNull(userRepository, "UserRepository cannot be null");
+    this.eventPublisher = Objects.requireNonNull(eventPublisher, "UserEventPublisher cannot be null");
   }
 
   /**
@@ -94,7 +101,27 @@ public class UserDomainService {
     User user = new User(username, email, passwordHash, firstName, lastName, userRole);
 
     // Save user
-    return userRepository.save(user);
+    User savedUser = userRepository.save(user);
+    
+    // Publish user created event
+    try {
+      UserCreatedEvent event = UserCreatedEvent.of(
+          savedUser.getId(),
+          savedUser.getUsername(),
+          savedUser.getEmail(),
+          savedUser.getFirstName(),
+          savedUser.getLastName(),
+          savedUser.getRole().name(),
+          savedUser.getCreatedAt()
+      );
+      eventPublisher.publishUserCreated(event);
+      log.info("User created event published for user: {}", savedUser.getId());
+    } catch (Exception e) {
+      log.error("Failed to publish user created event for user: {}", savedUser.getId(), e);
+      // Don't fail the operation if event publishing fails
+    }
+    
+    return savedUser;
   }
 
   /**
@@ -119,7 +146,29 @@ public class UserDomainService {
     // Update profile
     user.updateProfile(firstName, lastName, email);
 
-    return userRepository.save(user);
+    User updatedUser = userRepository.save(user);
+    
+    // Publish user updated event
+    try {
+      UserUpdatedEvent event = UserUpdatedEvent.of(
+          updatedUser.getId(),
+          updatedUser.getUsername(),
+          updatedUser.getEmail(),
+          updatedUser.getFirstName(),
+          updatedUser.getLastName(),
+          updatedUser.getRole().name(),
+          updatedUser.getStatus().name(),
+          java.util.Map.of("firstName", firstName, "lastName", lastName, "email", email),
+          updatedUser.getUpdatedAt()
+      );
+      eventPublisher.publishUserUpdated(event);
+      log.info("User updated event published for user: {}", updatedUser.getId());
+    } catch (Exception e) {
+      log.error("Failed to publish user updated event for user: {}", updatedUser.getId(), e);
+      // Don't fail the operation if event publishing fails
+    }
+    
+    return updatedUser;
   }
 
   /**
@@ -298,6 +347,38 @@ public class UserDomainService {
 
     if (lastName == null || lastName.trim().isEmpty()) {
       throw new UserDomainException("Last name cannot be null or empty");
+    }
+  }
+
+  /**
+   * Deletes a user from the system.
+   *
+   * @param userId the ID of the user to delete
+   * @throws UserNotFoundException if user is not found
+   */
+  public void deleteUser(Long userId) {
+    User user = findUserById(userId);
+    
+    // Store user info for event before deletion
+    String username = user.getUsername();
+    String email = user.getEmail();
+    
+    // Delete user
+    userRepository.deleteById(userId);
+    
+    // Publish user deleted event
+    try {
+      UserDeletedEvent event = UserDeletedEvent.of(
+          userId,
+          username,
+          email,
+          java.time.LocalDateTime.now()
+      );
+      eventPublisher.publishUserDeleted(event);
+      log.info("User deleted event published for user: {}", userId);
+    } catch (Exception e) {
+      log.error("Failed to publish user deleted event for user: {}", userId, e);
+      // Don't fail the operation if event publishing fails
     }
   }
 

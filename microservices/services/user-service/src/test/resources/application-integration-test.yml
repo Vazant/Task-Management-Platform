@@ -1,0 +1,157 @@
+# Integration test configuration for User Service
+# This file contains configuration for integration tests with Testcontainers
+
+spring:
+  application:
+    name: user-service-integration-test
+  
+  # Database Configuration (will be overridden by Testcontainers)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/testdb
+    username: test
+    password: test
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      max-lifetime: 1200000
+      connection-timeout: 20000
+  
+  # JPA Configuration for integration testing
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+        jdbc:
+          batch_size: 20
+          batch_versioned_data: true
+        order_inserts: true
+        order_updates: true
+        generate_statistics: false
+  
+  # Flyway Configuration for integration testing
+  flyway:
+    enabled: false  # Disabled for Testcontainers tests
+  
+  # Security Configuration for integration testing
+  security:
+    jwt:
+      secret: integration-test-secret-key-for-testing-purposes-only-must-be-at-least-32-characters
+      expiration: 3600
+      refresh-expiration: 86400
+  
+  # Kafka Configuration for integration testing (will be overridden by Testcontainers)
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      retries: 0
+      batch-size: 16384
+      linger-ms: 5
+      buffer-memory: 33554432
+    consumer:
+      group-id: user-service-integration-test-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: true
+      max-poll-records: 500
+      session-timeout-ms: 30000
+      heartbeat-interval-ms: 3000
+  
+  # Redis Configuration for integration testing (will be overridden by Testcontainers)
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 20
+        max-idle: 10
+        min-idle: 5
+        max-wait: 2000ms
+
+# Server Configuration for integration testing
+server:
+  port: 0  # Random port for testing
+
+# Management and Monitoring for integration testing
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+# Logging Configuration for integration testing
+logging:
+  level:
+    root: WARN
+    com.taskboard.userservice: DEBUG
+    org.springframework.security: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.testcontainers: INFO
+    org.apache.kafka: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Application specific configuration for integration testing
+app:
+  user:
+    default-role: USER
+    password:
+      min-length: 6
+      require-uppercase: false
+      require-lowercase: false
+      require-digit: false
+      require-special-char: false
+    email:
+      verification-required: false
+      verification-token-expiry: 3600
+    profile:
+      max-image-size: 1048576 # 1MB for testing
+      allowed-image-types: jpg,jpeg,png
+  security:
+    cors:
+      allowed-origins: "*"
+      allowed-methods: "*"
+      allowed-headers: "*"
+      allow-credentials: true
+      max-age: 3600
+    rate-limiting:
+      enabled: false
+      requests-per-minute: 1000
+      burst-capacity: 2000
+
+# Testcontainers configuration
+testcontainers:
+  reuse: true
+  ryuk:
+    enabled: true
+  postgres:
+    image: postgres:15-alpine
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+  redis:
+    image: redis:7-alpine

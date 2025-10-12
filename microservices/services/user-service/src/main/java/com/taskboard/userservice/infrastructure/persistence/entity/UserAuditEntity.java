@@ -1,5 +1,6 @@
 package com.taskboard.userservice.infrastructure.persistence.entity;
 
+import com.taskboard.userservice.domain.model.UserAudit;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,7 +58,7 @@ public class UserAuditEntity {
 
   @Column(name = "action_type", nullable = false, length = 20)
   @Enumerated(EnumType.STRING)
-  private AuditActionType actionType;
+  private UserAudit.AuditActionType actionType;
 
   @Column(name = "resource", length = 100)
   private String resource;
@@ -81,25 +82,7 @@ public class UserAuditEntity {
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 
-  /**
-   * Enumeration of audit action types.
-   */
-  public enum AuditActionType {
-    LOGIN_ATTEMPT,
-    LOGIN_SUCCESS,
-    LOGIN_FAILURE,
-    LOGOUT,
-    PASSWORD_CHANGE,
-    PROFILE_UPDATE,
-    ACCOUNT_LOCKED,
-    ACCOUNT_UNLOCKED,
-    EMAIL_VERIFICATION,
-    AUTHORIZATION_FAILURE,
-    SUSPICIOUS_ACTIVITY,
-    DATA_ACCESS,
-    DATA_MODIFICATION,
-    ACCOUNT_DELETION
-  }
+  // AuditActionType enum is defined in the domain model UserAudit
 
   // Getters and setters are provided by Lombok @Data
 

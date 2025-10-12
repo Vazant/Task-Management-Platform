@@ -88,6 +88,20 @@ spring:
         min-idle: 5
         max-wait: 2000ms
 
+# Kafka Topics Configuration
+kafka:
+  topics:
+    user-created: ${KAFKA_TOPIC_USER_CREATED:user.created}
+    user-updated: ${KAFKA_TOPIC_USER_UPDATED:user.updated}
+    user-deleted: ${KAFKA_TOPIC_USER_DELETED:user.deleted}
+  producer:
+    retries: ${KAFKA_PRODUCER_RETRIES:3}
+    batch-size: ${KAFKA_PRODUCER_BATCH_SIZE:16384}
+    linger-ms: ${KAFKA_PRODUCER_LINGER_MS:5}
+    buffer-memory: ${KAFKA_PRODUCER_BUFFER_MEMORY:33554432}
+    acks: ${KAFKA_PRODUCER_ACKS:all}
+    enable-idempotence: ${KAFKA_PRODUCER_ENABLE_IDEMPOTENCE:true}
+
 # Server Configuration
 server:
   port: ${SERVER_PORT:8081}

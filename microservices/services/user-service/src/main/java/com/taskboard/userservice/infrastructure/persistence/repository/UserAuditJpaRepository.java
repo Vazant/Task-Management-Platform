@@ -1,5 +1,6 @@
 package com.taskboard.userservice.infrastructure.persistence.repository;
 
+import com.taskboard.userservice.domain.model.UserAudit;
 import com.taskboard.userservice.infrastructure.persistence.entity.UserAuditEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -64,7 +65,7 @@ public interface UserAuditJpaRepository extends JpaRepository<UserAuditEntity, L
    * @param actionType the action type
    * @return list of audit logs with the action type
    */
-  List<UserAuditEntity> findByActionType(UserAuditEntity.AuditActionType actionType);
+  List<UserAuditEntity> findByActionType(UserAudit.AuditActionType actionType);
 
   /**
    * Finds audit logs by action type with pagination.
@@ -73,7 +74,7 @@ public interface UserAuditJpaRepository extends JpaRepository<UserAuditEntity, L
    * @param pageable pagination information
    * @return page of audit logs with the action type
    */
-  Page<UserAuditEntity> findByActionType(UserAuditEntity.AuditActionType actionType, Pageable pageable);
+  Page<UserAuditEntity> findByActionType(UserAudit.AuditActionType actionType, Pageable pageable);
 
   /**
    * Finds audit logs by IP address.
@@ -128,7 +129,7 @@ public interface UserAuditJpaRepository extends JpaRepository<UserAuditEntity, L
           + "(:endDate IS NULL OR u.createdAt <= :endDate)")
   Page<UserAuditEntity> findByCriteria(
       @Param("userId") Long userId,
-      @Param("actionType") UserAuditEntity.AuditActionType actionType,
+      @Param("actionType") UserAudit.AuditActionType actionType,
       @Param("success") Boolean success,
       @Param("startDate") LocalDateTime startDate,
       @Param("endDate") LocalDateTime endDate,
@@ -156,7 +157,7 @@ public interface UserAuditJpaRepository extends JpaRepository<UserAuditEntity, L
    * @param actionType the action type
    * @return number of audit logs with the action type
    */
-  long countByActionType(UserAuditEntity.AuditActionType actionType);
+  long countByActionType(UserAudit.AuditActionType actionType);
 
   /**
    * Counts audit logs by success status.

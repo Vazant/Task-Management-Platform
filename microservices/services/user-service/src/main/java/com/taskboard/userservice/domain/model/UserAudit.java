@@ -38,10 +38,10 @@ public class UserAudit {
   private LocalDateTime createdAt;
 
   /**
-   * Protected constructor for JPA.
+   * Public constructor for MapStruct and JPA.
    */
-  protected UserAudit() {
-    // Required by JPA
+  public UserAudit() {
+    // Required by MapStruct and JPA
   }
 
   /**
