@@ -67,7 +67,7 @@ class UserRepositoryIntegrationTest extends BaseIntegrationTest {
         String email = "test1@example.com";
 
         // When
-        Optional<User> user = userRepository.findByEmail(email);
+        Optional<User> user = userRepository.getUserByEmail(email);
 
         // Then
         assertThat(user).isPresent();

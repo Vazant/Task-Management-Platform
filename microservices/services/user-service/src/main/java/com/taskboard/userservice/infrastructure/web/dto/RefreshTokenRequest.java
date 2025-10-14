@@ -7,26 +7,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Request DTO for authentication token refresh.
- * Contains the refresh token needed to obtain a new access token.
- * 
- * <p>This DTO is used for the token refresh endpoint to extend
- * user sessions without requiring re-authentication.
- * 
- * @author TaskBoard Team
- * @version 1.0
+ * Request DTO for token refresh.
+ *
+ * <p>This DTO contains the refresh token required to obtain a new access token.
+ * It includes validation annotations to ensure data integrity.
+ *
+ * @author Task Management Platform Team
+ * @version 1.0.0
  * @since 1.0.0
- * @see RefreshTokenResponse
  */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class RefreshTokenRequest {
-    
-    /**
-     * The refresh token used to obtain a new access token.
-     */
+
     @NotBlank(message = "Refresh token is required")
     private String refreshToken;
 }

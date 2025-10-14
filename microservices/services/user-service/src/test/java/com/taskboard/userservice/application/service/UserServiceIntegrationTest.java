@@ -242,7 +242,7 @@ class UserServiceIntegrationTest {
             entityManager.clear();
             
             // When
-            Optional<User> foundUser = userService.findByEmail("test@example.com");
+            Optional<User> foundUser = userService.getUserByEmail("test@example.com");
             
             // Then
             assertThat(foundUser).isPresent();
@@ -282,7 +282,7 @@ class UserServiceIntegrationTest {
             entityManager.clear();
             
             // When
-            List<User> activeUsers = userService.findActiveUsers();
+            List<User> activeUsers = userService.getActiveUsers();
             
             // Then
             assertThat(activeUsers).hasSize(2);
@@ -436,7 +436,7 @@ class UserServiceIntegrationTest {
             entityManager.clear();
             
             // When
-            Optional<User> authenticatedUser = userService.authenticate("testuser", "password123");
+            Optional<User> authenticatedUser = userService.authenticateUser("testuser", "password123");
             
             // Then
             assertThat(authenticatedUser).isPresent();
@@ -461,7 +461,7 @@ class UserServiceIntegrationTest {
             entityManager.clear();
             
             // When
-            Optional<User> authenticatedUser = userService.authenticate("testuser", "wrongpassword");
+            Optional<User> authenticatedUser = userService.authenticateUser("testuser", "wrongpassword");
             
             // Then
             assertThat(authenticatedUser).isEmpty();
@@ -484,7 +484,7 @@ class UserServiceIntegrationTest {
             entityManager.clear();
             
             // When
-            Optional<User> authenticatedUser = userService.authenticate("inactive", "password123");
+            Optional<User> authenticatedUser = userService.authenticateUser("inactive", "password123");
             
             // Then
             assertThat(authenticatedUser).isEmpty();

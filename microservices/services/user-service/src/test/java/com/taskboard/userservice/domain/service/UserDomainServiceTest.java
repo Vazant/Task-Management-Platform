@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
+import com.taskboard.userservice.domain.event.UserEventPublisher;
 import com.taskboard.userservice.domain.exception.UserAlreadyExistsException;
 import com.taskboard.userservice.domain.exception.UserDomainException;
 import com.taskboard.userservice.domain.exception.UserNotFoundException;
@@ -36,12 +37,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class UserDomainServiceTest {
 
   @Mock private UserRepository userRepository;
+  @Mock private UserEventPublisher eventPublisher;
 
   private UserDomainService userDomainService;
 
   @BeforeEach
   void setUp() {
-    userDomainService = new UserDomainService(userRepository);
+    userDomainService = new UserDomainService(userRepository, eventPublisher);
   }
 
   /**

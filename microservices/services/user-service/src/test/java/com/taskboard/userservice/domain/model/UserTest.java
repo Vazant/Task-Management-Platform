@@ -387,7 +387,7 @@ class UserTest {
                 .status(UserStatus.ACTIVE)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .lastActivity(lastLoginAt)
+                .lastLoginAt(lastLoginAt)
                 .build();
             
             // Then

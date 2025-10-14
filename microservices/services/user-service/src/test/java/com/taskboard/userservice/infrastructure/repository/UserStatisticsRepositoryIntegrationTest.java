@@ -3,6 +3,8 @@ package com.taskboard.userservice.infrastructure.repository;
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
 import com.taskboard.userservice.domain.model.UserStatistics;
+import com.taskboard.userservice.domain.repository.UserRepository;
+import com.taskboard.userservice.domain.repository.UserStatisticsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
