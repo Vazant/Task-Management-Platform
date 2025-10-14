@@ -2,6 +2,7 @@ package com.taskboard.userservice.infrastructure.repository;
 
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.domain.model.UserStatistics;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import com.taskboard.userservice.domain.repository.UserStatisticsRepository;
@@ -54,8 +55,9 @@ class UserStatisticsRepositoryIntegrationTest {
         testStatistics = UserStatistics.builder()
             .totalTasks(10)
             .completedTasks(5)
-            .pendingTasks(3)
-            .overdueTasks(2)
+            .todoTasks(2)
+            .inProgressTasks(1)
+            .todoTasks(0).inProgressTasks(2)
             .totalProjects(3)
             .activeProjects(2)
             .totalProjects(1)
@@ -72,7 +74,7 @@ class UserStatisticsRepositoryIntegrationTest {
         void shouldSaveUserStatisticsSuccessfully() {
             // Given
             User savedUser = userRepository.save(testUser);
-            testStatistics.setUser(savedUser);
+            testStatistics = testStatistics.toBuilder().userId(savedUser.getId()).build();
             
             // When
             UserStatistics savedStatistics = userStatisticsRepository.save(testStatistics);
@@ -81,7 +83,7 @@ class UserStatisticsRepositoryIntegrationTest {
             
             // Then
             assertThat(savedStatistics.getId()).isNotNull();
-            assertThat(savedStatistics.getUser().getId()).isEqualTo(savedUser.getId());
+            assertThat(savedStatistics.getUserId()).isEqualTo(savedUser.getId());
             assertThat(savedStatistics.getTotalTasks()).isEqualTo(10);
             assertThat(savedStatistics.getCompletedTasks()).isEqualTo(5);
             assertThat(savedStatistics.getPendingTasks()).isEqualTo(3);
@@ -98,7 +100,7 @@ class UserStatisticsRepositoryIntegrationTest {
         void shouldFindUserStatisticsByUserId() {
             // Given
             User savedUser = userRepository.save(testUser);
-            testStatistics.setUser(savedUser);
+            testStatistics = testStatistics.toBuilder().userId(savedUser.getId()).build();
             userStatisticsRepository.save(testStatistics);
             entityManager.flush();
             entityManager.clear();
@@ -108,7 +110,7 @@ class UserStatisticsRepositoryIntegrationTest {
             
             // Then
             assertThat(foundStatistics).isPresent();
-            assertThat(foundStatistics.get().getUser().getId()).isEqualTo(savedUser.getId());
+            assertThat(foundStatistics.get().getUserId()).isEqualTo(savedUser.getId());
             assertThat(foundStatistics.get().getTotalTasks()).isEqualTo(10);
         }
         
@@ -117,7 +119,7 @@ class UserStatisticsRepositoryIntegrationTest {
         void shouldUpdateUserStatisticsSuccessfully() {
             // Given
             User savedUser = userRepository.save(testUser);
-            testStatistics.setUser(savedUser);
+            testStatistics = testStatistics.toBuilder().userId(savedUser.getId()).build();
             UserStatistics savedStatistics = userStatisticsRepository.save(testStatistics);
             entityManager.flush();
             entityManager.clear();
@@ -126,8 +128,9 @@ class UserStatisticsRepositoryIntegrationTest {
             UserStatistics statisticsToUpdate = savedStatistics.toBuilder()
                 .totalTasks(15)
                 .completedTasks(8)
-                .pendingTasks(5)
-                .overdueTasks(2)
+                .todoTasks(3)
+                .inProgressTasks(2)
+                .todoTasks(0).inProgressTasks(2)
                 .build();
             
             UserStatistics updatedStatistics = userStatisticsRepository.save(statisticsToUpdate);
@@ -147,13 +150,13 @@ class UserStatisticsRepositoryIntegrationTest {
         void shouldDeleteUserStatisticsSuccessfully() {
             // Given
             User savedUser = userRepository.save(testUser);
-            testStatistics.setUser(savedUser);
+            testStatistics = testStatistics.toBuilder().userId(savedUser.getId()).build();
             UserStatistics savedStatistics = userStatisticsRepository.save(testStatistics);
             entityManager.flush();
             entityManager.clear();
             
             // When
-            userStatisticsRepository.deleteById(savedStatistics.getId());
+            userStatisticsRepository.delete(savedStatistics.getId());
             entityManager.flush();
             entityManager.clear();
             
@@ -176,33 +179,33 @@ class UserStatisticsRepositoryIntegrationTest {
             User user3 = userRepository.save(testUser.toBuilder().username("user3").email("user3@example.com").build());
             
             UserStatistics highCompletionStats = testStatistics.toBuilder()
-                .user(user1)
+                .userId(user1.getId())
                 .totalTasks(10)
                 .completedTasks(9) // 90% completion rate
                 .build();
             
             UserStatistics mediumCompletionStats = testStatistics.toBuilder()
-                .user(user2)
+                .userId(user2.getId())
                 .totalTasks(10)
                 .completedTasks(5) // 50% completion rate
                 .build();
             
             UserStatistics lowCompletionStats = testStatistics.toBuilder()
-                .user(user3)
+                .userId(user3.getId())
                 .totalTasks(10)
                 .completedTasks(2) // 20% completion rate
                 .build();
             
-            userStatisticsRepository.saveAll(List.of(highCompletionStats, mediumCompletionStats, lowCompletionStats));
+            userStatisticsRepository.save(List.of(highCompletionStats, mediumCompletionStats, lowCompletionStats));
             entityManager.flush();
             entityManager.clear();
             
             // When
-            List<UserStatistics> highCompletionUsers = userStatisticsRepository.findByCompletionRateGreaterThan(0.8);
+            List<UserStatistics> highCompletionUsers = userStatisticsRepository.findByCompletedTasksGreaterThan(0.8);
             
             // Then
             assertThat(highCompletionUsers).hasSize(1);
-            assertThat(highCompletionUsers.get(0).getUser().getUsername()).isEqualTo("user1");
+            assertThat(highCompletionUsers.get(0).getUserId()).isEqualTo(user1.getId());
         }
         
         @Test
@@ -213,25 +216,25 @@ class UserStatisticsRepositoryIntegrationTest {
             User user2 = userRepository.save(testUser.toBuilder().username("user2").email("user2@example.com").build());
             
             UserStatistics overdueStats = testStatistics.toBuilder()
-                .user(user1)
-                .overdueTasks(3)
+                .userId(user1.getId())
+                .todoTasks(0).inProgressTasks(3)
                 .build();
             
             UserStatistics noOverdueStats = testStatistics.toBuilder()
-                .user(user2)
-                .overdueTasks(0)
+                .userId(user2.getId())
+                .todoTasks(0).inProgressTasks(0)
                 .build();
             
-            userStatisticsRepository.saveAll(List.of(overdueStats, noOverdueStats));
+            userStatisticsRepository.save(List.of(overdueStats, noOverdueStats));
             entityManager.flush();
             entityManager.clear();
             
             // When
-            List<UserStatistics> usersWithOverdue = userStatisticsRepository.findByOverdueTasksGreaterThan(0);
+            List<UserStatistics> usersWithOverdue = userStatisticsRepository.findByTodoTasksGreaterThan(0);
             
             // Then
             assertThat(usersWithOverdue).hasSize(1);
-            assertThat(usersWithOverdue.get(0).getUser().getUsername()).isEqualTo("user1");
+            assertThat(usersWithOverdue.get(0).getUserId()).isEqualTo(user1.getId());
             assertThat(usersWithOverdue.get(0).getOverdueTasks()).isEqualTo(3);
         }
         
@@ -243,16 +246,16 @@ class UserStatisticsRepositoryIntegrationTest {
             User user2 = userRepository.save(testUser.toBuilder().username("user2").email("user2@example.com").build());
             
             UserStatistics manyProjectsStats = testStatistics.toBuilder()
-                .user(user1)
+                .userId(user1.getId())
                 .activeProjects(5)
                 .build();
             
             UserStatistics fewProjectsStats = testStatistics.toBuilder()
-                .user(user2)
+                .userId(user2.getId())
                 .activeProjects(1)
                 .build();
             
-            userStatisticsRepository.saveAll(List.of(manyProjectsStats, fewProjectsStats));
+            userStatisticsRepository.save(List.of(manyProjectsStats, fewProjectsStats));
             entityManager.flush();
             entityManager.clear();
             
@@ -261,7 +264,7 @@ class UserStatisticsRepositoryIntegrationTest {
             
             // Then
             assertThat(activeProjectUsers).hasSize(1);
-            assertThat(activeProjectUsers.get(0).getUser().getUsername()).isEqualTo("user1");
+            assertThat(activeProjectUsers.get(0).getUserId()).isEqualTo(user1.getId());
             assertThat(activeProjectUsers.get(0).getActiveProjects()).isEqualTo(5);
         }
         
@@ -275,16 +278,16 @@ class UserStatisticsRepositoryIntegrationTest {
             User user2 = userRepository.save(testUser.toBuilder().username("user2").email("user2@example.com").build());
             
             UserStatistics recentActivityStats = testStatistics.toBuilder()
-                .user(user1)
+                .userId(user1.getId())
                 .lastActivityAt(LocalDateTime.now())
                 .build();
             
             UserStatistics oldActivityStats = testStatistics.toBuilder()
-                .user(user2)
+                .userId(user2.getId())
                 .lastActivityAt(LocalDateTime.now().minusDays(3))
                 .build();
             
-            userStatisticsRepository.saveAll(List.of(recentActivityStats, oldActivityStats));
+            userStatisticsRepository.save(List.of(recentActivityStats, oldActivityStats));
             entityManager.flush();
             entityManager.clear();
             
@@ -293,7 +296,7 @@ class UserStatisticsRepositoryIntegrationTest {
             
             // Then
             assertThat(recentUsers).hasSize(1);
-            assertThat(recentUsers.get(0).getUser().getUsername()).isEqualTo("user1");
+            assertThat(recentUsers.get(0).getUserId()).isEqualTo(user1.getId());
         }
         
         @Test
@@ -305,21 +308,21 @@ class UserStatisticsRepositoryIntegrationTest {
             User user3 = userRepository.save(testUser.toBuilder().username("user3").email("user3@example.com").build());
             
             UserStatistics highTaskStats = testStatistics.toBuilder()
-                .user(user1)
+                .userId(user1.getId())
                 .totalTasks(100)
                 .build();
             
             UserStatistics mediumTaskStats = testStatistics.toBuilder()
-                .user(user2)
+                .userId(user2.getId())
                 .totalTasks(50)
                 .build();
             
             UserStatistics lowTaskStats = testStatistics.toBuilder()
-                .user(user3)
+                .userId(user3.getId())
                 .totalTasks(10)
                 .build();
             
-            userStatisticsRepository.saveAll(List.of(highTaskStats, mediumTaskStats, lowTaskStats));
+            userStatisticsRepository.save(List.of(highTaskStats, mediumTaskStats, lowTaskStats));
             entityManager.flush();
             entityManager.clear();
             
@@ -344,7 +347,7 @@ class UserStatisticsRepositoryIntegrationTest {
             // Given
             User savedUser = userRepository.save(testUser);
             UserStatistics stats = testStatistics.toBuilder()
-                .user(savedUser)
+                .userId(savedUser.getId())
                 .totalTasks(10)
                 .completedTasks(7)
                 .build();
@@ -367,7 +370,7 @@ class UserStatisticsRepositoryIntegrationTest {
             // Given
             User savedUser = userRepository.save(testUser);
             UserStatistics stats = testStatistics.toBuilder()
-                .user(savedUser)
+                .userId(savedUser.getId())
                 .totalTasks(0)
                 .completedTasks(0)
                 .build();
@@ -390,11 +393,12 @@ class UserStatisticsRepositoryIntegrationTest {
             // Given
             User savedUser = userRepository.save(testUser);
             UserStatistics stats = testStatistics.toBuilder()
-                .user(savedUser)
+                .userId(savedUser.getId())
                 .totalTasks(10)
                 .completedTasks(5)
-                .pendingTasks(3)
-                .overdueTasks(2)
+                .todoTasks(2)
+            .inProgressTasks(1)
+                .todoTasks(0).inProgressTasks(2)
                 .build();
             
             userStatisticsRepository.save(stats);
@@ -435,7 +439,7 @@ class UserStatisticsRepositoryIntegrationTest {
                 users.add(user);
                 
                 statistics.add(testStatistics.toBuilder()
-                    .user(user)
+                    .userId(user.getId())
                     .totalTasks(i + 1)
                     .completedTasks(i)
                     .build());
@@ -443,7 +447,7 @@ class UserStatisticsRepositoryIntegrationTest {
             
             // When
             long startTime = System.currentTimeMillis();
-            userStatisticsRepository.saveAll(statistics);
+            userStatisticsRepository.save(statistics);
             entityManager.flush();
             long endTime = System.currentTimeMillis();
             
@@ -469,22 +473,22 @@ class UserStatisticsRepositoryIntegrationTest {
                 users.add(user);
                 
                 statistics.add(testStatistics.toBuilder()
-                    .user(user)
+                    .userId(user.getId())
                     .totalTasks(i + 1)
                     .completedTasks(i)
-                    .overdueTasks(i % 3)
+                    .todoTasks(0).inProgressTasks(i % 3)
                     .activeProjects(i % 5)
                     .build());
             }
             
-            userStatisticsRepository.saveAll(statistics);
+            userStatisticsRepository.save(statistics);
             entityManager.flush();
             entityManager.clear();
             
             // When
             long startTime = System.currentTimeMillis();
-            List<UserStatistics> highCompletionUsers = userStatisticsRepository.findByCompletionRateGreaterThan(0.8);
-            List<UserStatistics> overdueUsers = userStatisticsRepository.findByOverdueTasksGreaterThan(0);
+            List<UserStatistics> highCompletionUsers = userStatisticsRepository.findByCompletedTasksGreaterThan(0.8);
+            List<UserStatistics> overdueUsers = userStatisticsRepository.findByTodoTasksGreaterThan(0);
             List<UserStatistics> topUsers = userStatisticsRepository.findTop10ByOrderByTotalTasksDesc();
             long endTime = System.currentTimeMillis();
             

@@ -3,6 +3,7 @@ package com.taskboard.userservice.integration;
 import com.taskboard.userservice.application.dto.CreateUserRequest;
 import com.taskboard.userservice.application.usecase.CreateUserUseCase;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.infrastructure.event.KafkaUserEventPublisher;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;

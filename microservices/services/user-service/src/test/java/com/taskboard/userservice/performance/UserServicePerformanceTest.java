@@ -5,6 +5,7 @@ import com.taskboard.userservice.application.dto.CreateUserRequest;
 import com.taskboard.userservice.application.dto.LoginRequest;
 import com.taskboard.userservice.application.dto.RegisterRequest;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

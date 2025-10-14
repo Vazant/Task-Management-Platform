@@ -3,7 +3,6 @@ package com.taskboard.userservice.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -30,7 +29,6 @@ import java.util.Objects;
  */
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class User {
 
@@ -40,14 +38,26 @@ public class User {
   private String password;
   private String firstName;
   private String lastName;
-  private UserStatus status;
+  @Builder.Default
+  private UserStatus status = UserStatus.ACTIVE;
   private UserRole role;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+  @Builder.Default
+  private LocalDateTime createdAt = LocalDateTime.now();
+  @Builder.Default
+  private LocalDateTime updatedAt = LocalDateTime.now();
   private LocalDateTime lastLoginAt;
-  private boolean emailVerified;
+  @Builder.Default
+  private boolean emailVerified = false;
   private String profileImageUrl;
   private String externalId;
+
+  /**
+   * Default constructor for frameworks that require it.
+   * Note: This creates an invalid user object. Use the parameterized constructor for valid users.
+   */
+  public User() {
+    // Default constructor for frameworks
+  }
 
   /**
    * Creates a new User with required fields.
@@ -66,12 +76,29 @@ public class User {
       String firstName,
       String lastName,
       UserRole role) {
-    this.username = Objects.requireNonNull(username, "Username cannot be null");
-    this.email = Objects.requireNonNull(email, "Email cannot be null");
-    this.password = Objects.requireNonNull(password, "Password cannot be null");
-    this.firstName = Objects.requireNonNull(firstName, "First name cannot be null");
-    this.lastName = Objects.requireNonNull(lastName, "Last name cannot be null");
-    this.role = Objects.requireNonNull(role, "Role cannot be null");
+    // Validate required fields
+    if (username == null || username.trim().isEmpty()) {
+      throw new IllegalArgumentException("Username cannot be null or empty");
+    }
+    if (email == null || email.trim().isEmpty()) {
+      throw new IllegalArgumentException("Email cannot be null or empty");
+    }
+    if (!email.contains("@")) {
+      throw new IllegalArgumentException("Email must be a valid email address");
+    }
+    if (password == null || password.trim().isEmpty()) {
+      throw new IllegalArgumentException("Password cannot be null or empty");
+    }
+    if (role == null) {
+      throw new IllegalArgumentException("Role cannot be null");
+    }
+    
+    this.username = username.trim();
+    this.email = email.trim();
+    this.password = password;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.role = role;
 
     this.status = UserStatus.ACTIVE;
     this.createdAt = LocalDateTime.now();
@@ -182,12 +209,39 @@ public class User {
 
   /**
    * Gets user's full name.
+   * If both first and last names are available, returns full name.
+   * Otherwise, returns username.
    *
-   * @return concatenated first and last name
+   * @return full name or username if names are not available
    */
   public String getFullName() {
-    return firstName + " " + lastName;
+    if (firstName != null && lastName != null && 
+        !firstName.trim().isEmpty() && !lastName.trim().isEmpty()) {
+      return firstName + " " + lastName;
+    }
+    return username != null ? username : "Unknown User";
   }
+
+  /**
+   * Gets user's display name.
+   * If both first and last names are available, returns full name.
+   * Otherwise, returns username.
+   *
+   * @return display name for the user
+   */
+    public String getDisplayName() {
+        if (firstName != null && lastName != null && 
+            !firstName.trim().isEmpty() && !lastName.trim().isEmpty()) {
+            return firstName + " " + lastName;
+        }
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            return firstName;
+        }
+        if (lastName != null && !lastName.trim().isEmpty()) {
+            return lastName;
+        }
+        return username != null ? username : "Unknown User";
+    }
 
   // Lombok @Data annotation provides getters and setters automatically
 
@@ -255,5 +309,107 @@ public class User {
         .profileImageUrl(profileImageUrl)
         .externalId(externalId);
   }
+
+  /**
+   * Validates the user object and throws exceptions for invalid data.
+   * This method should be called after creating a User object to ensure data integrity.
+   */
+  public void validate() {
+    if (username == null || username.trim().isEmpty()) {
+      throw new IllegalArgumentException("Username cannot be null or empty");
+    }
+    if (!isValidUsername(username)) {
+      throw new IllegalArgumentException("Username must be at least 3 characters long and contain only alphanumeric characters");
+    }
+    if (email == null || email.trim().isEmpty()) {
+      throw new IllegalArgumentException("Email cannot be null or empty");
+    }
+    if (!isValidEmail(email)) {
+      throw new IllegalArgumentException("Email must be a valid email address");
+    }
+    if (password == null || password.trim().isEmpty()) {
+      throw new IllegalArgumentException("Password cannot be null or empty");
+    }
+    if (role == null) {
+      throw new IllegalArgumentException("Role cannot be null");
+    }
+  }
+
+  /**
+   * Validates username format.
+   * 
+   * @param username the username to validate
+   * @return true if username is valid, false otherwise
+   */
+  private boolean isValidUsername(String username) {
+    if (username == null || username.trim().isEmpty()) {
+      return false;
+    }
+    
+    String trimmedUsername = username.trim();
+    
+    // Username must be at least 3 characters long
+    if (trimmedUsername.length() < 3) {
+      return false;
+    }
+    
+    // Username can only contain alphanumeric characters
+    return trimmedUsername.matches("^[a-zA-Z0-9]+$");
+  }
+
+  /**
+   * Validates email format.
+   * 
+   * @param email the email to validate
+   * @return true if email is valid, false otherwise
+   */
+    private boolean isValidEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        
+        // Basic email validation - must contain @ and have valid format
+        String trimmedEmail = email.trim();
+        if (!trimmedEmail.contains("@")) {
+            return false;
+        }
+        
+        String[] parts = trimmedEmail.split("@");
+        if (parts.length != 2) {
+            return false;
+        }
+        
+        String localPart = parts[0];
+        String domainPart = parts[1];
+        
+        // Local part cannot be empty
+        if (localPart.isEmpty()) {
+            return false;
+        }
+        
+        // Check for consecutive dots in local part
+        if (localPart.contains("..")) {
+            return false;
+        }
+        
+        // Domain part cannot be empty and must contain at least one dot
+        if (domainPart.isEmpty() || !domainPart.contains(".")) {
+            return false;
+        }
+        
+        // Domain part cannot start or end with dot
+        if (domainPart.startsWith(".") || domainPart.endsWith(".")) {
+            return false;
+        }
+        
+        // Additional validation for common invalid patterns
+        if (trimmedEmail.endsWith("@") || trimmedEmail.startsWith("@")) {
+            return false;
+        }
+        
+        // Check for multiple @ symbols
+        return trimmedEmail.indexOf("@") == trimmedEmail.lastIndexOf("@");
+    }
+
 
 }

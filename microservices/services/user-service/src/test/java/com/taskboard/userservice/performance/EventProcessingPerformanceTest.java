@@ -5,6 +5,7 @@ import com.taskboard.userservice.domain.event.task.TaskCreatedEvent;
 import com.taskboard.userservice.domain.event.task.TaskCreatedEvent.TaskData;
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import com.taskboard.userservice.domain.repository.UserStatisticsRepository;
 import com.taskboard.userservice.infrastructure.config.PasswordEncoderConfig;
@@ -93,7 +94,7 @@ class EventProcessingPerformanceTest {
                 .createdAt(timestamp)
                 .build();
             
-            TaskCreatedEvent event = TaskCreatedEvent.builder()
+            TaskCreatedEvent event = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType("task.created")
                 .sourceService("task-service")
@@ -143,7 +144,7 @@ class EventProcessingPerformanceTest {
                     .createdAt(timestamp)
                     .build();
                 
-                TaskCreatedEvent event = TaskCreatedEvent.builder()
+                TaskCreatedEvent event = TaskCreatedEvent.builder(
                     .eventId(UUID.randomUUID())
                     .eventType("task.created")
                     .sourceService("task-service")
@@ -204,7 +205,7 @@ class EventProcessingPerformanceTest {
                         .createdAt(timestamp)
                         .build();
                     
-                    TaskCreatedEvent event = TaskCreatedEvent.builder()
+                    TaskCreatedEvent event = TaskCreatedEvent.builder(
                         .eventId(UUID.randomUUID())
                         .eventType("task.created")
                         .sourceService("task-service")
@@ -269,7 +270,7 @@ class EventProcessingPerformanceTest {
                         .createdAt(timestamp)
                         .build();
                     
-                    TaskCreatedEvent event = TaskCreatedEvent.builder()
+                    TaskCreatedEvent event = TaskCreatedEvent.builder(
                         .eventId(UUID.randomUUID())
                         .eventType("task.created")
                         .sourceService("task-service")
@@ -336,7 +337,7 @@ class EventProcessingPerformanceTest {
                         .createdAt(timestamp)
                         .build();
                     
-                    TaskCreatedEvent event = TaskCreatedEvent.builder()
+                    TaskCreatedEvent event = TaskCreatedEvent.builder(
                         .eventId(UUID.randomUUID())
                         .eventType("task.created")
                         .sourceService("task-service")
@@ -396,7 +397,7 @@ class EventProcessingPerformanceTest {
                         .createdAt(timestamp)
                         .build();
                     
-                    TaskCreatedEvent event = TaskCreatedEvent.builder()
+                    TaskCreatedEvent event = TaskCreatedEvent.builder(
                         .eventId(UUID.randomUUID())
                         .eventType("task.created")
                         .sourceService("task-service")
@@ -464,7 +465,7 @@ class EventProcessingPerformanceTest {
                     .createdAt(timestamp)
                     .build();
                 
-                TaskCreatedEvent event = TaskCreatedEvent.builder()
+                TaskCreatedEvent event = TaskCreatedEvent.builder(
                     .eventId(UUID.randomUUID())
                     .eventType("task.created")
                     .sourceService("task-service")
@@ -529,7 +530,7 @@ class EventProcessingPerformanceTest {
                         .createdAt(timestamp)
                         .build();
                     
-                    TaskCreatedEvent event = TaskCreatedEvent.builder()
+                    TaskCreatedEvent event = TaskCreatedEvent.builder(
                         .eventId(UUID.randomUUID())
                         .eventType("task.created")
                         .sourceService("task-service")

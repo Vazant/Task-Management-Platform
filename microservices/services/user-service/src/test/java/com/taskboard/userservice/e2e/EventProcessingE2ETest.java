@@ -7,6 +7,7 @@ import com.taskboard.userservice.domain.event.task.TaskCreatedEvent;
 import com.taskboard.userservice.domain.event.task.TaskCreatedEvent.TaskData;
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import com.taskboard.userservice.domain.repository.UserStatisticsRepository;
 import com.taskboard.userservice.infrastructure.config.PasswordEncoderConfig;
@@ -97,7 +98,7 @@ class EventProcessingE2ETest {
                 .createdAt(timestamp)
                 .build();
             
-            TaskCreatedEvent event = TaskCreatedEvent.builder()
+            TaskCreatedEvent event = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType("task.created")
                 .sourceService("task-service")
@@ -161,7 +162,7 @@ class EventProcessingE2ETest {
                 .createdAt(timestamp)
                 .build();
             
-            TaskCreatedEvent event = TaskCreatedEvent.builder()
+            TaskCreatedEvent event = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType("task.created")
                 .sourceService("task-service")
@@ -196,7 +197,7 @@ class EventProcessingE2ETest {
                 .createdAt(timestamp)
                 .build();
             
-            TaskCreatedEvent event = TaskCreatedEvent.builder()
+            TaskCreatedEvent event = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType("task.created")
                 .sourceService("task-service")
@@ -228,7 +229,7 @@ class EventProcessingE2ETest {
             UUID eventId = UUID.randomUUID();
             LocalDateTime timestamp = LocalDateTime.now();
             
-            var event = com.taskboard.userservice.domain.event.project.ProjectMemberAddedEvent.builder()
+            var event = com.taskboard.userservice.domain.event.project.ProjectMemberAddedEvent.builder(
                 .eventId(eventId)
                 .eventType("project.member.added")
                 .sourceService("project-service")
@@ -301,7 +302,7 @@ class EventProcessingE2ETest {
                 .createdAt(timestamp)
                 .build();
             
-            TaskCreatedEvent event = TaskCreatedEvent.builder()
+            TaskCreatedEvent event = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType("task.created")
                 .sourceService("task-service")
@@ -337,7 +338,7 @@ class EventProcessingE2ETest {
                 .createdAt(timestamp)
                 .build();
             
-            TaskCreatedEvent event = TaskCreatedEvent.builder()
+            TaskCreatedEvent event = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType("task.created")
                 .sourceService("task-service")
@@ -441,7 +442,7 @@ class EventProcessingE2ETest {
             .createdAt(timestamp)
             .build();
         
-        return TaskCreatedEvent.builder()
+        return TaskCreatedEvent.builder(
             .eventId(UUID.randomUUID())
             .eventType("task.created")
             .sourceService("task-service")
@@ -453,7 +454,7 @@ class EventProcessingE2ETest {
     private com.taskboard.userservice.domain.event.project.ProjectMemberAddedEvent createProjectMemberAddedEvent(
             Long projectId, String projectName, LocalDateTime timestamp) {
         
-        return com.taskboard.userservice.domain.event.project.ProjectMemberAddedEvent.builder()
+        return com.taskboard.userservice.domain.event.project.ProjectMemberAddedEvent.builder(
             .eventId(UUID.randomUUID())
             .eventType("project.member.added")
             .sourceService("project-service")

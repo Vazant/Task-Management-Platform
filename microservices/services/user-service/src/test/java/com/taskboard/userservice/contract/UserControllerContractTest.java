@@ -5,6 +5,7 @@ import com.taskboard.userservice.application.dto.CreateUserRequest;
 import com.taskboard.userservice.application.dto.UpdateUserRequest;
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import com.taskboard.userservice.infrastructure.config.PasswordEncoderConfig;
 import org.junit.jupiter.api.BeforeEach;

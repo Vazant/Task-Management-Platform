@@ -66,7 +66,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .createdAt(timestamp)
                 .build();
             
-            TaskCreatedEvent eventData = TaskCreatedEvent.builder()
+            TaskCreatedEvent eventData = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType(eventType)
                 .sourceService(sourceService)
@@ -103,7 +103,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build();
             
             // When
-            kafkaConsumer.consumeIncomingEvent(message);
+            kafkaConsumer.consume(message);
             
             // Then
             verify(objectMapper).readValue(jsonPayload, TaskCreatedEvent.class);
@@ -125,7 +125,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build();
             
             // When & Then
-            assertThatThrownBy(() -> kafkaConsumer.consumeIncomingEvent(message))
+            assertThatThrownBy(() -> kafkaConsumer.consume(message))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Invalid JSON");
             
@@ -147,7 +147,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .userId(100L)
                 .build();
             
-            TaskCreatedEvent eventData = TaskCreatedEvent.builder()
+            TaskCreatedEvent eventData = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType(eventType)
                 .sourceService(sourceService)
@@ -176,7 +176,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build(); // No headers
             
             // When
-            kafkaConsumer.consumeIncomingEvent(message);
+            kafkaConsumer.consume(message);
             
             // Then
             verify(objectMapper).readValue(jsonPayload, TaskCreatedEvent.class);
@@ -198,7 +198,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .userId(100L)
                 .build();
             
-            TaskCreatedEvent eventData = TaskCreatedEvent.builder()
+            TaskCreatedEvent eventData = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType(eventType)
                 .sourceService(sourceService)
@@ -229,7 +229,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build();
             
             // When & Then
-            assertThatThrownBy(() -> kafkaConsumer.consumeIncomingEvent(message))
+            assertThatThrownBy(() -> kafkaConsumer.consume(message))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Processing failed");
             
@@ -257,7 +257,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .userId(100L)
                 .build();
             
-            TaskCreatedEvent eventData = TaskCreatedEvent.builder()
+            TaskCreatedEvent eventData = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType(eventType)
                 .sourceService(sourceService)
@@ -293,7 +293,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build();
             
             // When
-            kafkaConsumer.consumeIncomingEvent(message);
+            kafkaConsumer.consume(message);
             
             // Then
             verify(objectMapper).readValue(jsonPayload, TaskCreatedEvent.class);
@@ -315,7 +315,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .userId(100L)
                 .build();
             
-            TaskCreatedEvent eventData = TaskCreatedEvent.builder()
+            TaskCreatedEvent eventData = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType(eventType)
                 .sourceService(sourceService)
@@ -345,7 +345,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build();
             
             // When
-            kafkaConsumer.consumeIncomingEvent(message);
+            kafkaConsumer.consume(message);
             
             // Then
             verify(objectMapper).readValue(jsonPayload, TaskCreatedEvent.class);
@@ -371,7 +371,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build();
             
             // When & Then
-            assertThatThrownBy(() -> kafkaConsumer.consumeIncomingEvent(message))
+            assertThatThrownBy(() -> kafkaConsumer.consume(message))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Deserialization failed");
             
@@ -387,7 +387,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build();
             
             // When & Then
-            assertThatThrownBy(() -> kafkaConsumer.consumeIncomingEvent(message))
+            assertThatThrownBy(() -> kafkaConsumer.consume(message))
                 .isInstanceOf(IllegalArgumentException.class);
             
             verify(objectMapper, never()).readValue(anyString(), any(Class.class));
@@ -408,7 +408,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .build();
             
             // When & Then
-            assertThatThrownBy(() -> kafkaConsumer.consumeIncomingEvent(message))
+            assertThatThrownBy(() -> kafkaConsumer.consume(message))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Empty payload");
             
@@ -436,7 +436,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
                 .userId(100L)
                 .build();
             
-            TaskCreatedEvent eventData = TaskCreatedEvent.builder()
+            TaskCreatedEvent eventData = TaskCreatedEvent.builder(
                 .eventId(eventId)
                 .eventType(eventType)
                 .sourceService(sourceService)
@@ -467,7 +467,7 @@ class KafkaIncomingEventConsumerIntegrationTest {
             // When
             long startTime = System.currentTimeMillis();
             for (int i = 0; i < eventCount; i++) {
-                kafkaConsumer.consumeIncomingEvent(message);
+                kafkaConsumer.consume(message);
             }
             long endTime = System.currentTimeMillis();
             

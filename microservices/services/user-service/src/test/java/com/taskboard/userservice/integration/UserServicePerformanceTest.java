@@ -4,6 +4,7 @@ import com.taskboard.userservice.application.dto.CreateUserRequest;
 import com.taskboard.userservice.application.usecase.CreateUserUseCase;
 import com.taskboard.userservice.application.usecase.GetUserUseCase;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

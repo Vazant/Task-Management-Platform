@@ -4,6 +4,7 @@ import com.taskboard.userservice.application.dto.CreateUserRequest;
 import com.taskboard.userservice.application.dto.UpdateUserRequest;
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import com.taskboard.userservice.infrastructure.config.PasswordEncoderConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -277,7 +278,7 @@ class UserServiceIntegrationTest {
                 .status(UserStatus.INACTIVE)
                 .build();
             
-            userRepository.saveAll(List.of(activeUser1, activeUser2, inactiveUser));
+            userRepository.save(List.of(activeUser1, activeUser2, inactiveUser));
             entityManager.flush();
             entityManager.clear();
             

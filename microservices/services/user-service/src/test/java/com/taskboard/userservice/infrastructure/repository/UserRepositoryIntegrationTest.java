@@ -2,6 +2,7 @@ package com.taskboard.userservice.infrastructure.repository;
 
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -108,7 +109,7 @@ class UserRepositoryIntegrationTest {
             entityManager.clear();
             
             // When
-            Optional<User> foundUser = userRepository.getUserByEmail("test@example.com");
+            Optional<User> foundUser = userRepository.findByEmail("test@example.com");
             
             // Then
             assertThat(foundUser).isPresent();
@@ -151,7 +152,7 @@ class UserRepositoryIntegrationTest {
             entityManager.clear();
             
             // When
-            userRepository.deleteById(savedUser.getId());
+            userRepository.delete(savedUser.getId());
             entityManager.flush();
             entityManager.clear();
             
@@ -173,12 +174,12 @@ class UserRepositoryIntegrationTest {
             User activeUser2 = testUser.toBuilder().username("active2").email("active2@example.com").build();
             User inactiveUser = testUser.toBuilder().username("inactive").email("inactive@example.com").status(UserStatus.INACTIVE).build();
             
-            userRepository.saveAll(List.of(activeUser1, activeUser2, inactiveUser));
+            userRepository.save(List.of(activeUser1, activeUser2, inactiveUser));
             entityManager.flush();
             entityManager.clear();
             
             // When
-            List<User> activeUsers = userRepository.findByIsActiveTrue();
+            List<User> activeUsers = userRepository.findByStatus(UserStatus.ACTIVE);
             
             // Then
             assertThat(activeUsers).hasSize(2);
@@ -193,7 +194,7 @@ class UserRepositoryIntegrationTest {
             User regularUser1 = testUser.toBuilder().username("user1").email("user1@example.com").role(UserRole.USER).build();
             User regularUser2 = testUser.toBuilder().username("user2").email("user2@example.com").role(UserRole.USER).build();
             
-            userRepository.saveAll(List.of(adminUser, regularUser1, regularUser2));
+            userRepository.save(List.of(adminUser, regularUser1, regularUser2));
             entityManager.flush();
             entityManager.clear();
             
@@ -253,12 +254,12 @@ class UserRepositoryIntegrationTest {
                 .createdAt(LocalDateTime.now())
                 .build();
             
-            userRepository.saveAll(List.of(oldUser, newUser));
+            userRepository.save(List.of(oldUser, newUser));
             entityManager.flush();
             entityManager.clear();
             
             // When
-            List<User> recentUsers = userRepository.findByCreatedAtAfter(cutoffDate);
+            List<User> recentUsers = userRepository.findByCreatedAtGreaterThan(cutoffDate);
             
             // Then
             assertThat(recentUsers).hasSize(1);
@@ -343,7 +344,7 @@ class UserRepositoryIntegrationTest {
             
             // When
             long startTime = System.currentTimeMillis();
-            List<User> savedUsers = userRepository.saveAll(users);
+            List<User> savedUsers = userRepository.save(users);
             entityManager.flush();
             long endTime = System.currentTimeMillis();
             
@@ -368,7 +369,7 @@ class UserRepositoryIntegrationTest {
                     .build());
             }
             
-            userRepository.saveAll(users);
+            userRepository.save(users);
             entityManager.flush();
             entityManager.clear();
             

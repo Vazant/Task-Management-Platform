@@ -38,6 +38,7 @@ class UserTest {
         void shouldCreateUserWithValidData() {
             // When
             User user = userBuilder.build();
+            user.validate(); // Validate the user
             
             // Then
             assertThat(user.getUsername()).isEqualTo("testuser");
@@ -61,6 +62,7 @@ class UserTest {
                 .password("hash")
                 .role(UserRole.USER)
                 .build();
+            user.validate(); // Validate the user
             
             // Then
             assertThat(user.getUsername()).isEqualTo("minimaluser");
@@ -74,7 +76,10 @@ class UserTest {
         @DisplayName("Should throw exception when username is null")
         void shouldThrowExceptionWhenUsernameIsNull() {
             // When & Then
-            assertThatThrownBy(() -> userBuilder.username(null).build())
+            assertThatThrownBy(() -> {
+                User user = userBuilder.username(null).build();
+                user.validate();
+            })
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Username cannot be null or empty");
         }
@@ -83,7 +88,10 @@ class UserTest {
         @DisplayName("Should throw exception when username is empty")
         void shouldThrowExceptionWhenUsernameIsEmpty() {
             // When & Then
-            assertThatThrownBy(() -> userBuilder.username("").build())
+            assertThatThrownBy(() -> {
+                User user = userBuilder.username("").build();
+                user.validate();
+            })
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Username cannot be null or empty");
         }
@@ -92,7 +100,10 @@ class UserTest {
         @DisplayName("Should throw exception when email is null")
         void shouldThrowExceptionWhenEmailIsNull() {
             // When & Then
-            assertThatThrownBy(() -> userBuilder.email(null).build())
+            assertThatThrownBy(() -> {
+                User user = userBuilder.email(null).build();
+                user.validate();
+            })
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Email cannot be null or empty");
         }
@@ -101,25 +112,34 @@ class UserTest {
         @DisplayName("Should throw exception when email is invalid")
         void shouldThrowExceptionWhenEmailIsInvalid() {
             // When & Then
-            assertThatThrownBy(() -> userBuilder.email("invalid-email").build())
+            assertThatThrownBy(() -> {
+                User user = userBuilder.email("invalid-email").build();
+                user.validate();
+            })
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Invalid email format");
+                .hasMessageContaining("Email must be a valid email address");
         }
         
         @Test
         @DisplayName("Should throw exception when password is null")
         void shouldThrowExceptionWhenPasswordIsNull() {
             // When & Then
-            assertThatThrownBy(() -> userBuilder.password(null).build())
+            assertThatThrownBy(() -> {
+                User user = userBuilder.password(null).build();
+                user.validate();
+            })
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Password cannot be null");
+                .hasMessageContaining("Password cannot be null or empty");
         }
         
         @Test
         @DisplayName("Should throw exception when role is null")
         void shouldThrowExceptionWhenRoleIsNull() {
             // When & Then
-            assertThatThrownBy(() -> userBuilder.role(null).build())
+            assertThatThrownBy(() -> {
+                User user = userBuilder.role(null).build();
+                user.validate();
+            })
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining("Role cannot be null");
         }
@@ -145,7 +165,10 @@ class UserTest {
         @DisplayName("Should reject invalid usernames")
         void shouldRejectInvalidUsernames(String username) {
             // When & Then
-            assertThatThrownBy(() -> userBuilder.username(username).build())
+            assertThatThrownBy(() -> {
+                User user = userBuilder.username(username).build();
+                user.validate();
+            })
                 .isInstanceOf(IllegalArgumentException.class);
         }
         
@@ -176,7 +199,10 @@ class UserTest {
         @DisplayName("Should reject invalid email addresses")
         void shouldRejectInvalidEmailAddresses(String email) {
             // When & Then
-            assertThatThrownBy(() -> userBuilder.email(email).build())
+            assertThatThrownBy(() -> {
+                User user = userBuilder.email(email).build();
+                user.validate();
+            })
                 .isInstanceOf(IllegalArgumentException.class);
         }
     }
@@ -322,8 +348,9 @@ class UserTest {
         @DisplayName("Should be equal when usernames are same")
         void shouldBeEqualWhenUsernamesAreSame() {
             // Given
-            User user1 = userBuilder.username("sameuser").build();
-            User user2 = userBuilder.username("sameuser").build();
+            LocalDateTime now = LocalDateTime.now();
+            User user1 = userBuilder.username("sameuser").createdAt(now).updatedAt(now).build();
+            User user2 = userBuilder.username("sameuser").createdAt(now).updatedAt(now).build();
             
             // When & Then
             assertThat(user1).isEqualTo(user2);

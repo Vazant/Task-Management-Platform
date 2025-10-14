@@ -145,4 +145,35 @@ public interface UserStatisticsRepository {
      * @return the updated user statistics
      */
     UserStatistics updateLastTaskCompleted(Long userId);
+    
+    /**
+     * Deletes user statistics by ID.
+     * 
+     * @param id the statistics ID
+     */
+    void delete(Long id);
+    
+    /**
+     * Saves multiple user statistics.
+     * 
+     * @param userStatisticsList the list of user statistics to save
+     * @return the saved user statistics list
+     */
+    java.util.List<UserStatistics> save(java.util.List<UserStatistics> userStatisticsList);
+    
+    /**
+     * Finds user statistics with completion rate greater than the specified value.
+     * 
+     * @param completionRate the minimum completion rate
+     * @return list of user statistics with high completion rate
+     */
+    java.util.List<UserStatistics> findByCompletedTasksGreaterThan(int completedTasks);
+    
+    /**
+     * Finds user statistics with TODO tasks greater than the specified value.
+     * 
+     * @param todoTasks the minimum number of TODO tasks
+     * @return list of user statistics with many TODO tasks
+     */
+    java.util.List<UserStatistics> findByTodoTasksGreaterThan(int todoTasks);
 }

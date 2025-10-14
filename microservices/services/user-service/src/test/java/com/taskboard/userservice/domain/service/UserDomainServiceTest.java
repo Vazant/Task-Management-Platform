@@ -12,6 +12,7 @@ import com.taskboard.userservice.domain.exception.UserNotFoundException;
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
 import com.taskboard.userservice.domain.model.UserStatus;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;

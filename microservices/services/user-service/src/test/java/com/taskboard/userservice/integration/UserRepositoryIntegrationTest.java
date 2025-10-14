@@ -3,6 +3,7 @@ package com.taskboard.userservice.integration;
 import com.taskboard.userservice.domain.model.User;
 import com.taskboard.userservice.domain.model.UserRole;
 import com.taskboard.userservice.domain.model.UserStatus;
+import com.taskboard.userservice.domain.model.UserStatus;
 import com.taskboard.userservice.infrastructure.persistence.adapter.UserRepositoryAdapter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -179,7 +180,7 @@ class UserRepositoryIntegrationTest extends BaseIntegrationTest {
         assertThat(userToDelete).isPresent();
 
         // When
-        userRepository.deleteById(userId);
+        userRepository.delete(userId);
 
         // Then
         Optional<User> deletedUser = userRepository.findById(userId);

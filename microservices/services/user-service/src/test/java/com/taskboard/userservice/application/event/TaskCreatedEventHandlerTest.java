@@ -61,7 +61,7 @@ class TaskCreatedEventHandlerTest {
             .createdAt(LocalDateTime.now())
             .build();
         
-        IncomingEvent<TaskCreatedEvent.TaskData> event = new TaskCreatedEvent(
+        IncomingEvent<TaskCreatedEvent.TaskData> event = TaskCreatedEvent.builder(
             UUID.randomUUID(), "task.created", "task-service", LocalDateTime.now(), "1.0", taskData
         );
         
@@ -92,7 +92,7 @@ class TaskCreatedEventHandlerTest {
             .createdAt(LocalDateTime.now())
             .build();
         
-        IncomingEvent<TaskCreatedEvent.TaskData> event = new TaskCreatedEvent(
+        IncomingEvent<TaskCreatedEvent.TaskData> event = TaskCreatedEvent.builder(
             UUID.randomUUID(), "task.created", "task-service", LocalDateTime.now(), "1.0", taskData
         );
         
