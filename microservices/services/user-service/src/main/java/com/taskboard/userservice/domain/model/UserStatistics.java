@@ -1,5 +1,10 @@
 package com.taskboard.userservice.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 /**
@@ -15,146 +20,30 @@ import java.time.LocalDateTime;
  * @version 1.0
  * @since 1.0.0
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserStatistics {
     
-    private final Long userId;
-    private final int totalTasks;
-    private final int completedTasks;
-    private final int inProgressTasks;
-    private final int todoTasks;
-    private final int activeProjects;
-    private final int totalProjects;
-    private final LocalDateTime lastActivity;
-    private final LocalDateTime lastTaskCreated;
-    private final LocalDateTime lastTaskCompleted;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
+    private Long id;
+    private Long userId;
+    private int totalTasks;
+    private int completedTasks;
+    private int inProgressTasks;
+    private int todoTasks;
+    private int activeProjects;
+    private int totalProjects;
+    private LocalDateTime lastActivity;
+    private LocalDateTime lastTaskCreated;
+    private LocalDateTime lastTaskCompleted;
+    private LocalDateTime lastLoginAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     
-    /**
-     * Private constructor to enforce use of builder pattern.
-     */
-    private UserStatistics(Builder builder) {
-        this.userId = builder.userId;
-        this.totalTasks = builder.totalTasks;
-        this.completedTasks = builder.completedTasks;
-        this.inProgressTasks = builder.inProgressTasks;
-        this.todoTasks = builder.todoTasks;
-        this.activeProjects = builder.activeProjects;
-        this.totalProjects = builder.totalProjects;
-        this.lastActivity = builder.lastActivity;
-        this.lastTaskCreated = builder.lastTaskCreated;
-        this.lastTaskCompleted = builder.lastTaskCompleted;
-        this.createdAt = builder.createdAt;
-        this.updatedAt = builder.updatedAt;
-    }
+    // Lombok @Data annotation provides getters and setters automatically
     
-    /**
-     * Gets the user ID.
-     * 
-     * @return the user ID
-     */
-    public Long getUserId() {
-        return userId;
-    }
-    
-    /**
-     * Gets the total number of tasks.
-     * 
-     * @return the total task count
-     */
-    public int getTotalTasks() {
-        return totalTasks;
-    }
-    
-    /**
-     * Gets the number of completed tasks.
-     * 
-     * @return the completed task count
-     */
-    public int getCompletedTasks() {
-        return completedTasks;
-    }
-    
-    /**
-     * Gets the number of in-progress tasks.
-     * 
-     * @return the in-progress task count
-     */
-    public int getInProgressTasks() {
-        return inProgressTasks;
-    }
-    
-    /**
-     * Gets the number of TODO tasks.
-     * 
-     * @return the TODO task count
-     */
-    public int getTodoTasks() {
-        return todoTasks;
-    }
-    
-    /**
-     * Gets the number of active projects.
-     * 
-     * @return the active project count
-     */
-    public int getActiveProjects() {
-        return activeProjects;
-    }
-    
-    /**
-     * Gets the total number of projects.
-     * 
-     * @return the total project count
-     */
-    public int getTotalProjects() {
-        return totalProjects;
-    }
-    
-    /**
-     * Gets the last activity timestamp.
-     * 
-     * @return the last activity time
-     */
-    public LocalDateTime getLastActivity() {
-        return lastActivity;
-    }
-    
-    /**
-     * Gets the last task creation timestamp.
-     * 
-     * @return the last task creation time
-     */
-    public LocalDateTime getLastTaskCreated() {
-        return lastTaskCreated;
-    }
-    
-    /**
-     * Gets the last task completion timestamp.
-     * 
-     * @return the last task completion time
-     */
-    public LocalDateTime getLastTaskCompleted() {
-        return lastTaskCompleted;
-    }
-    
-    /**
-     * Gets the creation timestamp.
-     * 
-     * @return the creation time
-     */
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    /**
-     * Gets the last update timestamp.
-     * 
-     * @return the last update time
-     */
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
+    // Lombok @Data annotation provides all getters automatically
     
     /**
      * Calculates the task completion rate.
@@ -204,111 +93,25 @@ public class UserStatistics {
         return java.time.Duration.between(lastActivity, LocalDateTime.now()).toDays();
     }
     
+    // Lombok @Builder annotation provides builder pattern automatically
+    
     /**
-     * Builder pattern for creating UserStatistics instances.
+     * Gets pending tasks count (TODO + IN_PROGRESS).
+     * 
+     * @return the pending task count
      */
-    public static class Builder {
-        private Long userId;
-        private int totalTasks = 0;
-        private int completedTasks = 0;
-        private int inProgressTasks = 0;
-        private int todoTasks = 0;
-        private int activeProjects = 0;
-        private int totalProjects = 0;
-        private LocalDateTime lastActivity;
-        private LocalDateTime lastTaskCreated;
-        private LocalDateTime lastTaskCompleted;
-        private LocalDateTime createdAt = LocalDateTime.now();
-        private LocalDateTime updatedAt = LocalDateTime.now();
-        
-        public Builder userId(Long userId) {
-            this.userId = userId;
-            return this;
-        }
-        
-        public Builder totalTasks(int totalTasks) {
-            this.totalTasks = totalTasks;
-            return this;
-        }
-        
-        public Builder completedTasks(int completedTasks) {
-            this.completedTasks = completedTasks;
-            return this;
-        }
-        
-        public Builder inProgressTasks(int inProgressTasks) {
-            this.inProgressTasks = inProgressTasks;
-            return this;
-        }
-        
-        public Builder todoTasks(int todoTasks) {
-            this.todoTasks = todoTasks;
-            return this;
-        }
-        
-        public Builder activeProjects(int activeProjects) {
-            this.activeProjects = activeProjects;
-            return this;
-        }
-        
-        public Builder totalProjects(int totalProjects) {
-            this.totalProjects = totalProjects;
-            return this;
-        }
-        
-        public Builder lastActivity(LocalDateTime lastActivity) {
-            this.lastActivity = lastActivity;
-            return this;
-        }
-        
-        public Builder lastTaskCreated(LocalDateTime lastTaskCreated) {
-            this.lastTaskCreated = lastTaskCreated;
-            return this;
-        }
-        
-        public Builder lastTaskCompleted(LocalDateTime lastTaskCompleted) {
-            this.lastTaskCompleted = lastTaskCompleted;
-            return this;
-        }
-        
-        public Builder createdAt(LocalDateTime createdAt) {
-            this.createdAt = createdAt;
-            return this;
-        }
-        
-        public Builder updatedAt(LocalDateTime updatedAt) {
-            this.updatedAt = updatedAt;
-            return this;
-        }
-        
-        public UserStatistics build() {
-            if (userId == null) {
-                throw new IllegalArgumentException("User ID is required");
-            }
-            
-            // Validate that task counts are consistent
-            if (totalTasks != completedTasks + inProgressTasks + todoTasks) {
-                throw new IllegalArgumentException(
-                    "Total tasks must equal sum of completed, in-progress, and TODO tasks");
-            }
-            
-            // Validate that project counts are consistent
-            if (activeProjects > totalProjects) {
-                throw new IllegalArgumentException(
-                    "Active projects cannot exceed total projects");
-            }
-            
-            return new UserStatistics(this);
-        }
+    public int getPendingTasks() {
+        return todoTasks + inProgressTasks;
     }
     
     /**
-     * Creates a new builder instance.
+     * Gets overdue tasks count (placeholder for future implementation).
      * 
-     * @return a new builder
+     * @return the overdue task count
      */
-    public static Builder builder() {
-        return new Builder();
+    public int getOverdueTasks() {
+        // TODO: Implement overdue task calculation based on due dates
+        return 0;
     }
     
     /**
@@ -316,8 +119,9 @@ public class UserStatistics {
      * 
      * @return a new builder initialized with current values
      */
-    public Builder toBuilder() {
-        return new Builder()
+    public UserStatisticsBuilder toBuilder() {
+        return UserStatistics.builder()
+            .id(id)
             .userId(userId)
             .totalTasks(totalTasks)
             .completedTasks(completedTasks)
@@ -328,6 +132,7 @@ public class UserStatistics {
             .lastActivity(lastActivity)
             .lastTaskCreated(lastTaskCreated)
             .lastTaskCompleted(lastTaskCompleted)
+            .lastLoginAt(lastLoginAt)
             .createdAt(createdAt)
             .updatedAt(updatedAt);
     }

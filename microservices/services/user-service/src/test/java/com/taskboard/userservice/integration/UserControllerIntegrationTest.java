@@ -134,7 +134,7 @@ class UserControllerIntegrationTest extends BaseIntegrationTest {
                 .firstName("Test")
                 .lastName("User")
                 .role("USER")
-                .isActive(true)
+                .status(UserStatus.ACTIVE)
                 .build();
 
         when(getUserUseCase.execute(any(GetUserRequest.class))).thenReturn(response);

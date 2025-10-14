@@ -1,0 +1,71 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.taskboard:user-service >---------------------
+[INFO] Building User Service 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ user-service ---
+[INFO] Copying 1 resource from src/main/resources to target/classes
+[INFO] Copying 4 resources from src/main/resources to target/classes
+[INFO] 
+[INFO] --- compiler:3.14.0:compile (default-compile) @ user-service ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 94 source files with javac [debug parameters release 21] to target/classes
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/config/WebConfig.java:[65,17] method allowedHeaders in class org.springframework.web.servlet.config.annotation.CorsRegistration cannot be applied to given types;
+  required: java.lang.String[]
+  found:    java.util.List<java.lang.String>
+  reason: varargs mismatch; java.util.List<java.lang.String> cannot be converted to java.lang.String
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/AuthController.java:[419,13] cannot find symbol
+  symbol:   method active(boolean)
+  location: class com.taskboard.userservice.application.dto.UserDto.UserDtoBuilder
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/UserController.java:[328,45] cannot find symbol
+  symbol:   method findByUsername(java.lang.String)
+  location: variable userService of type com.taskboard.userservice.application.service.UserService
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/UserController.java:[378,45] cannot find symbol
+  symbol:   method findByUsername(java.lang.String)
+  location: variable userService of type com.taskboard.userservice.application.service.UserService
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/UserController.java:[525,45] cannot find symbol
+  symbol:   method findByUsername(java.lang.String)
+  location: variable userService of type com.taskboard.userservice.application.service.UserService
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/UserController.java:[550,13] cannot find symbol
+  symbol:   method active(boolean)
+  location: class com.taskboard.userservice.application.dto.UserDto.UserDtoBuilder
+[INFO] 6 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  3.627 s
+[INFO] Finished at: 2025-10-14T19:57:29+02:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.14.0:compile (default-compile) on project user-service: Compilation failure: Compilation failure: 
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/config/WebConfig.java:[65,17] method allowedHeaders in class org.springframework.web.servlet.config.annotation.CorsRegistration cannot be applied to given types;
+[ERROR]   required: java.lang.String[]
+[ERROR]   found:    java.util.List<java.lang.String>
+[ERROR]   reason: varargs mismatch; java.util.List<java.lang.String> cannot be converted to java.lang.String
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/AuthController.java:[419,13] cannot find symbol
+[ERROR]   symbol:   method active(boolean)
+[ERROR]   location: class com.taskboard.userservice.application.dto.UserDto.UserDtoBuilder
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/UserController.java:[328,45] cannot find symbol
+[ERROR]   symbol:   method findByUsername(java.lang.String)
+[ERROR]   location: variable userService of type com.taskboard.userservice.application.service.UserService
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/UserController.java:[378,45] cannot find symbol
+[ERROR]   symbol:   method findByUsername(java.lang.String)
+[ERROR]   location: variable userService of type com.taskboard.userservice.application.service.UserService
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/UserController.java:[525,45] cannot find symbol
+[ERROR]   symbol:   method findByUsername(java.lang.String)
+[ERROR]   location: variable userService of type com.taskboard.userservice.application.service.UserService
+[ERROR] /Users/vazant/Documents/GitHub/Task-Management-Platform/microservices/services/user-service/src/main/java/com/taskboard/userservice/infrastructure/web/controller/UserController.java:[550,13] cannot find symbol
+[ERROR]   symbol:   method active(boolean)
+[ERROR]   location: class com.taskboard.userservice.application.dto.UserDto.UserDtoBuilder
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

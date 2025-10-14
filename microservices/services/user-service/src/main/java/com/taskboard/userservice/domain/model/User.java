@@ -1,5 +1,10 @@
 package com.taskboard.userservice.domain.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -23,12 +28,16 @@ import java.util.Objects;
  * @version 1.0.0
  * @since 1.0.0
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
   private Long id;
   private String username;
   private String email;
-  private String passwordHash;
+  private String password;
   private String firstName;
   private String lastName;
   private UserStatus status;
@@ -38,18 +47,14 @@ public class User {
   private LocalDateTime lastLoginAt;
   private boolean emailVerified;
   private String profileImageUrl;
-
-  /** Default constructor for JPA and frameworks. */
-  protected User() {
-    // Required by JPA
-  }
+  private String externalId;
 
   /**
    * Creates a new User with required fields.
    *
    * @param username unique username
    * @param email user's email address
-   * @param passwordHash hashed password
+   * @param password hashed password
    * @param firstName user's first name
    * @param lastName user's last name
    * @param role user's role in the system
@@ -57,13 +62,13 @@ public class User {
   public User(
       String username,
       String email,
-      String passwordHash,
+      String password,
       String firstName,
       String lastName,
       UserRole role) {
     this.username = Objects.requireNonNull(username, "Username cannot be null");
     this.email = Objects.requireNonNull(email, "Email cannot be null");
-    this.passwordHash = Objects.requireNonNull(passwordHash, "Password hash cannot be null");
+    this.password = Objects.requireNonNull(password, "Password cannot be null");
     this.firstName = Objects.requireNonNull(firstName, "First name cannot be null");
     this.lastName = Objects.requireNonNull(lastName, "Last name cannot be null");
     this.role = Objects.requireNonNull(role, "Role cannot be null");
@@ -91,10 +96,10 @@ public class User {
   /**
    * Changes user's password.
    *
-   * @param newPasswordHash new hashed password
+   * @param newPassword new hashed password
    */
-  public void changePassword(String newPasswordHash) {
-    this.passwordHash = Objects.requireNonNull(newPasswordHash, "Password hash cannot be null");
+  public void changePassword(String newPassword) {
+    this.password = Objects.requireNonNull(newPassword, "Password cannot be null");
     this.updatedAt = LocalDateTime.now();
   }
 
@@ -129,6 +134,16 @@ public class User {
   /** Records user login. */
   public void recordLogin() {
     this.lastLoginAt = LocalDateTime.now();
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  /**
+   * Updates the last login time.
+   *
+   * @param lastLoginAt the new last login time
+   */
+  public void updateLastLogin(LocalDateTime lastLoginAt) {
+    this.lastLoginAt = lastLoginAt;
     this.updatedAt = LocalDateTime.now();
   }
 
@@ -174,111 +189,7 @@ public class User {
     return firstName + " " + lastName;
   }
 
-  // Getters
-  public Long getId() {
-    return id;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public String getPasswordHash() {
-    return passwordHash;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public UserStatus getStatus() {
-    return status;
-  }
-
-  public UserRole getRole() {
-    return role;
-  }
-
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public LocalDateTime getLastLoginAt() {
-    return lastLoginAt;
-  }
-
-  public boolean isEmailVerified() {
-    return emailVerified;
-  }
-
-  public String getProfileImageUrl() {
-    return profileImageUrl;
-  }
-
-  // Setters for JPA
-  protected void setId(Long id) {
-    this.id = id;
-  }
-
-  protected void setUsername(String username) {
-    this.username = username;
-  }
-
-  protected void setEmail(String email) {
-    this.email = email;
-  }
-
-  protected void setPasswordHash(String passwordHash) {
-    this.passwordHash = passwordHash;
-  }
-
-  protected void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  protected void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-  protected void setStatus(UserStatus status) {
-    this.status = status;
-  }
-
-  protected void setRole(UserRole role) {
-    this.role = role;
-  }
-
-  protected void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  protected void setUpdatedAt(LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
-
-  protected void setLastLoginAt(LocalDateTime lastLoginAt) {
-    this.lastLoginAt = lastLoginAt;
-  }
-
-  protected void setEmailVerified(boolean emailVerified) {
-    this.emailVerified = emailVerified;
-  }
-
-  protected void setProfileImageUrl(String profileImageUrl) {
-    this.profileImageUrl = profileImageUrl;
-  }
+  // Lombok @Data annotation provides getters and setters automatically
 
   /**
    * Updates user's profile image URL.
@@ -290,44 +201,7 @@ public class User {
     this.updatedAt = LocalDateTime.now();
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    User user = (User) o;
-    return Objects.equals(id, user.id) && Objects.equals(username, user.username);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, username);
-  }
-
-  @Override
-  public String toString() {
-    return "User{"
-        + "id="
-        + id
-        + ", username='"
-        + username
-        + '\''
-        + ", email='"
-        + email
-        + '\''
-        + ", firstName='"
-        + firstName
-        + '\''
-        + ", lastName='"
-        + lastName
-        + '\''
-        + ", status="
-        + status
-        + ", role="
-        + role
-        + ", createdAt="
-        + createdAt
-        + '}';
-  }
+  // Lombok @Data annotation provides equals, hashCode, and toString automatically
 
   /**
    * Updates the user's email address.
@@ -357,6 +231,29 @@ public class User {
   public void updateLastName(String lastName) {
     this.lastName = lastName;
     this.updatedAt = LocalDateTime.now();
+  }
+
+  /**
+   * Creates a copy of this user with updated values.
+   * 
+   * @return a new builder initialized with current values
+   */
+  public UserBuilder toBuilder() {
+    return User.builder()
+        .id(id)
+        .username(username)
+        .email(email)
+        .password(password)
+        .firstName(firstName)
+        .lastName(lastName)
+        .status(status)
+        .role(role)
+        .createdAt(createdAt)
+        .updatedAt(updatedAt)
+        .lastLoginAt(lastLoginAt)
+        .emailVerified(emailVerified)
+        .profileImageUrl(profileImageUrl)
+        .externalId(externalId);
   }
 
 }

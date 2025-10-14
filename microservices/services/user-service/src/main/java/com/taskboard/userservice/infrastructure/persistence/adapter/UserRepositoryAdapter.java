@@ -224,6 +224,16 @@ public class UserRepositoryAdapter implements UserRepository {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public boolean existsByEmailAndIdNot(String email, Long id) {
+    if (email == null || email.trim().isEmpty() || id == null) {
+      return false;
+    }
+
+    return jpaRepository.existsByEmailAndIdNot(email, id);
+  }
+
+  @Override
   public User save(User user) {
     if (user == null) {
       throw new IllegalArgumentException("User cannot be null");

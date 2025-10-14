@@ -1,386 +1,427 @@
 package com.taskboard.userservice.domain.model;
 
-import static org.assertj.core.api.Assertions.*;
-
-import java.time.LocalDateTime;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-/**
- * Unit tests for User domain entity.
- *
- * <p>These tests verify the business logic and behavior of the User entity, including validation,
- * state transitions, and business rule enforcement.
- *
- * @author Task Management Platform Team
- * @version 1.0.0
- * @since 1.0.0
- */
-@DisplayName("User Domain Entity Tests")
+import java.time.LocalDateTime;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+@DisplayName("User Domain Model Tests")
 class UserTest {
-
-  @Nested
-  @DisplayName("User Creation Tests")
-  class UserCreationTests {
-
-    @Test
-    @DisplayName("Should create user with valid parameters")
-    void shouldCreateUserWithValidParameters() {
-      // Given
-      String username = "testuser";
-      String email = "test@example.com";
-      String passwordHash = "hashedPassword123";
-      String firstName = "John";
-      String lastName = "Doe";
-      UserRole role = UserRole.USER;
-
-      // When
-      User user = new User(username, email, passwordHash, firstName, lastName, role);
-
-      // Then
-      assertThat(user.getUsername()).isEqualTo(username);
-      assertThat(user.getEmail()).isEqualTo(email);
-      assertThat(user.getPasswordHash()).isEqualTo(passwordHash);
-      assertThat(user.getFirstName()).isEqualTo(firstName);
-      assertThat(user.getLastName()).isEqualTo(lastName);
-      assertThat(user.getRole()).isEqualTo(role);
-      assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
-      assertThat(user.getCreatedAt()).isNotNull();
-      assertThat(user.getUpdatedAt()).isNotNull();
-      assertThat(user.isEmailVerified()).isFalse();
+    
+    private User.UserBuilder userBuilder;
+    
+    @BeforeEach
+    void setUp() {
+        userBuilder = User.builder()
+            .username("testuser")
+            .email("test@example.com")
+            .firstName("Test")
+            .lastName("User")
+            .password("hashedPassword")
+            .role(UserRole.USER)
+            .status(UserStatus.ACTIVE);
     }
-
-    @Test
-    @DisplayName("Should throw exception when username is null")
-    void shouldThrowExceptionWhenUsernameIsNull() {
-      // When & Then
-      assertThatThrownBy(
-              () -> new User(null, "test@example.com", "hash", "John", "Doe", UserRole.USER))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("Username cannot be null");
+    
+    @Nested
+    @DisplayName("User Creation Tests")
+    class UserCreationTests {
+        
+        @Test
+        @DisplayName("Should create user with valid data")
+        void shouldCreateUserWithValidData() {
+            // When
+            User user = userBuilder.build();
+            
+            // Then
+            assertThat(user.getUsername()).isEqualTo("testuser");
+            assertThat(user.getEmail()).isEqualTo("test@example.com");
+            assertThat(user.getFirstName()).isEqualTo("Test");
+            assertThat(user.getLastName()).isEqualTo("User");
+            assertThat(user.getPassword()).isEqualTo("hashedPassword");
+            assertThat(user.getRole()).isEqualTo(UserRole.USER);
+            assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
+            assertThat(user.getCreatedAt()).isNotNull();
+            assertThat(user.getUpdatedAt()).isNotNull();
+        }
+        
+        @Test
+        @DisplayName("Should create user with minimal required data")
+        void shouldCreateUserWithMinimalRequiredData() {
+            // When
+            User user = User.builder()
+                .username("minimaluser")
+                .email("minimal@example.com")
+                .password("hash")
+                .role(UserRole.USER)
+                .build();
+            
+            // Then
+            assertThat(user.getUsername()).isEqualTo("minimaluser");
+            assertThat(user.getEmail()).isEqualTo("minimal@example.com");
+            assertThat(user.getPassword()).isEqualTo("hash");
+            assertThat(user.getRole()).isEqualTo(UserRole.USER);
+            assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE); // Default value
+        }
+        
+        @Test
+        @DisplayName("Should throw exception when username is null")
+        void shouldThrowExceptionWhenUsernameIsNull() {
+            // When & Then
+            assertThatThrownBy(() -> userBuilder.username(null).build())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Username cannot be null or empty");
+        }
+        
+        @Test
+        @DisplayName("Should throw exception when username is empty")
+        void shouldThrowExceptionWhenUsernameIsEmpty() {
+            // When & Then
+            assertThatThrownBy(() -> userBuilder.username("").build())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Username cannot be null or empty");
+        }
+        
+        @Test
+        @DisplayName("Should throw exception when email is null")
+        void shouldThrowExceptionWhenEmailIsNull() {
+            // When & Then
+            assertThatThrownBy(() -> userBuilder.email(null).build())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Email cannot be null or empty");
+        }
+        
+        @Test
+        @DisplayName("Should throw exception when email is invalid")
+        void shouldThrowExceptionWhenEmailIsInvalid() {
+            // When & Then
+            assertThatThrownBy(() -> userBuilder.email("invalid-email").build())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Invalid email format");
+        }
+        
+        @Test
+        @DisplayName("Should throw exception when password is null")
+        void shouldThrowExceptionWhenPasswordIsNull() {
+            // When & Then
+            assertThatThrownBy(() -> userBuilder.password(null).build())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Password cannot be null");
+        }
+        
+        @Test
+        @DisplayName("Should throw exception when role is null")
+        void shouldThrowExceptionWhenRoleIsNull() {
+            // When & Then
+            assertThatThrownBy(() -> userBuilder.role(null).build())
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("Role cannot be null");
+        }
     }
-
-    @Test
-    @DisplayName("Should throw exception when email is null")
-    void shouldThrowExceptionWhenEmailIsNull() {
-      // When & Then
-      assertThatThrownBy(() -> new User("testuser", null, "hash", "John", "Doe", UserRole.USER))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("Email cannot be null");
+    
+    @Nested
+    @DisplayName("User Validation Tests")
+    class UserValidationTests {
+        
+        @ParameterizedTest
+        @ValueSource(strings = {"user", "test_user", "user123", "user-name", "user.name"})
+        @DisplayName("Should accept valid usernames")
+        void shouldAcceptValidUsernames(String username) {
+            // When
+            User user = userBuilder.username(username).build();
+            
+            // Then
+            assertThat(user.getUsername()).isEqualTo(username);
+        }
+        
+        @ParameterizedTest
+        @ValueSource(strings = {"", " ", "a", "ab", "user@", "user#", "user$", "user%"})
+        @DisplayName("Should reject invalid usernames")
+        void shouldRejectInvalidUsernames(String username) {
+            // When & Then
+            assertThatThrownBy(() -> userBuilder.username(username).build())
+                .isInstanceOf(IllegalArgumentException.class);
+        }
+        
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "test@example.com",
+            "user.name@domain.co.uk",
+            "user+tag@example.org",
+            "123@test.com"
+        })
+        @DisplayName("Should accept valid email addresses")
+        void shouldAcceptValidEmailAddresses(String email) {
+            // When
+            User user = userBuilder.email(email).build();
+            
+            // Then
+            assertThat(user.getEmail()).isEqualTo(email);
+        }
+        
+        @ParameterizedTest
+        @ValueSource(strings = {
+            "invalid-email",
+            "@example.com",
+            "user@",
+            "user@.com",
+            "user..name@example.com"
+        })
+        @DisplayName("Should reject invalid email addresses")
+        void shouldRejectInvalidEmailAddresses(String email) {
+            // When & Then
+            assertThatThrownBy(() -> userBuilder.email(email).build())
+                .isInstanceOf(IllegalArgumentException.class);
+        }
     }
-
-    @Test
-    @DisplayName("Should throw exception when password hash is null")
-    void shouldThrowExceptionWhenPasswordHashIsNull() {
-      // When & Then
-      assertThatThrownBy(
-              () -> new User("testuser", "test@example.com", null, "John", "Doe", UserRole.USER))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("Password hash cannot be null");
+    
+    @Nested
+    @DisplayName("User Business Logic Tests")
+    class UserBusinessLogicTests {
+        
+        @Test
+        @DisplayName("Should return correct full name")
+        void shouldReturnCorrectFullName() {
+            // Given
+            User user = userBuilder
+                .firstName("John")
+                .lastName("Doe")
+                .build();
+            
+            // When
+            String fullName = user.getFullName();
+            
+            // Then
+            assertThat(fullName).isEqualTo("John Doe");
+        }
+        
+        @Test
+        @DisplayName("Should return username when first name is null")
+        void shouldReturnUsernameWhenFirstNameIsNull() {
+            // Given
+            User user = userBuilder
+                .firstName(null)
+                .lastName("Doe")
+                .build();
+            
+            // When
+            String fullName = user.getFullName();
+            
+            // Then
+            assertThat(fullName).isEqualTo("testuser");
+        }
+        
+        @Test
+        @DisplayName("Should return username when last name is null")
+        void shouldReturnUsernameWhenLastNameIsNull() {
+            // Given
+            User user = userBuilder
+                .firstName("John")
+                .lastName(null)
+                .build();
+            
+            // When
+            String fullName = user.getFullName();
+            
+            // Then
+            assertThat(fullName).isEqualTo("testuser");
+        }
+        
+        @Test
+        @DisplayName("Should return username when both names are null")
+        void shouldReturnUsernameWhenBothNamesAreNull() {
+            // Given
+            User user = userBuilder
+                .firstName(null)
+                .lastName(null)
+                .build();
+            
+            // When
+            String fullName = user.getFullName();
+            
+            // Then
+            assertThat(fullName).isEqualTo("testuser");
+        }
+        
+        @Test
+        @DisplayName("Should check if user is admin")
+        void shouldCheckIfUserIsAdmin() {
+            // Given
+            User adminUser = userBuilder.role(UserRole.ADMIN).build();
+            User regularUser = userBuilder.role(UserRole.USER).build();
+            
+            // When & Then
+            assertThat(adminUser.isAdmin()).isTrue();
+            assertThat(regularUser.isAdmin()).isFalse();
+        }
+        
+        @Test
+        @DisplayName("Should check if user is active")
+        void shouldCheckIfUserIsActive() {
+            // Given
+            User activeUser = userBuilder.status(UserStatus.ACTIVE).build();
+            User inactiveUser = userBuilder.status(UserStatus.INACTIVE).build();
+            
+            // When & Then
+            assertThat(activeUser.getStatus()).isEqualTo(UserStatus.ACTIVE);
+            assertThat(inactiveUser.getStatus()).isEqualTo(UserStatus.INACTIVE);
+        }
+        
+        @Test
+        @DisplayName("Should update last login time")
+        void shouldUpdateLastLoginTime() {
+            // Given
+            User user = userBuilder.build();
+            LocalDateTime loginTime = LocalDateTime.now();
+            
+            // When
+            user.updateLastLogin(loginTime);
+            
+            // Then
+            assertThat(user.getLastLoginAt()).isEqualTo(loginTime);
+        }
+        
+        @Test
+        @DisplayName("Should activate user")
+        void shouldActivateUser() {
+            // Given
+            User user = userBuilder.status(UserStatus.INACTIVE).build();
+            
+            // When
+            user.activate();
+            
+            // Then
+            assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
+        }
+        
+        @Test
+        @DisplayName("Should deactivate user")
+        void shouldDeactivateUser() {
+            // Given
+            User user = userBuilder.status(UserStatus.ACTIVE).build();
+            
+            // When
+            user.deactivate();
+            
+            // Then
+            assertThat(user.getStatus()).isEqualTo(UserStatus.INACTIVE);
+        }
     }
-
-    @Test
-    @DisplayName("Should throw exception when first name is null")
-    void shouldThrowExceptionWhenFirstNameIsNull() {
-      // When & Then
-      assertThatThrownBy(
-              () -> new User("testuser", "test@example.com", "hash", null, "Doe", UserRole.USER))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("First name cannot be null");
+    
+    @Nested
+    @DisplayName("User Equality and HashCode Tests")
+    class UserEqualityTests {
+        
+        @Test
+        @DisplayName("Should be equal when usernames are same")
+        void shouldBeEqualWhenUsernamesAreSame() {
+            // Given
+            User user1 = userBuilder.username("sameuser").build();
+            User user2 = userBuilder.username("sameuser").build();
+            
+            // When & Then
+            assertThat(user1).isEqualTo(user2);
+            assertThat(user1.hashCode()).isEqualTo(user2.hashCode());
+        }
+        
+        @Test
+        @DisplayName("Should not be equal when usernames are different")
+        void shouldNotBeEqualWhenUsernamesAreDifferent() {
+            // Given
+            User user1 = userBuilder.username("user1").build();
+            User user2 = userBuilder.username("user2").build();
+            
+            // When & Then
+            assertThat(user1).isNotEqualTo(user2);
+        }
+        
+        @Test
+        @DisplayName("Should not be equal to null")
+        void shouldNotBeEqualToNull() {
+            // Given
+            User user = userBuilder.build();
+            
+            // When & Then
+            assertThat(user).isNotEqualTo(null);
+        }
+        
+        @Test
+        @DisplayName("Should not be equal to different class")
+        void shouldNotBeEqualToString() {
+            // Given
+            User user = userBuilder.build();
+            String string = "not a user";
+            
+            // When & Then
+            assertThat(user).isNotEqualTo(string);
+        }
     }
-
-    @Test
-    @DisplayName("Should throw exception when last name is null")
-    void shouldThrowExceptionWhenLastNameIsNull() {
-      // When & Then
-      assertThatThrownBy(
-              () -> new User("testuser", "test@example.com", "hash", "John", null, UserRole.USER))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("Last name cannot be null");
+    
+    @Nested
+    @DisplayName("User Builder Tests")
+    class UserBuilderTests {
+        
+        @Test
+        @DisplayName("Should create user with all fields using builder")
+        void shouldCreateUserWithAllFieldsUsingBuilder() {
+            // Given
+            LocalDateTime createdAt = LocalDateTime.now().minusDays(1);
+            LocalDateTime updatedAt = LocalDateTime.now();
+            LocalDateTime lastLoginAt = LocalDateTime.now().minusHours(1);
+            
+            // When
+            User user = userBuilder
+                .id(1L)
+                .username("builderuser")
+                .email("builder@example.com")
+                .firstName("Builder")
+                .lastName("User")
+                .password("builderHash")
+                .role(UserRole.ADMIN)
+                .status(UserStatus.ACTIVE)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .lastActivity(lastLoginAt)
+                .build();
+            
+            // Then
+            assertThat(user.getId()).isEqualTo(1L);
+            assertThat(user.getUsername()).isEqualTo("builderuser");
+            assertThat(user.getEmail()).isEqualTo("builder@example.com");
+            assertThat(user.getFirstName()).isEqualTo("Builder");
+            assertThat(user.getLastName()).isEqualTo("User");
+            assertThat(user.getPassword()).isEqualTo("builderHash");
+            assertThat(user.getRole()).isEqualTo(UserRole.ADMIN);
+            assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
+            assertThat(user.getCreatedAt()).isEqualTo(createdAt);
+            assertThat(user.getUpdatedAt()).isEqualTo(updatedAt);
+            assertThat(user.getLastLoginAt()).isEqualTo(lastLoginAt);
+        }
+        
+        @Test
+        @DisplayName("Should create copy of user using toBuilder")
+        void shouldCreateCopyOfUserUsingToBuilder() {
+            // Given
+            User originalUser = userBuilder.build();
+            
+            // When
+            User copiedUser = originalUser.toBuilder()
+                .username("copieduser")
+                .email("copied@example.com")
+                .build();
+            
+            // Then
+            assertThat(copiedUser.getUsername()).isEqualTo("copieduser");
+            assertThat(copiedUser.getEmail()).isEqualTo("copied@example.com");
+            assertThat(copiedUser.getFirstName()).isEqualTo(originalUser.getFirstName());
+            assertThat(copiedUser.getLastName()).isEqualTo(originalUser.getLastName());
+            assertThat(copiedUser.getRole()).isEqualTo(originalUser.getRole());
+        }
     }
-
-    @Test
-    @DisplayName("Should throw exception when role is null")
-    void shouldThrowExceptionWhenRoleIsNull() {
-      // When & Then
-      assertThatThrownBy(
-              () -> new User("testuser", "test@example.com", "hash", "John", "Doe", null))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("Role cannot be null");
-    }
-  }
-
-  @Nested
-  @DisplayName("User Profile Update Tests")
-  class UserProfileUpdateTests {
-
-    private User createTestUser() {
-      return new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-    }
-
-    @Test
-    @DisplayName("Should update profile with valid parameters")
-    void shouldUpdateProfileWithValidParameters() {
-      // Given
-      User user = createTestUser();
-      LocalDateTime originalUpdatedAt = user.getUpdatedAt();
-
-      // When
-      user.updateProfile("Jane", "Smith", "jane@example.com");
-
-      // Then
-      assertThat(user.getFirstName()).isEqualTo("Jane");
-      assertThat(user.getLastName()).isEqualTo("Smith");
-      assertThat(user.getEmail()).isEqualTo("jane@example.com");
-      assertThat(user.getUpdatedAt()).isAfter(originalUpdatedAt);
-    }
-
-    @Test
-    @DisplayName("Should throw exception when updating with null first name")
-    void shouldThrowExceptionWhenUpdatingWithNullFirstName() {
-      // Given
-      User user = createTestUser();
-
-      // When & Then
-      assertThatThrownBy(() -> user.updateProfile(null, "Smith", "jane@example.com"))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("First name cannot be null");
-    }
-
-    @Test
-    @DisplayName("Should throw exception when updating with null last name")
-    void shouldThrowExceptionWhenUpdatingWithNullLastName() {
-      // Given
-      User user = createTestUser();
-
-      // When & Then
-      assertThatThrownBy(() -> user.updateProfile("Jane", null, "jane@example.com"))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("Last name cannot be null");
-    }
-
-    @Test
-    @DisplayName("Should throw exception when updating with null email")
-    void shouldThrowExceptionWhenUpdatingWithNullEmail() {
-      // Given
-      User user = createTestUser();
-
-      // When & Then
-      assertThatThrownBy(() -> user.updateProfile("Jane", "Smith", null))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("Email cannot be null");
-    }
-  }
-
-  @Nested
-  @DisplayName("User Status Tests")
-  class UserStatusTests {
-
-    private User createTestUser() {
-      return new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-    }
-
-    @Test
-    @DisplayName("Should activate user")
-    void shouldActivateUser() {
-      // Given
-      User user = createTestUser();
-      user.deactivate();
-
-      // When
-      user.activate();
-
-      // Then
-      assertThat(user.getStatus()).isEqualTo(UserStatus.ACTIVE);
-      assertThat(user.isActive()).isTrue();
-    }
-
-    @Test
-    @DisplayName("Should deactivate user")
-    void shouldDeactivateUser() {
-      // Given
-      User user = createTestUser();
-
-      // When
-      user.deactivate();
-
-      // Then
-      assertThat(user.getStatus()).isEqualTo(UserStatus.INACTIVE);
-      assertThat(user.isActive()).isFalse();
-    }
-
-    @Test
-    @DisplayName("Should block user")
-    void shouldBlockUser() {
-      // Given
-      User user = createTestUser();
-
-      // When
-      user.block();
-
-      // Then
-      assertThat(user.getStatus()).isEqualTo(UserStatus.BLOCKED);
-      assertThat(user.isBlocked()).isTrue();
-    }
-  }
-
-  @Nested
-  @DisplayName("User Role Tests")
-  class UserRoleTests {
-
-    private User createTestUser() {
-      return new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-    }
-
-    @Test
-    @DisplayName("Should update user role")
-    void shouldUpdateUserRole() {
-      // Given
-      User user = createTestUser();
-      LocalDateTime originalUpdatedAt = user.getUpdatedAt();
-
-      // When
-      user.updateRole(UserRole.MANAGER);
-
-      // Then
-      assertThat(user.getRole()).isEqualTo(UserRole.MANAGER);
-      assertThat(user.getUpdatedAt()).isAfter(originalUpdatedAt);
-    }
-
-    @Test
-    @DisplayName("Should throw exception when updating with null role")
-    void shouldThrowExceptionWhenUpdatingWithNullRole() {
-      // Given
-      User user = createTestUser();
-
-      // When & Then
-      assertThatThrownBy(() -> user.updateRole(null))
-          .isInstanceOf(NullPointerException.class)
-          .hasMessage("Role cannot be null");
-    }
-
-    @Test
-    @DisplayName("Should identify admin user correctly")
-    void shouldIdentifyAdminUserCorrectly() {
-      // Given
-      User adminUser =
-          new User("admin", "admin@example.com", "hash", "Admin", "User", UserRole.ADMIN);
-      User regularUser = createTestUser();
-
-      // When & Then
-      assertThat(adminUser.isAdmin()).isTrue();
-      assertThat(regularUser.isAdmin()).isFalse();
-    }
-  }
-
-  @Nested
-  @DisplayName("User Utility Methods Tests")
-  class UserUtilityMethodsTests {
-
-    private User createTestUser() {
-      return new User("testuser", "test@example.com", "hash", "John", "Doe", UserRole.USER);
-    }
-
-    @Test
-    @DisplayName("Should get full name correctly")
-    void shouldGetFullNameCorrectly() {
-      // Given
-      User user = createTestUser();
-
-      // When
-      String fullName = user.getFullName();
-
-      // Then
-      assertThat(fullName).isEqualTo("John Doe");
-    }
-
-    @Test
-    @DisplayName("Should record login time")
-    void shouldRecordLoginTime() {
-      // Given
-      User user = createTestUser();
-      LocalDateTime originalUpdatedAt = user.getUpdatedAt();
-
-      // When
-      user.recordLogin();
-
-      // Then
-      assertThat(user.getLastLoginAt()).isNotNull();
-      assertThat(user.getUpdatedAt()).isAfter(originalUpdatedAt);
-    }
-
-    @Test
-    @DisplayName("Should verify email")
-    void shouldVerifyEmail() {
-      // Given
-      User user = createTestUser();
-      LocalDateTime originalUpdatedAt = user.getUpdatedAt();
-
-      // When
-      user.verifyEmail();
-
-      // Then
-      assertThat(user.isEmailVerified()).isTrue();
-      assertThat(user.getUpdatedAt()).isAfter(originalUpdatedAt);
-    }
-  }
-
-  @Nested
-  @DisplayName("User Equality and HashCode Tests")
-  class UserEqualityTests {
-
-    @Test
-    @DisplayName("Should be equal when users have same id and username")
-    void shouldBeEqualWhenUsersHaveSameIdAndUsername() {
-      // Given
-      User user1 =
-          createUserWithId(
-              "testuser", "test1@example.com", "hash1", "John", "Doe", UserRole.USER, 1L);
-      User user2 =
-          createUserWithId(
-              "testuser", "test2@example.com", "hash2", "Jane", "Smith", UserRole.ADMIN, 1L);
-
-      // When & Then
-      assertThat(user1).isEqualTo(user2).hasSameHashCodeAs(user2);
-    }
-
-    @Test
-    @DisplayName("Should not be equal when users have different ids")
-    void shouldNotBeEqualWhenUsersHaveDifferentIds() {
-      // Given
-      User user1 =
-          createUserWithId(
-              "testuser", "test1@example.com", "hash1", "John", "Doe", UserRole.USER, 1L);
-      User user2 =
-          createUserWithId(
-              "testuser", "test2@example.com", "hash2", "Jane", "Smith", UserRole.ADMIN, 2L);
-
-      // When & Then
-      assertThat(user1).isNotEqualTo(user2);
-    }
-
-    /**
-     * Helper method to create a User with a specific ID for testing. Uses reflection to set the
-     * protected setId method.
-     */
-    private User createUserWithId(
-        String username,
-        String email,
-        String passwordHash,
-        String firstName,
-        String lastName,
-        UserRole role,
-        Long id) {
-      User user = new User(username, email, passwordHash, firstName, lastName, role);
-      try {
-        java.lang.reflect.Method setIdMethod = User.class.getDeclaredMethod("setId", Long.class);
-        setIdMethod.setAccessible(true);
-        setIdMethod.invoke(user, id);
-      } catch (Exception e) {
-        throw new RuntimeException("Failed to set user ID", e);
-      }
-      return user;
-    }
-  }
 }

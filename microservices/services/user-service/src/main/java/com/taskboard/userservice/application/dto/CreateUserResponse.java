@@ -95,4 +95,22 @@ public class CreateUserResponse {
         .profileImageUrl(this.profileImageUrl)
         .build();
   }
+
+  /**
+   * Gets the user ID.
+   *
+   * @return the user ID
+   */
+  public Long getUserId() {
+    return this.id;
+  }
+
+  /**
+   * Checks if the user is active.
+   *
+   * @return true if the user is active
+   */
+  public boolean isActive() {
+    return this.status == UserStatus.ACTIVE;
+  }
 }

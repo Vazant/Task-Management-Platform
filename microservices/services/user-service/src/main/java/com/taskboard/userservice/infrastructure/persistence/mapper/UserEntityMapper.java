@@ -73,7 +73,7 @@ public class UserEntityMapper {
     UserEntity entity = new UserEntity(
         user.getUsername(),
         user.getEmail(),
-        user.getPasswordHash(),
+        user.getPassword(),
         user.getFirstName(),
         user.getLastName(),
         user.getRole());
@@ -134,7 +134,7 @@ public class UserEntityMapper {
     // Update basic fields
     entity.setUsername(user.getUsername());
     entity.setEmail(user.getEmail());
-    entity.setPasswordHash(user.getPasswordHash());
+    entity.setPasswordHash(user.getPassword());
     entity.setFirstName(user.getFirstName());
     entity.setLastName(user.getLastName());
     entity.setStatus(user.getStatus());
@@ -229,7 +229,7 @@ public class UserEntityMapper {
     UserEntity updated = new UserEntity(
         updates.getUsername(),
         updates.getEmail(),
-        updates.getPasswordHash(),
+        updates.getPassword(),
         updates.getFirstName(),
         updates.getLastName(),
         updates.getRole());
@@ -281,7 +281,7 @@ public class UserEntityMapper {
 
     return user.getUsername() != null
         && user.getEmail() != null
-        && user.getPasswordHash() != null
+        && user.getPassword() != null
         && user.getFirstName() != null
         && user.getLastName() != null
         && user.getRole() != null

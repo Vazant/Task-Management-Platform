@@ -265,4 +265,13 @@ public interface UserRepository {
    * @return true if a user exists with the ID, false otherwise
    */
   boolean existsById(Long id);
+
+  /**
+   * Checks if a user exists with the specified email and different ID.
+   *
+   * @param email the email to check
+   * @param id the user ID to exclude
+   * @return true if a user exists with the email and different ID, false otherwise
+   */
+  boolean existsByEmailAndIdNot(String email, Long id);
 }

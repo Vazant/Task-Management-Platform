@@ -70,10 +70,27 @@ public class UpdateUserRequest {
   private UserStatus status;
 
   @Pattern(
-      regexp = "^(?:https?://)?(?:[A-Za-z0-9-]++\\.)++[A-Za-z]{2,63}(?:/[\\w.-]++)*+/?$",
-      message = "Profile image URL must be a valid URL"
+    regexp = "^(?:https?://)?(?:[A-Za-z0-9-]++\\.)++[A-Za-z]{2,63}(?:/[\\w.-]++)*+/?$",
+    message = "Profile image URL must be a valid URL"
   )
   private String profileImageUrl;
+
+  /**
+   * Creates a copy of this request with updated values.
+   * 
+   * @return a new builder initialized with current values
+   */
+  public UpdateUserRequestBuilder toBuilder() {
+    return UpdateUserRequest.builder()
+        .userId(userId)
+        .username(username)
+        .email(email)
+        .firstName(firstName)
+        .lastName(lastName)
+        .role(role)
+        .status(status)
+        .profileImageUrl(profileImageUrl);
+  }
 }
 
 

@@ -70,6 +70,15 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Long> {
   boolean existsByEmail(String email);
 
   /**
+   * Checks if a user exists with the given email and different ID.
+   *
+   * @param email the email to check
+   * @param id the user ID to exclude
+   * @return true if user exists with email and different ID
+   */
+  boolean existsByEmailAndIdNot(String email, Long id);
+
+  /**
    * Finds users by status.
    *
    * @param status the user status

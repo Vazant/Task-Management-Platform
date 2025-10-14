@@ -88,7 +88,7 @@ public class AuthenticateUserUseCase {
       }
 
       // Verify password
-      if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+      if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
         securityAuditService.logAuthenticationFailed(username, "Invalid password");
         throw new BadCredentialsException("Invalid credentials");
       }

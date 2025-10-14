@@ -1,8 +1,8 @@
 package com.taskboard.userservice.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.taskboard.userservice.infrastructure.web.dto.CreateUserRequest;
-import com.taskboard.userservice.infrastructure.web.dto.UpdateUserRequest;
+import com.taskboard.userservice.application.dto.CreateUserRequest;
+import com.taskboard.userservice.application.dto.UpdateUserRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

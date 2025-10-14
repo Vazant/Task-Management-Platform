@@ -114,7 +114,7 @@ class UserRepositoryIntegrationTest extends BaseIntegrationTest {
         User newUser = User.builder()
                 .username("newuser")
                 .email("newuser@example.com")
-                .passwordHash("$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi")
+                .password("$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi")
                 .firstName("New")
                 .lastName("User")
                 .status(UserStatus.ACTIVE)
