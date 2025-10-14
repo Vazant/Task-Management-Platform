@@ -1,331 +1,463 @@
 package com.taskboard.userservice.infrastructure.web.controller;
 
-import com.taskboard.userservice.application.dto.AuthenticateUserRequest;
-import com.taskboard.userservice.application.dto.AuthenticateUserResponse;
-import com.taskboard.userservice.application.usecase.AuthenticateUserUseCase;
-import com.taskboard.userservice.infrastructure.web.dto.ApiResponse;
-import com.taskboard.userservice.infrastructure.web.dto.ErrorResponse;
-import com.taskboard.userservice.infrastructure.web.dto.LoginRequest;
-import com.taskboard.userservice.infrastructure.web.dto.LoginResponse;
-import com.taskboard.userservice.infrastructure.web.dto.RefreshTokenRequest;
-import com.taskboard.userservice.infrastructure.web.dto.RefreshTokenResponse;
-import com.taskboard.userservice.infrastructure.web.dto.RegisterRequest;
-import com.taskboard.userservice.infrastructure.web.dto.RegisterResponse;
+import com.taskboard.userservice.application.dto.LoginRequest;
+import com.taskboard.userservice.application.dto.RegisterRequest;
+import com.taskboard.userservice.application.dto.UserDto;
+import com.taskboard.userservice.application.service.UserService;
+import com.taskboard.userservice.domain.model.User;
+import com.taskboard.userservice.infrastructure.security.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 /**
- * REST controller for authentication and authorization operations.
- * Provides endpoints for user login, registration, and token management.
+ * REST controller for authentication operations.
  * 
- * <p>This controller handles all authentication-related HTTP requests including:
+ * <p>This controller provides endpoints for:
  * <ul>
- *   <li>User login with credentials</li>
- *   <li>User registration with validation</li>
- *   <li>Token refresh for extended sessions</li>
- *   <li>User logout and session cleanup</li>
- *   <li>Token validation and current user info</li>
+ *   <li>User registration</li>
+ *   <li>User login and authentication</li>
+ *   <li>Token refresh</li>
+ *   <li>User logout</li>
  * </ul>
+ * </p>
  * 
- * <p>All endpoints return standardized {@link ApiResponse} objects with
- * consistent error handling and security measures.
+ * <p>Authentication endpoints do not require prior authentication.</p>
  * 
- * @author TaskBoard Team
+ * @author User Service Team
  * @version 1.0
  * @since 1.0.0
- * @see ApiResponse
- * @see LoginRequest
- * @see RegisterRequest
  */
 @RestController
-@RequestMapping("/api/auth")
-@RequiredArgsConstructor
-@Slf4j
-@Validated
+@RequestMapping("/api/v1/auth")
+@Tag(name = "Authentication", description = "Operations for user authentication and registration")
 public class AuthController {
-
-    private final AuthenticateUserUseCase authenticateUserUseCase;
-    // TODO: Добавить RefreshTokenUseCase, RegisterUserUseCase, LogoutUseCase
-
-    /**
-     * Authenticates a user and returns an access token.
-     * 
-     * <p>This endpoint validates user credentials and returns a JWT token
-     * for authenticated sessions. The token can be used for subsequent
-     * API requests to maintain the user's session.
-     * 
-     * <p>Security: Public endpoint (no authentication required)
-     * 
-     * @param request the login request containing username and password
-     * @return ResponseEntity containing the access token and user information
-     * @throws IllegalArgumentException if credentials are invalid
-     * 
-     * @see LoginRequest
-     * @see LoginResponse
-     * @see ApiResponse
-     */
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@Valid @RequestBody LoginRequest request) {
-        
-        log.info("Login attempt for username: {}", request.getUsername());
-        
-        try {
-            AuthenticateUserRequest authRequest = AuthenticateUserRequest.builder()
-                    .username(request.getUsername())
-                    .password(request.getPassword())
-                    .build();
-            
-            AuthenticateUserResponse authResponse = authenticateUserUseCase.execute(authRequest);
-            
-            if (authResponse.isAuthenticated()) {
-                LoginResponse loginResponse = LoginResponse.builder()
-                        .token(authResponse.getToken())
-                        .tokenType(authResponse.getTokenType())
-                        .expiresIn(authResponse.getExpiresIn())
-                        .userId(authResponse.getUserId())
-                        .username(authResponse.getUsername())
-                        .build();
-                
-                ApiResponse<LoginResponse> apiResponse = ApiResponse.<LoginResponse>builder()
-                        .success(true)
-                        .data(loginResponse)
-                        .message("Login successful")
-                        .build();
-                
-                log.info("Login successful for user: {}", request.getUsername());
-                return ResponseEntity.ok(apiResponse);
-            } else {
-                return handleAuthenticationError("Invalid credentials");
-            }
-            
-        } catch (Exception e) {
-            log.error("Unexpected error during login", e);
-            return handleAuthenticationError("Login failed");
-        }
+    
+    private final UserService userService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    
+    public AuthController(UserService userService, 
+                         AuthenticationManager authenticationManager,
+                         JwtTokenProvider jwtTokenProvider) {
+        this.userService = userService;
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
-
+    
     /**
      * Registers a new user in the system.
      * 
-     * <p>This endpoint creates a new user account with the provided information.
-     * The request is validated to ensure all required fields are present and
-     * meet the system requirements.
+     * <p>This endpoint allows new users to register in the system. The user will be created
+     * with the USER role and will be able to authenticate using the provided credentials.</p>
      * 
-     * <p>Security: Public endpoint (no authentication required)
+     * @param request the user registration request
+     * @return the created user information (without password)
      * 
-     * @param request the registration request containing user details
-     * @return ResponseEntity containing the registration result and user information
-     * @throws IllegalArgumentException if validation fails or user already exists
-     * 
-     * @see RegisterRequest
-     * @see RegisterResponse
-     * @see ApiResponse
+     * @throws com.taskboard.userservice.domain.exception.ValidationException if the request data is invalid
+     * @throws com.taskboard.userservice.domain.exception.ConflictException if username or email already exists
      */
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<RegisterResponse>> register(@Valid @RequestBody RegisterRequest request) {
+    @Operation(
+        summary = "Register a new user",
+        description = "Registers a new user in the system. The user will be created with the USER role " +
+            "and will be able to authenticate using the provided credentials."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "201",
+            description = "User registered successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = UserDto.class),
+                examples = @ExampleObject(
+                    name = "Registered User",
+                    value = """
+                        {
+                            "id": 1,
+                            "username": "newuser",
+                            "email": "newuser@example.com",
+                            "firstName": "New",
+                            "lastName": "User",
+                            "role": "USER",
+                            "active": true,
+                            "createdAt": "2024-01-01T10:00:00",
+                            "updatedAt": "2024-01-01T10:00:00"
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "Validation Error",
+                    value = """
+                        {
+                            "timestamp": "2024-01-01T10:00:00",
+                            "status": 400,
+                            "error": "Bad Request",
+                            "path": "/api/v1/auth/register",
+                            "errors": [
+                                "Username is required",
+                                "Email must be valid",
+                                "Password must be at least 8 characters"
+                            ]
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "409",
+            description = "Username or email already exists",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "Conflict Error",
+                    value = """
+                        {
+                            "timestamp": "2024-01-01T10:00:00",
+                            "status": 409,
+                            "error": "Conflict",
+                            "path": "/api/v1/auth/register",
+                            "message": "Username already exists"
+                        }
+                        """
+                )
+            )
+        )
+    })
+    public ResponseEntity<UserDto> register(
+            @Parameter(description = "User registration request", required = true)
+            @Valid @RequestBody RegisterRequest request) {
         
-        log.info("Registration attempt for username: {}", request.getUsername());
+        // Convert RegisterRequest to CreateUserRequest
+        com.taskboard.userservice.application.dto.CreateUserRequest createRequest = 
+            com.taskboard.userservice.application.dto.CreateUserRequest.builder()
+                .username(request.getUsername())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
+                .role(request.getRole())
+                .profileImageUrl(request.getProfileImageUrl())
+                .build();
         
-        try {
-            // TODO: Implement RegisterUserUseCase
-            // RegisterUserRequest registerRequest = RegisterUserRequest.builder()
-            //         .username(request.getUsername())
-            //         .email(request.getEmail())
-            //         .password(request.getPassword())
-            //         .firstName(request.getFirstName())
-            //         .lastName(request.getLastName())
-            //         .build();
-            // 
-            // RegisterUserResponse response = registerUserUseCase.execute(registerRequest);
-            
-            RegisterResponse registerResponse = RegisterResponse.builder()
-                    .userId(1L) // Placeholder
-                    .username(request.getUsername())
-                    .email(request.getEmail())
-                    .message("Registration successful")
-                    .build();
-            
-            ApiResponse<RegisterResponse> apiResponse = ApiResponse.<RegisterResponse>builder()
-                    .success(true)
-                    .data(registerResponse)
-                    .message("User registered successfully")
-                    .build();
-            
-            log.info("Registration successful for user: {}", request.getUsername());
-            return ResponseEntity.status(HttpStatus.CREATED).body(apiResponse);
-            
-        } catch (IllegalArgumentException e) {
-            log.warn("Registration failed: {}", e.getMessage());
-            return handleValidationError(e.getMessage());
-        } catch (Exception e) {
-            log.error("Unexpected error during registration", e);
-            return handleInternalError("Registration failed");
-        }
+        UserDto userDto = userService.createUser(createRequest);
+        
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
     }
-
+    
     /**
-     * Обновление токена аутентификации.
-     *
-     * @param request данные для обновления токена
-     * @return новый токен
+     * Authenticates a user and returns a JWT token.
+     * 
+     * <p>This endpoint authenticates a user using their username and password.
+     * Upon successful authentication, a JWT token is returned that can be used
+     * for subsequent API calls.</p>
+     * 
+     * @param request the login request containing credentials
+     * @return authentication response with JWT token and user information
+     * 
+     * @throws com.taskboard.userservice.domain.exception.AuthenticationException if credentials are invalid
+     * @throws com.taskboard.userservice.domain.exception.AccountInactiveException if user account is inactive
+     */
+    @PostMapping("/login")
+    @Operation(
+        summary = "Authenticate user",
+        description = "Authenticates a user using their username and password. " +
+            "Returns a JWT token that can be used for subsequent API calls."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Authentication successful",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = AuthResponse.class),
+                examples = @ExampleObject(
+                    name = "Authentication Success",
+                    value = """
+                        {
+                            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                            "tokenType": "Bearer",
+                            "expiresIn": 3600,
+                            "user": {
+                                "id": 1,
+                                "username": "testuser",
+                                "email": "test@example.com",
+                                "firstName": "Test",
+                                "lastName": "User",
+                                "role": "USER",
+                                "active": true,
+                                "createdAt": "2024-01-01T10:00:00",
+                                "updatedAt": "2024-01-01T10:00:00"
+                            }
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Invalid request data",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "Validation Error",
+                    value = """
+                        {
+                            "timestamp": "2024-01-01T10:00:00",
+                            "status": 400,
+                            "error": "Bad Request",
+                            "path": "/api/v1/auth/login",
+                            "errors": [
+                                "Username is required",
+                                "Password is required"
+                            ]
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Invalid credentials or inactive account",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "Authentication Error",
+                    value = """
+                        {
+                            "timestamp": "2024-01-01T10:00:00",
+                            "status": 401,
+                            "error": "Unauthorized",
+                            "path": "/api/v1/auth/login",
+                            "message": "Invalid credentials"
+                        }
+                        """
+                )
+            )
+        )
+    })
+    public ResponseEntity<AuthResponse> login(
+            @Parameter(description = "Login request", required = true)
+            @Valid @RequestBody LoginRequest request) {
+        
+        // Authenticate user
+        Authentication authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
+        );
+        
+        // Get user details
+        Optional<UserDto> user = userService.getUserByUsername(request.getUsername());
+        if (user.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        
+        // Generate JWT token
+        String token = jwtTokenProvider.generateToken(authentication);
+        long expiresIn = jwtTokenProvider.getExpiration();
+        
+        // Create response
+        AuthResponse response = new AuthResponse(
+            token,
+            "Bearer",
+            expiresIn,
+            user.get()
+        );
+        
+        return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * Refreshes the JWT token for the current user.
+     * 
+     * <p>This endpoint allows users to refresh their JWT token without re-authenticating.
+     * The token must be valid and not expired.</p>
+     * 
+     * @param authentication the current authentication context
+     * @return new JWT token
+     * 
+     * @throws com.taskboard.userservice.domain.exception.TokenExpiredException if the token is expired
+     * @throws com.taskboard.userservice.domain.exception.InvalidTokenException if the token is invalid
      */
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshToken(
-            @Valid @RequestBody RefreshTokenRequest request) {
+    @Operation(
+        summary = "Refresh JWT token",
+        description = "Refreshes the JWT token for the current user without re-authenticating. " +
+            "The current token must be valid and not expired."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Token refreshed successfully",
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = TokenRefreshResponse.class),
+                examples = @ExampleObject(
+                    name = "Token Refresh Success",
+                    value = """
+                        {
+                            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                            "tokenType": "Bearer",
+                            "expiresIn": 3600
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Invalid or expired token",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "Token Error",
+                    value = """
+                        {
+                            "timestamp": "2024-01-01T10:00:00",
+                            "status": 401,
+                            "error": "Unauthorized",
+                            "path": "/api/v1/auth/refresh",
+                            "message": "Invalid token"
+                        }
+                        """
+                )
+            )
+        )
+    })
+    public ResponseEntity<TokenRefreshResponse> refreshToken(Authentication authentication) {
+        // Generate new token
+        String token = jwtTokenProvider.generateToken(authentication);
+        long expiresIn = jwtTokenProvider.getExpirationTime();
         
-        log.info("Token refresh attempt");
+        // Create response
+        TokenRefreshResponse response = new TokenRefreshResponse(
+            token,
+            "Bearer",
+            expiresIn
+        );
         
-        try {
-            // TODO: Implement RefreshTokenUseCase
-            // RefreshTokenResponse response = refreshTokenUseCase.execute(request);
-            
-            RefreshTokenResponse refreshResponse = RefreshTokenResponse.builder()
-                    .token("new-token") // Placeholder
-                    .tokenType("Bearer")
-                    .expiresIn(3600)
-                    .build();
-            
-            ApiResponse<RefreshTokenResponse> apiResponse = ApiResponse.<RefreshTokenResponse>builder()
-                    .success(true)
-                    .data(refreshResponse)
-                    .message("Token refreshed successfully")
-                    .build();
-            
-            return ResponseEntity.ok(apiResponse);
-            
-        } catch (IllegalArgumentException e) {
-            log.warn("Token refresh failed: {}", e.getMessage());
-            return handleAuthenticationError("Invalid refresh token");
-        } catch (Exception e) {
-            log.error("Unexpected error during token refresh", e);
-            return handleInternalError("Token refresh failed");
-        }
+        return ResponseEntity.ok(response);
     }
-
+    
     /**
-     * Выход из системы (logout).
-     *
-     * @param request данные для выхода
-     * @return результат выхода
+     * Logs out the current user.
+     * 
+     * <p>This endpoint logs out the current user. In a stateless JWT implementation,
+     * this primarily serves as a client-side signal to discard the token.</p>
+     * 
+     * @return success message
      */
     @PostMapping("/logout")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ApiResponse<Void>> logout(@RequestBody(required = false) String request) {
+    @Operation(
+        summary = "Logout user",
+        description = "Logs out the current user. In a stateless JWT implementation, " +
+            "this primarily serves as a client-side signal to discard the token."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "Logout successful",
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "Logout Success",
+                    value = """
+                        {
+                            "message": "Logged out successfully"
+                        }
+                        """
+                )
+            )
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "Unauthorized"
+        )
+    })
+    public ResponseEntity<LogoutResponse> logout() {
+        // Clear security context
+        SecurityContextHolder.clearContext();
         
-        log.info("Logout attempt");
-        
-        try {
-            // TODO: Implement LogoutUseCase
-            // logoutUseCase.execute(request);
-            
-            ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
-                    .success(true)
-                    .message("Logout successful")
-                    .build();
-            
-            log.info("Logout successful");
-            return ResponseEntity.ok(apiResponse);
-            
-        } catch (Exception e) {
-            log.error("Unexpected error during logout", e);
-            return handleInternalError("Logout failed");
-        }
+        return ResponseEntity.ok(new LogoutResponse("Logged out successfully"));
     }
-
+    
     /**
-     * Проверка валидности токена.
-     *
-     * @return статус токена
+     * Maps a User entity to a UserDto.
+     * 
+     * @param user the user entity
+     * @return the user DTO
      */
-    @GetMapping("/validate")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ApiResponse<Void>> validateToken() {
-        
-        log.debug("Token validation request");
-        
-        ApiResponse<Void> apiResponse = ApiResponse.<Void>builder()
-                .success(true)
-                .message("Token is valid")
-                .build();
-        
-        return ResponseEntity.ok(apiResponse);
+    private UserDto mapToDto(User user) {
+        return UserDto.builder()
+            .id(user.getId())
+            .username(user.getUsername())
+            .email(user.getEmail())
+            .firstName(user.getFirstName())
+            .lastName(user.getLastName())
+            .role(user.getRole())
+            .status(user.isActive() ? com.taskboard.userservice.domain.model.UserStatus.ACTIVE : com.taskboard.userservice.domain.model.UserStatus.INACTIVE)
+            .createdAt(user.getCreatedAt())
+            .updatedAt(user.getUpdatedAt())
+            .build();
     }
-
+    
     /**
-     * Получение информации о текущем пользователе.
-     *
-     * @return данные текущего пользователя
+     * Response DTO for authentication operations.
      */
-    @GetMapping("/me")
-    @PreAuthorize("hasRole('USER')")
-    public ResponseEntity<ApiResponse<Object>> getCurrentUser() {
+    public record AuthResponse(
+        @Schema(description = "JWT token", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+        String token,
         
-        log.debug("Get current user request");
+        @Schema(description = "Token type", example = "Bearer")
+        String tokenType,
         
-        try {
-            // TODO: Implement GetCurrentUserUseCase
-            // GetCurrentUserResponse response = getCurrentUserUseCase.execute();
-            
-            ApiResponse<Object> apiResponse = ApiResponse.<Object>builder()
-                    .success(true)
-                    .data("Current user data") // Placeholder
-                    .message("Current user retrieved successfully")
-                    .build();
-            
-            return ResponseEntity.ok(apiResponse);
-            
-        } catch (Exception e) {
-            log.error("Unexpected error getting current user", e);
-            return handleInternalError("Failed to get current user");
-        }
-    }
-
-    // Вспомогательные методы для обработки ошибок
-
-    private <T> ResponseEntity<ApiResponse<T>> handleAuthenticationError(String message) {
-        ErrorResponse error = ErrorResponse.builder()
-                .code("AUTHENTICATION_ERROR")
-                .message(message)
-                .build();
+        @Schema(description = "Token expiration time in seconds", example = "3600")
+        long expiresIn,
         
-        ApiResponse<T> apiResponse = ApiResponse.<T>builder()
-                .success(false)
-                .error(error)
-                .build();
+        @Schema(description = "User information")
+        UserDto user
+    ) {}
+    
+    /**
+     * Response DTO for token refresh operations.
+     */
+    public record TokenRefreshResponse(
+        @Schema(description = "New JWT token", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")
+        String token,
         
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
-    }
-
-    private <T> ResponseEntity<ApiResponse<T>> handleValidationError(String message) {
-        ErrorResponse error = ErrorResponse.builder()
-                .code("VALIDATION_ERROR")
-                .message(message)
-                .build();
+        @Schema(description = "Token type", example = "Bearer")
+        String tokenType,
         
-        ApiResponse<T> apiResponse = ApiResponse.<T>builder()
-                .success(false)
-                .error(error)
-                .build();
-        
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
-
-    private <T> ResponseEntity<ApiResponse<T>> handleInternalError(String message) {
-        ErrorResponse error = ErrorResponse.builder()
-                .code("INTERNAL_ERROR")
-                .message(message)
-                .build();
-        
-        ApiResponse<T> apiResponse = ApiResponse.<T>builder()
-                .success(false)
-                .error(error)
-                .build();
-        
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
-    }
+        @Schema(description = "Token expiration time in seconds", example = "3600")
+        long expiresIn
+    ) {}
+    
+    /**
+     * Response DTO for logout operations.
+     */
+    public record LogoutResponse(
+        @Schema(description = "Logout message", example = "Logged out successfully")
+        String message
+    ) {}
 }

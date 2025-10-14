@@ -43,3 +43,5 @@ public interface UserEventPublisher {
     void publishUserDeleted(UserDeletedEvent event);
 }
 
+
+

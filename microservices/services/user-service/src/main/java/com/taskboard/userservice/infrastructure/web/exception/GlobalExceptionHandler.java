@@ -1,302 +1,210 @@
 package com.taskboard.userservice.infrastructure.web.exception;
 
-import com.taskboard.userservice.infrastructure.web.dto.ApiResponse;
-import com.taskboard.userservice.infrastructure.web.dto.ErrorResponse;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
+import com.taskboard.userservice.application.exception.UserNotFoundException;
+import com.taskboard.userservice.application.exception.UserServiceException;
+import com.taskboard.userservice.domain.exception.UserDomainException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.context.request.WebRequest;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Global exception handler for REST API endpoints.
- * Provides consistent error handling and response formatting across the entire application.
+ * Global exception handler for the User Service.
  * 
- * <p>This handler catches and processes various types of exceptions including:
+ * <p>This class provides centralized exception handling for all controllers in the application.
+ * It follows the best practice of having a single point of exception handling and provides
+ * consistent error responses across the entire application.
+ * 
+ * <p>Features:
  * <ul>
- *   <li>Validation errors (Bean Validation, Constraint Violations)</li>
- *   <li>Authentication and authorization errors</li>
- *   <li>Resource not found errors</li>
- *   <li>HTTP method and parameter errors</li>
- *   <li>Generic application errors</li>
+ *   <li>Centralized exception handling</li>
+ *   <li>Consistent error response format</li>
+ *   <li>Proper HTTP status codes</li>
+ *   <li>Detailed logging for debugging</li>
+ *   <li>Security-conscious error messages</li>
  * </ul>
  * 
- * <p>All exceptions are converted to standardized {@link ApiResponse} objects
- * with appropriate HTTP status codes and error details.
- * 
- * @author TaskBoard Team
- * @version 1.0
+ * @author Task Management Platform Team
+ * @version 1.0.0
  * @since 1.0.0
- * @see ApiResponse
- * @see ErrorResponse
  */
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
 
     /**
-     * Handles field validation errors from Bean Validation.
-     * 
-     * @param ex the validation exception containing field errors
-     * @return ResponseEntity with validation error details
-     */
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidationException(MethodArgumentNotValidException ex) {
-        log.warn("Validation error: {}", ex.getMessage());
-        
-        List<ErrorResponse.ValidationError> validationErrors = new ArrayList<>();
-        
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            ErrorResponse.ValidationError validationError = ErrorResponse.ValidationError.builder()
-                    .field(error.getField())
-                    .message(error.getDefaultMessage())
-                    .rejectedValue(error.getRejectedValue())
-                    .build();
-            validationErrors.add(validationError);
-        }
+   * Handles user not found exceptions.
+   * 
+   * @param ex the exception
+   * @param request the web request
+   * @return error response with 404 status
+   */
+  @ExceptionHandler(UserNotFoundException.class)
+  public ResponseEntity<ErrorResponse> handleUserNotFoundException(
+      UserNotFoundException ex, 
+      WebRequest request) {
+    
+    log.warn("User not found: {}", ex.getMessage());
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("VALIDATION_ERROR")
-                .message("Validation failed")
-                .validationErrors(validationErrors)
+        .timestamp(LocalDateTime.now())
+        .status(HttpStatus.NOT_FOUND.value())
+        .error("User Not Found")
+        .message(ex.getMessage())
+        .path(getPath(request))
                 .build();
         
-        return ResponseEntity.badRequest()
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+  }
 
-    /**
-     * Обработка ошибок валидации ограничений.
-     */
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleConstraintViolationException(ConstraintViolationException ex) {
-        log.warn("Constraint violation: {}", ex.getMessage());
-        
-        List<ErrorResponse.ValidationError> validationErrors = new ArrayList<>();
-        
-        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-            String fieldName = violation.getPropertyPath().toString();
-            ErrorResponse.ValidationError validationError = ErrorResponse.ValidationError.builder()
-                    .field(fieldName)
-                    .message(violation.getMessage())
-                    .rejectedValue(violation.getInvalidValue())
-                    .build();
-            validationErrors.add(validationError);
-        }
+  /**
+   * Handles user service exceptions.
+   * 
+   * @param ex the exception
+   * @param request the web request
+   * @return error response with 400 status
+   */
+  @ExceptionHandler(UserServiceException.class)
+  public ResponseEntity<ErrorResponse> handleUserServiceException(
+      UserServiceException ex, 
+      WebRequest request) {
+    
+    log.error("User service error: {}", ex.getMessage(), ex);
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("CONSTRAINT_VIOLATION")
-                .message("Constraint validation failed")
-                .validationErrors(validationErrors)
+        .timestamp(LocalDateTime.now())
+        .status(HttpStatus.BAD_REQUEST.value())
+        .error("User Service Error")
+        .message(ex.getMessage())
+        .path(getPath(request))
                 .build();
         
-        return ResponseEntity.badRequest()
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+  }
 
-    /**
-     * Обработка ошибок аутентификации.
-     */
-    @ExceptionHandler({AuthenticationException.class, BadCredentialsException.class})
-    public ResponseEntity<ApiResponse<Void>> handleAuthenticationException(Exception ex) {
-        log.warn("Authentication error: {}", ex.getMessage());
+  /**
+   * Handles domain exceptions.
+   * 
+   * @param ex the exception
+   * @param request the web request
+   * @return error response with 422 status
+   */
+  @ExceptionHandler(UserDomainException.class)
+  public ResponseEntity<ErrorResponse> handleUserDomainException(
+      UserDomainException ex, 
+      WebRequest request) {
+    
+    log.warn("Domain validation error: {}", ex.getMessage());
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("AUTHENTICATION_ERROR")
-                .message("Authentication failed")
-                .details(ex.getMessage())
-                .build();
-        
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
-
-    /**
-     * Обработка ошибок авторизации.
-     */
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleAccessDeniedException(AccessDeniedException ex) {
-        log.warn("Access denied: {}", ex.getMessage());
-        
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("ACCESS_DENIED")
-                .message("Access denied")
-                .details(ex.getMessage())
-                .build();
-        
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
-
-    /**
-     * Обработка ошибок "не найдено".
-     */
-    @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity<ApiResponse<Void>> handleNotFoundException(IllegalArgumentException ex) {
-        log.warn("Not found: {}", ex.getMessage());
-        
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("NOT_FOUND")
+        .timestamp(LocalDateTime.now())
+        .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+        .error("Domain Validation Error")
                 .message(ex.getMessage())
+        .path(getPath(request))
                 .build();
         
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
+    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(errorResponse);
+  }
 
-    /**
-     * Обработка ошибок неверного HTTP метода.
-     */
-    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMethodNotSupportedException(HttpRequestMethodNotSupportedException ex) {
-        log.warn("Method not supported: {}", ex.getMessage());
+  /**
+   * Handles validation exceptions.
+   * 
+   * @param ex the exception
+   * @param request the web request
+   * @return error response with 400 status and validation details
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleValidationException(
+      MethodArgumentNotValidException ex, 
+      WebRequest request) {
+    
+    log.warn("Validation error: {}", ex.getMessage());
+    
+    Map<String, String> validationErrors = new HashMap<>();
+    ex.getBindingResult().getAllErrors().forEach((error) -> {
+      String fieldName = ((FieldError) error).getField();
+      String errorMessage = error.getDefaultMessage();
+      validationErrors.put(fieldName, errorMessage);
+    });
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("METHOD_NOT_SUPPORTED")
-                .message("HTTP method not supported")
-                .details(String.format("Method '%s' is not supported for this endpoint", ex.getMethod()))
+        .timestamp(LocalDateTime.now())
+        .status(HttpStatus.BAD_REQUEST.value())
+        .error("Validation Error")
+        .message("Request validation failed")
+        .path(getPath(request))
+        .validationErrors(validationErrors)
                 .build();
         
-        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+  }
 
-    /**
-     * Обработка ошибок неверного типа параметра.
-     */
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ApiResponse<Void>> handleTypeMismatchException(MethodArgumentTypeMismatchException ex) {
-        log.warn("Type mismatch: {}", ex.getMessage());
-        
-        String message = String.format("Invalid value '%s' for parameter '%s'. Expected type: %s",
-                ex.getValue(), ex.getName(), ex.getRequiredType().getSimpleName());
+  /**
+   * Handles illegal argument exceptions.
+   * 
+   * @param ex the exception
+   * @param request the web request
+   * @return error response with 400 status
+   */
+  @ExceptionHandler(IllegalArgumentException.class)
+  public ResponseEntity<ErrorResponse> handleIllegalArgumentException(
+      IllegalArgumentException ex, 
+      WebRequest request) {
+    
+    log.warn("Illegal argument: {}", ex.getMessage());
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("TYPE_MISMATCH")
-                .message("Invalid parameter type")
-                .details(message)
+        .timestamp(LocalDateTime.now())
+        .status(HttpStatus.BAD_REQUEST.value())
+        .error("Invalid Argument")
+        .message(ex.getMessage())
+        .path(getPath(request))
                 .build();
         
-        return ResponseEntity.badRequest()
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+  }
 
-    /**
-     * Обработка ошибок отсутствующих параметров запроса.
-     */
-    @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMissingParameterException(MissingServletRequestParameterException ex) {
-        log.warn("Missing parameter: {}", ex.getMessage());
-        
-        String message = String.format("Required parameter '%s' of type '%s' is missing",
-                ex.getParameterName(), ex.getParameterType());
+  /**
+   * Handles all other exceptions.
+   * 
+   * @param ex the exception
+   * @param request the web request
+   * @return error response with 500 status
+   */
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ErrorResponse> handleGenericException(
+      Exception ex, 
+      WebRequest request) {
+    
+    log.error("Unexpected error occurred: {}", ex.getMessage(), ex);
         
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("MISSING_PARAMETER")
-                .message("Required parameter missing")
-                .details(message)
+        .timestamp(LocalDateTime.now())
+        .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+        .error("Internal Server Error")
+        .message("An unexpected error occurred")
+        .path(getPath(request))
                 .build();
         
-        return ResponseEntity.badRequest()
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+  }
 
-    /**
-     * Обработка ошибок нечитаемого JSON.
-     */
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ApiResponse<Void>> handleMessageNotReadableException(HttpMessageNotReadableException ex) {
-        log.warn("Message not readable: {}", ex.getMessage());
-        
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("MALFORMED_JSON")
-                .message("Invalid JSON format")
-                .details("Request body contains invalid JSON")
-                .build();
-        
-        return ResponseEntity.badRequest()
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
-
-    /**
-     * Обработка ошибок "endpoint не найден".
-     */
-    @ExceptionHandler(NoHandlerFoundException.class)
-    public ResponseEntity<ApiResponse<Void>> handleNoHandlerFoundException(NoHandlerFoundException ex) {
-        log.warn("No handler found: {}", ex.getMessage());
-        
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("ENDPOINT_NOT_FOUND")
-                .message("Endpoint not found")
-                .details(String.format("No handler found for %s %s", ex.getHttpMethod(), ex.getRequestURL()))
-                .build();
-        
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
-
-    /**
-     * Обработка всех остальных исключений.
-     */
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
-        log.error("Unexpected error occurred", ex);
-        
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .code("INTERNAL_ERROR")
-                .message("An unexpected error occurred")
-                .details("Please contact support if the problem persists")
-                .build();
-        
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ApiResponse.<Void>builder()
-                        .success(false)
-                        .error(errorResponse)
-                        .build());
-    }
+  /**
+   * Extracts the request path from the web request.
+   * 
+   * @param request the web request
+   * @return the request path
+   */
+  private String getPath(WebRequest request) {
+    return request.getDescription(false).replace("uri=", "");
+  }
 }

@@ -1,6 +1,7 @@
 package com.taskboard.userservice.application.dto;
 
 import com.taskboard.userservice.domain.model.UserRole;
+import com.taskboard.userservice.domain.model.UserStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -50,6 +51,10 @@ public class UpdateUserRequest {
   @Positive(message = "User ID must be positive")
   private Long userId;
 
+  @NotBlank(message = "Username is required")
+  @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
+  private String username;
+
   @Email(message = "Email must be valid")
   @Size(max = 100, message = "Email must not exceed 100 characters")
   private String email;
@@ -62,12 +67,16 @@ public class UpdateUserRequest {
 
   private UserRole role;
 
+  private UserStatus status;
+
   @Pattern(
       regexp = "^(?:https?://)?(?:[A-Za-z0-9-]++\\.)++[A-Za-z]{2,63}(?:/[\\w.-]++)*+/?$",
       message = "Profile image URL must be a valid URL"
   )
   private String profileImageUrl;
 }
+
+
 
 
 

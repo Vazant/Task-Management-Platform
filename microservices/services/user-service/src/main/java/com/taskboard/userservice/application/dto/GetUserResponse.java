@@ -81,7 +81,31 @@ public class GetUserResponse {
         .profileImageUrl(user.getProfileImageUrl())
         .build();
   }
+
+  /**
+   * Converts this response to a UserDto.
+   *
+   * @return a UserDto instance
+   */
+  public UserDto getUser() {
+    return UserDto.builder()
+        .id(this.id)
+        .username(this.username)
+        .email(this.email)
+        .firstName(this.firstName)
+        .lastName(this.lastName)
+        .status(this.status)
+        .role(this.role)
+        .createdAt(this.createdAt)
+        .updatedAt(this.updatedAt)
+        .lastLoginAt(this.lastLoginAt)
+        .emailVerified(this.emailVerified)
+        .profileImageUrl(this.profileImageUrl)
+        .build();
+  }
 }
+
+
 
 
 

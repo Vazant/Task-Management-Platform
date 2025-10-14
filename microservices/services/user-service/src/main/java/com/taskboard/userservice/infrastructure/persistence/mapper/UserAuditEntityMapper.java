@@ -8,6 +8,7 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Mapper interface for converting between UserAudit domain model and UserAuditEntity JPA entity.
