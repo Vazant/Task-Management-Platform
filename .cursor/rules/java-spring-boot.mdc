@@ -129,7 +129,7 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @NotBlank
+    @jakarta.validation.constraints.NotBlank
     @Size(max = 100)
     private String title;
     
@@ -219,8 +219,22 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 ## DTO и валидация
 
+### ⚠️ ВАЖНО: Bean Validation для Spring Boot 3.x
+```java
+// ПРАВИЛЬНО - используйте jakarta.validation
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
+// НЕПРАВИЛЬНО - javax.validation устарел в Spring Boot 3.x
+// import javax.validation.constraints.NotBlank;
+```
+
 ### ✅ DO: Использование Lombok для простых DTO
 ```java
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -246,7 +260,7 @@ public class TaskDto {
 ```java
 public class UserDto {
     
-    @NotBlank(message = "Username is required")
+    @jakarta.validation.constraints.NotBlank(message = "Username is required")
     private String username;
     
     @Email(message = "Email must be valid")
@@ -274,9 +288,10 @@ public class UserDto {
 - Применяйте `@Builder` для создания immutable объектов
 - Используйте `@NoArgsConstructor` и `@AllArgsConstructor` для фреймворков
 - Пишите геттеры/сеттеры вручную при наличии бизнес-логики
-- Используйте Bean Validation аннотации
+- Используйте Bean Validation аннотации из `jakarta.validation.constraints`
 - Создавайте отдельные DTO для запросов и ответов
 - Применяйте `@JsonIgnore` для скрытия полей в JSON
+- **ВАЖНО**: Используйте `jakarta.validation` вместо `javax.validation` для Spring Boot 3.x
 
 ## Обработка исключений
 

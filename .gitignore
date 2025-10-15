@@ -1,6 +1,15 @@
 # ===========================================
 # Task Management Platform - .gitignore
 # ===========================================
+#
+# IMPORTANT: All .md files are excluded except README.md
+# This includes: DEPLOYMENT.md, ROADMAP.md, SUMMARY.md, etc.
+# Only README.md files are tracked in Git
+# 
+# RULE: Never commit .md files except README.md
+# Created: 2024-12-19
+#
+# ===========================================
 
 # ===========================================
 # IDE & EDITOR FILES
@@ -8,6 +17,7 @@
 
 # Cursor IDE
 .cursor/
+!.cursor/rules/
 
 # Audit files
 .audit/
@@ -403,6 +413,12 @@ microservices/docs/
 docs/
 *.md
 !README.md
+
+# Exclude all markdown files except README.md
+# This includes: DEPLOYMENT.md, ROADMAP.md, SUMMARY.md, etc.
+**/*.md
+!README.md
+!**/README.md
 
 # Daily logs and reports (not for Git)
 daily-logs/
