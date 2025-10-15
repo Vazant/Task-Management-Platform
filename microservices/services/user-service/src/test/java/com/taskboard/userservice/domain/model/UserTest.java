@@ -26,7 +26,9 @@ class UserTest {
             .lastName("User")
             .password("hashedPassword")
             .role(UserRole.USER)
-            .status(UserStatus.ACTIVE);
+            .status(UserStatus.ACTIVE)
+            .createdAt(LocalDateTime.now())
+            .updatedAt(LocalDateTime.now());
     }
     
     @Nested

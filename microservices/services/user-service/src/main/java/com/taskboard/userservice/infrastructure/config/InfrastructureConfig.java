@@ -50,6 +50,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * @since 1.0.0
  */
 @Configuration
+@Profile("!test")
 @EnableJpaRepositories(
     basePackages = "com.taskboard.userservice.infrastructure.persistence",
     entityManagerFactoryRef = "entityManagerFactory",

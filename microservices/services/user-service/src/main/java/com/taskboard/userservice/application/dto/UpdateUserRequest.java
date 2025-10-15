@@ -44,7 +44,7 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(exclude = {"email"}) // Exclude email from toString for security
 public class UpdateUserRequest {
 
   @NotNull(message = "User ID is required")
@@ -75,22 +75,6 @@ public class UpdateUserRequest {
   )
   private String profileImageUrl;
 
-  /**
-   * Creates a copy of this request with updated values.
-   * 
-   * @return a new builder initialized with current values
-   */
-  public UpdateUserRequestBuilder toBuilder() {
-    return UpdateUserRequest.builder()
-        .userId(userId)
-        .username(username)
-        .email(email)
-        .firstName(firstName)
-        .lastName(lastName)
-        .role(role)
-        .status(status)
-        .profileImageUrl(profileImageUrl);
-  }
 }
 
 

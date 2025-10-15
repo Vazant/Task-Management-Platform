@@ -4,11 +4,13 @@ import com.taskboard.userservice.domain.model.UserAudit;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * JPA entity for user audit logs.
@@ -37,7 +39,8 @@ import java.time.LocalDateTime;
     @Index(name = "idx_user_audit_created_at", columnList = "created_at"),
     @Index(name = "idx_user_audit_ip_address", columnList = "ip_address")
 })
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -84,19 +87,21 @@ public class UserAuditEntity {
 
   // AuditActionType enum is defined in the domain model UserAudit
 
-  // Getters and setters are provided by Lombok @Data
-
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     UserAuditEntity that = (UserAuditEntity) o;
-    return id != null && id.equals(that.id);
+    // For audit records, use a combination of fields for uniqueness
+    return Objects.equals(userId, that.userId) &&
+           Objects.equals(action, that.action) &&
+           Objects.equals(actionType, that.actionType) &&
+           Objects.equals(createdAt, that.createdAt);
   }
 
   @Override
   public int hashCode() {
-    return getClass().hashCode();
+    return Objects.hash(userId, action, actionType, createdAt);
   }
 
   @Override

@@ -2,8 +2,9 @@ package com.taskboard.userservice.infrastructure.messaging;
 
 import java.util.UUID;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.messaging.handler.annotation.Header;
@@ -27,17 +28,13 @@ import com.taskboard.userservice.domain.event.project.ProjectMemberAddedEvent;
  * TODO: Add metrics and monitoring for event processing
  */
 @Component
+@Profile("!test") // Exclude this component from the "test" profile
+@RequiredArgsConstructor
+@Slf4j
 public class KafkaIncomingEventConsumer {
-    
-    private static final Logger logger = LoggerFactory.getLogger(KafkaIncomingEventConsumer.class);
     
     private final IncomingEventProcessor eventProcessor;
     private final ObjectMapper objectMapper;
-    
-    public KafkaIncomingEventConsumer(IncomingEventProcessor eventProcessor, ObjectMapper objectMapper) {
-        this.eventProcessor = eventProcessor;
-        this.objectMapper = objectMapper;
-    }
     
     /**
      * Consumes task.created events from Task Service.
@@ -53,7 +50,7 @@ public class KafkaIncomingEventConsumer {
             @Header(value = "eventId", required = false) String eventId,
             @Header(value = "timestamp", required = false) String timestamp) {
         
-        logger.debug("Received task.created event: {}", payload);
+        log.debug("Received task.created event: {}", payload);
         
         try {
             // TODO: Parse event payload and create TaskCreatedEvent
@@ -71,7 +68,7 @@ public class KafkaIncomingEventConsumer {
             eventProcessor.processEvent(event);
             
         } catch (Exception e) {
-            logger.error("Failed to process task.created event: {}", payload, e);
+            log.error("Failed to process task.created event: {}", payload, e);
             // TODO: Send to dead letter queue
             throw e;
         }
@@ -91,7 +88,7 @@ public class KafkaIncomingEventConsumer {
             @Header(value = "eventId", required = false) String eventId,
             @Header(value = "timestamp", required = false) String timestamp) {
         
-        logger.debug("Received task.updated event: {}", payload);
+        log.debug("Received task.updated event: {}", payload);
         
         try {
             // TODO: Parse event payload and create TaskUpdatedEvent
@@ -109,7 +106,7 @@ public class KafkaIncomingEventConsumer {
             eventProcessor.processEvent(event);
             
         } catch (Exception e) {
-            logger.error("Failed to process task.updated event: {}", payload, e);
+            log.error("Failed to process task.updated event: {}", payload, e);
             // TODO: Send to dead letter queue
             throw e;
         }
@@ -129,7 +126,7 @@ public class KafkaIncomingEventConsumer {
             @Header(value = "eventId", required = false) String eventId,
             @Header(value = "timestamp", required = false) String timestamp) {
         
-        logger.debug("Received project.member.added event: {}", payload);
+        log.debug("Received project.member.added event: {}", payload);
         
         try {
             // TODO: Parse event payload and create ProjectMemberAddedEvent
@@ -147,7 +144,7 @@ public class KafkaIncomingEventConsumer {
             eventProcessor.processEvent(event);
             
         } catch (Exception e) {
-            logger.error("Failed to process project.member.added event: {}", payload, e);
+            log.error("Failed to process project.member.added event: {}", payload, e);
             // TODO: Send to dead letter queue
             throw e;
         }
@@ -161,7 +158,7 @@ public class KafkaIncomingEventConsumer {
      */
     private TaskCreatedEvent.TaskData parseTaskCreatedData(String payload) {
         // TODO: Implement JSON parsing for TaskCreatedEvent.TaskData
-        logger.debug("Parsing task created data from payload: {}", payload);
+        log.debug("Parsing task created data from payload: {}", payload);
         
         // Placeholder implementation
         return TaskCreatedEvent.TaskData.builder()
@@ -184,7 +181,7 @@ public class KafkaIncomingEventConsumer {
      */
     private TaskUpdatedEvent.TaskData parseTaskUpdatedData(String payload) {
         // TODO: Implement JSON parsing for TaskUpdatedEvent.TaskData
-        logger.debug("Parsing task updated data from payload: {}", payload);
+        log.debug("Parsing task updated data from payload: {}", payload);
         
         // Placeholder implementation
         return new TaskUpdatedEvent.TaskData(
@@ -201,7 +198,7 @@ public class KafkaIncomingEventConsumer {
      */
     private ProjectMemberAddedEvent.ProjectMemberData parseProjectMemberData(String payload) {
         // TODO: Implement JSON parsing for ProjectMemberAddedEvent.ProjectMemberData
-        logger.debug("Parsing project member data from payload: {}", payload);
+        log.debug("Parsing project member data from payload: {}", payload);
         
         // Placeholder implementation
         return new ProjectMemberAddedEvent.ProjectMemberData(
@@ -224,7 +221,7 @@ public class KafkaIncomingEventConsumer {
         try {
             return java.time.LocalDateTime.parse(timestamp);
         } catch (Exception e) {
-            logger.warn("Failed to parse timestamp: {}, using current time", timestamp);
+            log.warn("Failed to parse timestamp: {}, using current time", timestamp);
             return java.time.LocalDateTime.now();
         }
     }

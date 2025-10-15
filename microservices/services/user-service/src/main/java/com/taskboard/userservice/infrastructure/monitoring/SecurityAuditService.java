@@ -5,8 +5,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,9 +13,8 @@ import org.springframework.stereotype.Service;
  * events for compliance and monitoring purposes.
  */
 @Service
+@Slf4j
 public class SecurityAuditService {
-
-  private static final Logger logger = LoggerFactory.getLogger(SecurityAuditService.class);
 
   private final Counter loginAttemptsCounter;
   private final Counter failedLoginAttemptsCounter;
@@ -78,11 +76,11 @@ public class SecurityAuditService {
 
     if (success) {
       successfulLoginsCounter.increment();
-      logger.info("Successful login - Username: {}, IP: {}", username, ipAddress);
+      log.info("Successful login - Username: {}, IP: {}", username, ipAddress);
     } else {
       failedLoginAttemptsCounter.increment();
       recordFailedAttempt(ipAddress);
-      logger.warn("Failed login attempt - Username: {}, IP: {}", username, ipAddress);
+      log.warn("Failed login attempt - Username: {}, IP: {}", username, ipAddress);
     }
   }
 
@@ -94,7 +92,7 @@ public class SecurityAuditService {
    */
   public void recordPasswordChange(String username, String ipAddress) {
     passwordChangeCounter.increment();
-    logger.info("Password changed - Username: {}, IP: {}", username, ipAddress);
+    log.info("Password changed - Username: {}, IP: {}", username, ipAddress);
   }
 
   /**
@@ -106,7 +104,7 @@ public class SecurityAuditService {
    */
   public void recordAccountLockout(String username, String ipAddress, String reason) {
     accountLockoutCounter.increment();
-    logger.warn("Account locked - Username: {}, IP: {}, Reason: {}", username, ipAddress, reason);
+    log.warn("Account locked - Username: {}, IP: {}, Reason: {}", username, ipAddress, reason);
   }
 
   /**
@@ -120,7 +118,7 @@ public class SecurityAuditService {
   public void recordSuspiciousActivity(
       String activityType, String username, String ipAddress, String details) {
     suspiciousActivityCounter.increment();
-    logger.error(
+    log.error(
         "Suspicious activity detected - Type: {}, Username: {}, IP: {}, Details: {}",
         activityType,
         username,
@@ -136,9 +134,9 @@ public class SecurityAuditService {
    */
   public void recordTokenValidation(boolean tokenValid, String ipAddress) {
     if (tokenValid) {
-      logger.debug("Valid JWT token - IP: {}", ipAddress);
+      log.debug("Valid JWT token - IP: {}", ipAddress);
     } else {
-      logger.warn("Invalid JWT token - IP: {}", ipAddress);
+      log.warn("Invalid JWT token - IP: {}", ipAddress);
       recordSuspiciousActivity("INVALID_TOKEN", null, ipAddress, "Invalid JWT token provided");
     }
   }
@@ -153,7 +151,7 @@ public class SecurityAuditService {
    */
   public void recordAuthorizationFailure(
       String username, String resource, String action, String ipAddress) {
-    logger.warn(
+    log.warn(
         "Authorization failed - Username: {}, Resource: {}, Action: {}, IP: {}",
         username,
         resource,
@@ -205,7 +203,7 @@ public class SecurityAuditService {
    * @param role The role of the created user.
    */
   public void logUserCreated(Long userId, String username, String email, com.taskboard.userservice.domain.model.UserRole role) {
-    logger.info("User created - ID: {}, Username: {}, Email: {}, Role: {}", userId, username, email, role);
+    log.info("User created - ID: {}, Username: {}, Email: {}, Role: {}", userId, username, email, role);
   }
 
   /**
@@ -216,7 +214,7 @@ public class SecurityAuditService {
    * @param reason The reason for the failure.
    */
   public void logUserCreationFailed(String username, String email, String reason) {
-    logger.warn("User creation failed - Username: {}, Email: {}, Reason: {}", username, email, reason);
+    log.warn("User creation failed - Username: {}, Email: {}, Reason: {}", username, email, reason);
   }
 
   /**
@@ -243,7 +241,7 @@ public class SecurityAuditService {
    * @param username the username
    */
   public void logUserRetrieved(Long userId, String username) {
-    logger.info("User retrieved - User ID: {}, Username: {}", userId, username);
+    log.info("User retrieved - User ID: {}, Username: {}", userId, username);
   }
 
   /**
@@ -253,7 +251,7 @@ public class SecurityAuditService {
    * @param reason the reason for failure
    */
   public void logUserRetrievalFailed(Long userId, String reason) {
-    logger.warn("User retrieval failed - User ID: {}, Reason: {}", userId, reason);
+    log.warn("User retrieval failed - User ID: {}, Reason: {}", userId, reason);
   }
 
   /**
@@ -263,7 +261,7 @@ public class SecurityAuditService {
    * @param username the username
    */
   public void logUserUpdated(Long userId, String username) {
-    logger.info("User updated - User ID: {}, Username: {}", userId, username);
+    log.info("User updated - User ID: {}, Username: {}", userId, username);
   }
 
   /**
@@ -273,7 +271,7 @@ public class SecurityAuditService {
    * @param reason the reason for failure
    */
   public void logUserUpdateFailed(Long userId, String reason) {
-    logger.warn("User update failed - User ID: {}, Reason: {}", userId, reason);
+    log.warn("User update failed - User ID: {}, Reason: {}", userId, reason);
   }
 
   /**
@@ -283,7 +281,7 @@ public class SecurityAuditService {
    * @param username the username
    */
   public void logUserDeletionAttempt(Long userId, String username) {
-    logger.info("User deletion attempted - User ID: {}, Username: {}", userId, username);
+    log.info("User deletion attempted - User ID: {}, Username: {}", userId, username);
   }
 
   /**
@@ -293,7 +291,7 @@ public class SecurityAuditService {
    * @param username the username
    */
   public void logUserDeleted(Long userId, String username) {
-    logger.info("User deleted - User ID: {}, Username: {}", userId, username);
+    log.info("User deleted - User ID: {}, Username: {}", userId, username);
   }
 
   /**
@@ -303,7 +301,7 @@ public class SecurityAuditService {
    * @param reason the reason for failure
    */
   public void logUserDeletionFailed(Long userId, String reason) {
-    logger.warn("User deletion failed - User ID: {}, Reason: {}", userId, reason);
+    log.warn("User deletion failed - User ID: {}, Reason: {}", userId, reason);
   }
 
   /**
@@ -313,7 +311,7 @@ public class SecurityAuditService {
    * @param username the username
    */
   public void logAuthenticationSuccess(Long userId, String username) {
-    logger.info("Authentication successful - User ID: {}, Username: {}", userId, username);
+    log.info("Authentication successful - User ID: {}, Username: {}", userId, username);
     successfulLoginsCounter.increment();
   }
 
@@ -324,7 +322,7 @@ public class SecurityAuditService {
    * @param reason the reason for failure
    */
   public void logAuthenticationFailed(String username, String reason) {
-    logger.warn("Authentication failed - Username: {}, Reason: {}", username, reason);
+    log.warn("Authentication failed - Username: {}, Reason: {}", username, reason);
     failedLoginAttemptsCounter.increment();
   }
 }

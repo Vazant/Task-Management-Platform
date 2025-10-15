@@ -14,9 +14,9 @@ public class UserStatisticsTestDataBuilder {
     private int completedTasks = 0;
     private int activeProjects = 0;
     private int completedProjects = 0;
-    private LocalDateTime lastLoginAt = LocalDateTime.now();
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private LocalDateTime lastLoginAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     
     public static UserStatisticsTestDataBuilder aUserStatistics() {
         return new UserStatisticsTestDataBuilder();
@@ -68,7 +68,7 @@ public class UserStatisticsTestDataBuilder {
     }
     
     public UserStatistics build() {
-        return UserStatistics.builder()
+        UserStatistics stats = UserStatistics.builder()
             .id(id)
             .userId(userId)
             .totalTasks(totalTasks)
@@ -79,5 +79,15 @@ public class UserStatisticsTestDataBuilder {
             .createdAt(createdAt)
             .updatedAt(updatedAt)
             .build();
+        
+        // Set timestamps if not provided
+        if (stats.getCreatedAt() == null) {
+            stats.setCreatedNow();
+        }
+        if (stats.getUpdatedAt() == null) {
+            stats.setUpdatedNow();
+        }
+        
+        return stats;
     }
 }

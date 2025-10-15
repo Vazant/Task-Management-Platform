@@ -7,6 +7,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -46,6 +50,10 @@ import java.util.Objects;
       @UniqueConstraint(name = "uk_user_username", columnNames = "username"),
       @UniqueConstraint(name = "uk_user_email", columnNames = "email")
     })
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserEntity {
 
   @Id
@@ -111,10 +119,6 @@ public class UserEntity {
   @Column(name = "version")
   private Long version;
 
-  /** Default constructor for JPA. */
-  protected UserEntity() {
-    // Required by JPA
-  }
 
   /**
    * Creates a new UserEntity with required fields.
@@ -244,131 +248,19 @@ public class UserEntity {
     this.profileImageUrl = profileImageUrl;
   }
 
-  // Getters
-  public Long getId() {
-    return id;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public String getPasswordHash() {
-    return passwordHash;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public UserStatus getStatus() {
-    return status;
-  }
-
-  public UserRole getRole() {
-    return role;
-  }
-
-  public LocalDateTime getCreatedAt() {
-    return createdAt;
-  }
-
-  public LocalDateTime getUpdatedAt() {
-    return updatedAt;
-  }
-
-  public LocalDateTime getLastLoginAt() {
-    return lastLoginAt;
-  }
-
-  public boolean isEmailVerified() {
-    return emailVerified;
-  }
-
-  public String getProfileImageUrl() {
-    return profileImageUrl;
-  }
-
-  public Long getVersion() {
-    return version;
-  }
-
-  // Setters for JPA and Mapper
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
-  }
-
-  public void setPasswordHash(String passwordHash) {
-    this.passwordHash = passwordHash;
-  }
-
-  public void setFirstName(String firstName) {
-    this.firstName = firstName;
-  }
-
-  public void setLastName(String lastName) {
-    this.lastName = lastName;
-  }
-
-  public void setStatus(UserStatus status) {
-    this.status = status;
-  }
-
-  public void setRole(UserRole role) {
-    this.role = role;
-  }
-
-  public void setCreatedAt(LocalDateTime createdAt) {
-    this.createdAt = createdAt;
-  }
-
-  public void setUpdatedAt(LocalDateTime updatedAt) {
-    this.updatedAt = updatedAt;
-  }
-
-  public void setLastLoginAt(LocalDateTime lastLoginAt) {
-    this.lastLoginAt = lastLoginAt;
-  }
-
-  public void setEmailVerified(boolean emailVerified) {
-    this.emailVerified = emailVerified;
-  }
-
-  public void setProfileImageUrl(String profileImageUrl) {
-    this.profileImageUrl = profileImageUrl;
-  }
-
-  public void setVersion(Long version) {
-    this.version = version;
-  }
 
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     UserEntity that = (UserEntity) o;
-    return Objects.equals(id, that.id) && Objects.equals(username, that.username);
+    // Use only business keys for equals (not ID)
+    return Objects.equals(username, that.username) && Objects.equals(email, that.email);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, username);
+    return Objects.hash(username, email);
   }
 
   @Override
@@ -378,15 +270,6 @@ public class UserEntity {
         + id
         + ", username='"
         + username
-        + '\''
-        + ", email='"
-        + email
-        + '\''
-        + ", firstName='"
-        + firstName
-        + '\''
-        + ", lastName='"
-        + lastName
         + '\''
         + ", status="
         + status

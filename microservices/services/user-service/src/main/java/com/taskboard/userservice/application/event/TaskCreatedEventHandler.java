@@ -1,7 +1,7 @@
 package com.taskboard.userservice.application.event;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import com.taskboard.userservice.application.service.UserNotificationService;
@@ -19,9 +19,9 @@ import com.taskboard.userservice.domain.event.task.TaskCreatedEvent;
  * TODO: Check if user needs to be notified about task assignment
  */
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class TaskCreatedEventHandler implements IncomingEventHandler<TaskCreatedEvent.TaskData> {
-    
-    private static final Logger logger = LoggerFactory.getLogger(TaskCreatedEventHandler.class);
     
     private static final String EVENT_TYPE = "task.created";
     private static final String SOURCE_SERVICE = "task-service";
@@ -29,15 +29,9 @@ public class TaskCreatedEventHandler implements IncomingEventHandler<TaskCreated
     private final UserStatisticsService userStatisticsService;
     private final UserNotificationService userNotificationService;
     
-    public TaskCreatedEventHandler(UserStatisticsService userStatisticsService, 
-                                 UserNotificationService userNotificationService) {
-        this.userStatisticsService = userStatisticsService;
-        this.userNotificationService = userNotificationService;
-    }
-    
     @Override
     public void handle(IncomingEvent<TaskCreatedEvent.TaskData> event) {
-        logger.info("Processing TaskCreatedEvent for user: {}", event.getData().getUserId());
+        log.info("Processing TaskCreatedEvent for user: {}", event.getData().getUserId());
         
         try {
             TaskCreatedEvent.TaskData taskData = event.getData();
@@ -57,10 +51,10 @@ public class TaskCreatedEventHandler implements IncomingEventHandler<TaskCreated
             // 3. Update user activity
             userStatisticsService.updateUserActivity(taskData.getUserId(), "task_created");
             
-            logger.info("Successfully processed TaskCreatedEvent for user: {}", taskData.getUserId());
+            log.info("Successfully processed TaskCreatedEvent for user: {}", taskData.getUserId());
             
         } catch (Exception e) {
-            logger.error("Failed to process TaskCreatedEvent for user: {}", 
+            log.error("Failed to process TaskCreatedEvent for user: {}", 
                 event.getData().getUserId(), e);
             throw e;
         }

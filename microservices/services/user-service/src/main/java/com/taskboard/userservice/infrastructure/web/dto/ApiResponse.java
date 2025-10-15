@@ -66,8 +66,7 @@ public class ApiResponse<T> {
     /**
      * Timestamp when the response was generated.
      */
-    @Builder.Default
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime timestamp;
     
     /**
      * Creates a successful response with data.

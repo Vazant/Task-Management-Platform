@@ -1,7 +1,7 @@
 package com.taskboard.userservice.application.event;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import com.taskboard.userservice.application.service.UserNotificationService;
@@ -19,9 +19,9 @@ import com.taskboard.userservice.domain.event.task.TaskUpdatedEvent;
  * TODO: Handle priority changes and notifications
  */
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class TaskUpdatedEventHandler implements IncomingEventHandler<TaskUpdatedEvent.TaskData> {
-    
-    private static final Logger logger = LoggerFactory.getLogger(TaskUpdatedEventHandler.class);
     
     private static final String EVENT_TYPE = "task.updated";
     private static final String SOURCE_SERVICE = "task-service";
@@ -29,15 +29,9 @@ public class TaskUpdatedEventHandler implements IncomingEventHandler<TaskUpdated
     private final UserStatisticsService userStatisticsService;
     private final UserNotificationService userNotificationService;
     
-    public TaskUpdatedEventHandler(UserStatisticsService userStatisticsService, 
-                                 UserNotificationService userNotificationService) {
-        this.userStatisticsService = userStatisticsService;
-        this.userNotificationService = userNotificationService;
-    }
-    
     @Override
     public void handle(IncomingEvent<TaskUpdatedEvent.TaskData> event) {
-        logger.info("Processing TaskUpdatedEvent for user: {}", event.getData().getUserId());
+        log.info("Processing TaskUpdatedEvent for user: {}", event.getData().getUserId());
         
         try {
             TaskUpdatedEvent.TaskData taskData = event.getData();
@@ -70,10 +64,10 @@ public class TaskUpdatedEventHandler implements IncomingEventHandler<TaskUpdated
                 );
             }
             
-            logger.info("Successfully processed TaskUpdatedEvent for user: {}", taskData.getUserId());
+            log.info("Successfully processed TaskUpdatedEvent for user: {}", taskData.getUserId());
             
         } catch (Exception e) {
-            logger.error("Failed to process TaskUpdatedEvent for user: {}", 
+            log.error("Failed to process TaskUpdatedEvent for user: {}", 
                 event.getData().getUserId(), e);
             throw e;
         }

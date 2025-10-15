@@ -7,8 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -22,9 +21,8 @@ import org.springframework.stereotype.Component;
  * @since 1.0.0
  */
 @Component
+@Slf4j
 public class IncomingEventProcessor {
-    
-    private static final Logger logger = LoggerFactory.getLogger(IncomingEventProcessor.class);
     
     private final Map<String, IncomingEventHandler<?>> eventHandlers;
     private final EventDeduplicationService deduplicationService;
@@ -40,7 +38,7 @@ public class IncomingEventProcessor {
                 this::createHandlerKey,
                 Function.identity(),
                 (existing, replacement) -> {
-                    logger.warn("Duplicate handler for key: {}, using existing handler", createHandlerKey(existing));
+                    log.warn("Duplicate handler for key: {}, using existing handler", createHandlerKey(existing));
                     return existing;
                 },
                 ConcurrentHashMap::new
@@ -50,7 +48,7 @@ public class IncomingEventProcessor {
         this.validationService = validationService;
         this.retryService = retryService;
         
-        logger.info("Initialized IncomingEventProcessor with {} handlers", eventHandlers.size());
+        log.info("Initialized IncomingEventProcessor with {} handlers", eventHandlers.size());
     }
     
     /**
@@ -73,20 +71,20 @@ public class IncomingEventProcessor {
         String eventType = event.getEventType();
         String sourceService = event.getSourceService();
         
-        logger.debug("Processing event: {} from service: {} with ID: {}", 
+        log.debug("Processing event: {} from service: {} with ID: {}", 
             eventType, sourceService, eventId);
         
         // Step 1: Validate event
         try {
             validationService.validateEvent(event);
         } catch (EventValidationException e) {
-            logger.error("Event validation failed for event {}: {}", eventId, e.getMessage());
+            log.error("Event validation failed for event {}: {}", eventId, e.getMessage());
             throw new EventProcessingException("Event validation failed", e);
         }
         
         // Step 2: Check for duplicates
         if (deduplicationService.isEventProcessed(eventId)) {
-            logger.debug("Event {} already processed, skipping", eventId);
+            log.debug("Event {} already processed, skipping", eventId);
             return;
         }
         
@@ -96,7 +94,7 @@ public class IncomingEventProcessor {
         IncomingEventHandler<T> handler = (IncomingEventHandler<T>) eventHandlers.get(handlerKey);
         
         if (handler == null) {
-            logger.warn("No handler found for event type: {} from service: {}", 
+            log.warn("No handler found for event type: {} from service: {}", 
                 eventType, sourceService);
             return;
         }
@@ -109,11 +107,11 @@ public class IncomingEventProcessor {
                 return null;
             }).get(); // Wait for completion
             
-            logger.info("Successfully processed event: {} from service: {} with ID: {}", 
+            log.info("Successfully processed event: {} from service: {} with ID: {}", 
                 eventType, sourceService, eventId);
                 
         } catch (Exception e) {
-            logger.error("Failed to process event: {} from service: {} with ID: {}", 
+            log.error("Failed to process event: {} from service: {} with ID: {}", 
                 eventType, sourceService, eventId, e);
             throw new EventProcessingException("Failed to process event", e);
         }

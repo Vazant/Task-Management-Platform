@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Adapter implementation of UserAuditRepository using JPA.
@@ -60,7 +59,7 @@ public class UserAuditRepositoryAdapter implements UserAuditRepository {
       throw new IllegalArgumentException("UserAudit cannot be null");
     }
 
-    userAudit.validate();
+    // Validation is performed through Bean Validation annotations in UserAudit
     UserAuditEntity entity = userAuditEntityMapper.toEntity(userAudit);
     UserAuditEntity savedEntity = userAuditJpaRepository.save(entity);
     return userAuditEntityMapper.toDomain(savedEntity);
@@ -73,9 +72,7 @@ public class UserAuditRepositoryAdapter implements UserAuditRepository {
       throw new IllegalArgumentException("UserAudits list cannot be null");
     }
 
-    // Validate all audit records
-    userAudits.forEach(UserAudit::validate);
-
+    // Validation is performed through Bean Validation annotations in UserAudit
     List<UserAuditEntity> entities = userAuditEntityMapper.toEntityList(userAudits);
     List<UserAuditEntity> savedEntities = userAuditJpaRepository.saveAll(entities);
     return userAuditEntityMapper.toDomainList(savedEntities);
@@ -287,5 +284,13 @@ public class UserAuditRepositoryAdapter implements UserAuditRepository {
   @Transactional(readOnly = true)
   public long count() {
     return userAuditJpaRepository.count();
+  }
+
+  @Override
+  public String toString() {
+    return "UserAuditRepositoryAdapter{" +
+        "userAuditJpaRepository=" + userAuditJpaRepository.getClass().getSimpleName() +
+        ", userAuditEntityMapper=" + userAuditEntityMapper.getClass().getSimpleName() +
+        '}';
   }
 }

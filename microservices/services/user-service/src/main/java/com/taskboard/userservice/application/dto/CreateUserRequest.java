@@ -76,20 +76,5 @@ public class CreateUserRequest {
   )
   private String profileImageUrl;
   
-  /**
-   * Creates a copy of this request with updated values.
-   * 
-   * @return a new builder initialized with current values
-   */
-  public CreateUserRequestBuilder toBuilder() {
-    return CreateUserRequest.builder()
-        .username(username)
-        .email(email)
-        .password(password)
-        .firstName(firstName)
-        .lastName(lastName)
-        .role(role)
-        .profileImageUrl(profileImageUrl);
-  }
   
 }

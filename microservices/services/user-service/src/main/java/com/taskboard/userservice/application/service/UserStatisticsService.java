@@ -3,8 +3,8 @@ package com.taskboard.userservice.application.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,16 +20,12 @@ import com.taskboard.userservice.domain.repository.UserRepository;
  * TODO: Add statistics aggregation and reporting
  */
 @Service
+@RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class UserStatisticsService {
     
-    private static final Logger logger = LoggerFactory.getLogger(UserStatisticsService.class);
-    
     private final UserRepository userRepository;
-    
-    public UserStatisticsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
     
     /**
      * Updates user task statistics when a task is created.
@@ -37,12 +33,12 @@ public class UserStatisticsService {
      * @param userId the user ID
      */
     public void updateTaskCreatedStatistics(Long userId) {
-        logger.debug("Updating task created statistics for user: {}", userId);
+        log.debug("Updating task created statistics for user: {}", userId);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for statistics update: {}", userId);
+                log.warn("User not found for statistics update: {}", userId);
                 return;
             }
             
@@ -53,10 +49,10 @@ public class UserStatisticsService {
             // 2. Update last activity timestamp
             // 3. Update task creation rate
             
-            logger.debug("Updated task created statistics for user: {}", userId);
+            log.debug("Updated task created statistics for user: {}", userId);
             
         } catch (Exception e) {
-            logger.error("Failed to update task created statistics for user: {}", userId, e);
+            log.error("Failed to update task created statistics for user: {}", userId, e);
             throw e;
         }
     }
@@ -68,12 +64,12 @@ public class UserStatisticsService {
      * @param newStatus the new task status
      */
     public void updateTaskStatusStatistics(Long userId, String newStatus) {
-        logger.debug("Updating task status statistics for user: {} with status: {}", userId, newStatus);
+        log.debug("Updating task status statistics for user: {} with status: {}", userId, newStatus);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for statistics update: {}", userId);
+                log.warn("User not found for statistics update: {}", userId);
                 return;
             }
             
@@ -84,10 +80,10 @@ public class UserStatisticsService {
             // 2. Calculate completion rate
             // 3. Update productivity metrics
             
-            logger.debug("Updated task status statistics for user: {} with status: {}", userId, newStatus);
+            log.debug("Updated task status statistics for user: {} with status: {}", userId, newStatus);
             
         } catch (Exception e) {
-            logger.error("Failed to update task status statistics for user: {}", userId, e);
+            log.error("Failed to update task status statistics for user: {}", userId, e);
             throw e;
         }
     }
@@ -100,13 +96,13 @@ public class UserStatisticsService {
      * @param role the user role in the project
      */
     public void updateProjectMembershipStatistics(Long userId, Long projectId, String role) {
-        logger.debug("Updating project membership statistics for user: {} in project: {} with role: {}", 
+        log.debug("Updating project membership statistics for user: {} in project: {} with role: {}", 
             userId, projectId, role);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for statistics update: {}", userId);
+                log.warn("User not found for statistics update: {}", userId);
                 return;
             }
             
@@ -117,10 +113,10 @@ public class UserStatisticsService {
             // 2. Update role-specific statistics
             // 3. Update collaboration metrics
             
-            logger.debug("Updated project membership statistics for user: {} in project: {}", userId, projectId);
+            log.debug("Updated project membership statistics for user: {} in project: {}", userId, projectId);
             
         } catch (Exception e) {
-            logger.error("Failed to update project membership statistics for user: {}", userId, e);
+            log.error("Failed to update project membership statistics for user: {}", userId, e);
             throw e;
         }
     }
@@ -132,12 +128,12 @@ public class UserStatisticsService {
      * @param activityType the type of activity
      */
     public void updateUserActivity(Long userId, String activityType) {
-        logger.debug("Updating user activity for user: {} with activity: {}", userId, activityType);
+        log.debug("Updating user activity for user: {} with activity: {}", userId, activityType);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for activity update: {}", userId);
+                log.warn("User not found for activity update: {}", userId);
                 return;
             }
             
@@ -148,10 +144,10 @@ public class UserStatisticsService {
             // 2. Increment activity counter
             // 3. Track activity patterns
             
-            logger.debug("Updated user activity for user: {} with activity: {}", userId, activityType);
+            log.debug("Updated user activity for user: {} with activity: {}", userId, activityType);
             
         } catch (Exception e) {
-            logger.error("Failed to update user activity for user: {}", userId, e);
+            log.error("Failed to update user activity for user: {}", userId, e);
             throw e;
         }
     }
@@ -164,12 +160,12 @@ public class UserStatisticsService {
      */
     @Transactional(readOnly = true)
     public UserStatisticsSummary getUserStatistics(Long userId) {
-        logger.debug("Getting user statistics for user: {}", userId);
+        log.debug("Getting user statistics for user: {}", userId);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for statistics retrieval: {}", userId);
+                log.warn("User not found for statistics retrieval: {}", userId);
                 return null;
             }
             
@@ -182,7 +178,7 @@ public class UserStatisticsService {
             return new UserStatisticsSummary(userId, LocalDateTime.now());
             
         } catch (Exception e) {
-            logger.error("Failed to get user statistics for user: {}", userId, e);
+            log.error("Failed to get user statistics for user: {}", userId, e);
             throw e;
         }
     }
@@ -190,6 +186,8 @@ public class UserStatisticsService {
     /**
      * User statistics summary data class.
      */
+    @lombok.Data
+    @lombok.AllArgsConstructor
     public static class UserStatisticsSummary {
         private final Long userId;
         private final LocalDateTime lastUpdated;
@@ -205,30 +203,6 @@ public class UserStatisticsService {
             this.completedTasks = 0; // TODO: Get from database
             this.activeProjects = 0; // TODO: Get from database
             this.lastActivity = LocalDateTime.now(); // TODO: Get from database
-        }
-        
-        public Long getUserId() {
-            return userId;
-        }
-        
-        public LocalDateTime getLastUpdated() {
-            return lastUpdated;
-        }
-        
-        public int getTotalTasks() {
-            return totalTasks;
-        }
-        
-        public int getCompletedTasks() {
-            return completedTasks;
-        }
-        
-        public int getActiveProjects() {
-            return activeProjects;
-        }
-        
-        public LocalDateTime getLastActivity() {
-            return lastActivity;
         }
     }
 }

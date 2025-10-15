@@ -3,126 +3,66 @@ package com.taskboard.userservice.domain.event.task;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import com.taskboard.userservice.domain.event.IncomingEvent;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Event received when a task is updated in the Task Service.
- * 
- * TODO: Add change tracking (what fields were changed)
- * TODO: Add previous values for audit purposes
- * TODO: Add update reason/comment
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskUpdatedEvent implements IncomingEvent<TaskUpdatedEvent.TaskData> {
     
-    private final UUID eventId;
-    private final String eventType;
-    private final String sourceService;
-    private final LocalDateTime timestamp;
-    private final String version;
-    private final TaskData data;
+    public static final String EVENT_TYPE = "task.updated";
+    public static final String CURRENT_VERSION = "1.0";
     
-    public TaskUpdatedEvent(UUID eventId, String eventType, String sourceService, 
-                          LocalDateTime timestamp, String version, TaskData data) {
-        this.eventId = eventId;
-        this.eventType = eventType;
-        this.sourceService = sourceService;
-        this.timestamp = timestamp;
-        this.version = version;
-        this.data = data;
-    }
-    
-    @Override
-    public UUID getEventId() {
-        return eventId;
-    }
-    
-    @Override
-    public String getEventType() {
-        return eventType;
-    }
-    
-    @Override
-    public String getSourceService() {
-        return sourceService;
-    }
-    
-    @Override
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-    
-    @Override
-    public String getVersion() {
-        return version;
-    }
-    
-    @Override
-    public TaskData getData() {
-        return data;
-    }
+    private UUID eventId;
+    private String eventType;
+    private String sourceService;
+    private LocalDateTime timestamp;
+    private String version;
+    private TaskData data;
     
     /**
      * Task data payload for TaskUpdatedEvent.
      */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class TaskData {
-        private final Long taskId;
-        private final String title;
-        private final String description;
-        private final Long userId;
-        private final Long projectId;
-        private final String status;
-        private final String priority;
-        private final LocalDateTime updatedAt;
-        private final String updatedBy;
+        @NotNull
+        private Long taskId;
         
-        public TaskData(Long taskId, String title, String description, Long userId, 
-                       Long projectId, String status, String priority, 
-                       LocalDateTime updatedAt, String updatedBy) {
-            this.taskId = taskId;
-            this.title = title;
-            this.description = description;
-            this.userId = userId;
-            this.projectId = projectId;
-            this.status = status;
-            this.priority = priority;
-            this.updatedAt = updatedAt;
-            this.updatedBy = updatedBy;
-        }
+        @NotBlank
+        private String title;
         
-        public Long getTaskId() {
-            return taskId;
-        }
+        private String description;
         
-        public String getTitle() {
-            return title;
-        }
+        @NotNull
+        private Long userId;
         
-        public String getDescription() {
-            return description;
-        }
+        private Long projectId;
         
-        public Long getUserId() {
-            return userId;
-        }
+        @NotBlank
+        private String status;
         
-        public Long getProjectId() {
-            return projectId;
-        }
+        @NotBlank
+        private String priority;
         
-        public String getStatus() {
-            return status;
-        }
+        @NotNull
+        private LocalDateTime updatedAt;
         
-        public String getPriority() {
-            return priority;
-        }
-        
-        public LocalDateTime getUpdatedAt() {
-            return updatedAt;
-        }
-        
-        public String getUpdatedBy() {
-            return updatedBy;
-        }
+        @NotBlank
+        private String updatedBy;
     }
 }

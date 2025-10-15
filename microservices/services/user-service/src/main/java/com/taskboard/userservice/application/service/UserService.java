@@ -12,6 +12,7 @@ import com.taskboard.userservice.application.validation.UserValidator;
 import com.taskboard.userservice.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +49,6 @@ import java.util.stream.Collectors;
  * @see AuthenticateUserUseCase
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional
 public class UserService implements UserQueryServiceInterface, UserCommandServiceInterface {
@@ -62,6 +62,31 @@ public class UserService implements UserQueryServiceInterface, UserCommandServic
   private final UserCommandService userCommandService;
   private final UserValidator userValidator;
   private final UserRepository userRepository;
+  
+  /**
+   * Constructs a new UserService with all required dependencies.
+   * Uses @Lazy for UserValidator to break circular dependency.
+   */
+  public UserService(
+      CreateUserUseCase createUserUseCase,
+      GetUserUseCase getUserUseCase,
+      UpdateUserUseCase updateUserUseCase,
+      DeleteUserUseCase deleteUserUseCase,
+      AuthenticateUserUseCase authenticateUserUseCase,
+      UserQueryService userQueryService,
+      UserCommandService userCommandService,
+      @Lazy UserValidator userValidator,
+      UserRepository userRepository) {
+    this.createUserUseCase = createUserUseCase;
+    this.getUserUseCase = getUserUseCase;
+    this.updateUserUseCase = updateUserUseCase;
+    this.deleteUserUseCase = deleteUserUseCase;
+    this.authenticateUserUseCase = authenticateUserUseCase;
+    this.userQueryService = userQueryService;
+    this.userCommandService = userCommandService;
+    this.userValidator = userValidator;
+    this.userRepository = userRepository;
+  }
 
   /**
    * Creates a new user.

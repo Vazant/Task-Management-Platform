@@ -5,8 +5,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,9 +13,8 @@ import org.springframework.stereotype.Service;
  * various metrics for monitoring and alerting.
  */
 @Service
+@Slf4j
 public class PerformanceMonitoringService {
-
-  private static final Logger logger = LoggerFactory.getLogger(PerformanceMonitoringService.class);
 
   private final MeterRegistry meterRegistry;
   private final Counter userCreationCounter;
@@ -95,7 +93,7 @@ public class PerformanceMonitoringService {
     userCreationCounter.increment();
     userCreationTimer.record(duration);
 
-    logger.info(
+    log.info(
         "User creation recorded - Duration: {}ms, Success: {}", duration.toMillis(), success);
   }
 
@@ -114,7 +112,7 @@ public class PerformanceMonitoringService {
 
     userAuthenticationTimer.record(duration);
 
-    logger.info(
+    log.info(
         "User authentication recorded - Duration: {}ms, Success: {}", duration.toMillis(), success);
   }
 
@@ -128,7 +126,7 @@ public class PerformanceMonitoringService {
     userUpdateCounter.increment();
     userUpdateTimer.record(duration);
 
-    logger.info("User update recorded - Duration: {}ms, Success: {}", duration.toMillis(), success);
+    log.info("User update recorded - Duration: {}ms, Success: {}", duration.toMillis(), success);
   }
 
   /**
@@ -141,7 +139,7 @@ public class PerformanceMonitoringService {
     userDeletionCounter.increment();
     userDeletionTimer.record(duration);
 
-    logger.info(
+    log.info(
         "User deletion recorded - Duration: {}ms, Success: {}", duration.toMillis(), success);
   }
 
@@ -154,8 +152,8 @@ public class PerformanceMonitoringService {
    */
   public void recordCustomMetric(String metricName, double value, String... tags) {
     meterRegistry.gauge(metricName, value);
-    if (logger.isDebugEnabled()) {
-      logger.debug(
+    if (log.isDebugEnabled()) {
+      log.debug(
           "Custom metric recorded - Name: {}, Value: {}, Tags: {}",
           metricName,
           value,
@@ -171,7 +169,7 @@ public class PerformanceMonitoringService {
   public void recordUserCreationTime(long executionTime) {
     userCreationTimer.record(Duration.ofMillis(executionTime));
     userCreationCounter.increment();
-    logger.info("User creation time recorded: {}ms", executionTime);
+    log.info("User creation time recorded: {}ms", executionTime);
   }
 
   /**
@@ -181,7 +179,7 @@ public class PerformanceMonitoringService {
    */
   public void recordUserCreationFailure(long executionTime) {
     userCreationTimer.record(Duration.ofMillis(executionTime));
-    logger.warn("User creation failure recorded: {}ms", executionTime);
+    log.warn("User creation failure recorded: {}ms", executionTime);
   }
 
   /**
@@ -197,7 +195,7 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .increment();
 
-    logger.error("Error recorded - Type: {}, Message: {}", errorType, errorMessage);
+    log.error("Error recorded - Type: {}, Message: {}", errorType, errorMessage);
   }
 
   /**
@@ -211,7 +209,7 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .record(duration, TimeUnit.MILLISECONDS);
 
-    logger.info("User retrieval recorded - Duration: {}ms", duration);
+    log.info("User retrieval recorded - Duration: {}ms", duration);
   }
 
   /**
@@ -225,7 +223,7 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .increment();
 
-    logger.warn("User retrieval failure recorded - Duration: {}ms", duration);
+    log.warn("User retrieval failure recorded - Duration: {}ms", duration);
   }
 
   /**
@@ -239,7 +237,7 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .record(duration, TimeUnit.MILLISECONDS);
 
-    logger.info("User update recorded - Duration: {}ms", duration);
+    log.info("User update recorded - Duration: {}ms", duration);
   }
 
   /**
@@ -253,7 +251,7 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .increment();
 
-    logger.warn("User update failure recorded - Duration: {}ms", duration);
+    log.warn("User update failure recorded - Duration: {}ms", duration);
   }
 
   /**
@@ -267,7 +265,7 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .record(duration, TimeUnit.MILLISECONDS);
 
-    logger.info("User deletion recorded - Duration: {}ms", duration);
+    log.info("User deletion recorded - Duration: {}ms", duration);
   }
 
   /**
@@ -281,7 +279,7 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .increment();
 
-    logger.warn("User deletion failure recorded - Duration: {}ms", duration);
+    log.warn("User deletion failure recorded - Duration: {}ms", duration);
   }
 
   /**
@@ -295,7 +293,7 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .record(duration, TimeUnit.MILLISECONDS);
 
-    logger.info("User authentication recorded - Duration: {}ms", duration);
+    log.info("User authentication recorded - Duration: {}ms", duration);
   }
 
   /**
@@ -309,6 +307,6 @@ public class PerformanceMonitoringService {
         .register(meterRegistry)
         .increment();
 
-    logger.warn("User authentication failure recorded - Duration: {}ms", duration);
+    log.warn("User authentication failure recorded - Duration: {}ms", duration);
   }
 }

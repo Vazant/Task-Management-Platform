@@ -1,7 +1,7 @@
 package com.taskboard.userservice.application.event;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import com.taskboard.userservice.application.service.UserNotificationService;
@@ -19,9 +19,9 @@ import com.taskboard.userservice.domain.event.project.ProjectMemberAddedEvent;
  * TODO: Track project membership activity
  */
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class ProjectMemberAddedEventHandler implements IncomingEventHandler<ProjectMemberAddedEvent.ProjectMemberData> {
-    
-    private static final Logger logger = LoggerFactory.getLogger(ProjectMemberAddedEventHandler.class);
     
     private static final String EVENT_TYPE = "project.member.added";
     private static final String SOURCE_SERVICE = "project-service";
@@ -29,15 +29,9 @@ public class ProjectMemberAddedEventHandler implements IncomingEventHandler<Proj
     private final UserStatisticsService userStatisticsService;
     private final UserNotificationService userNotificationService;
     
-    public ProjectMemberAddedEventHandler(UserStatisticsService userStatisticsService, 
-                                        UserNotificationService userNotificationService) {
-        this.userStatisticsService = userStatisticsService;
-        this.userNotificationService = userNotificationService;
-    }
-    
     @Override
     public void handle(IncomingEvent<ProjectMemberAddedEvent.ProjectMemberData> event) {
-        logger.info("Processing ProjectMemberAddedEvent for user: {}", event.getData().getUserId());
+        log.info("Processing ProjectMemberAddedEvent for user: {}", event.getData().getUserId());
         
         try {
             ProjectMemberAddedEvent.ProjectMemberData memberData = event.getData();
@@ -62,10 +56,10 @@ public class ProjectMemberAddedEventHandler implements IncomingEventHandler<Proj
             // 3. Update user activity
             userStatisticsService.updateUserActivity(memberData.getUserId(), "project_member_added");
             
-            logger.info("Successfully processed ProjectMemberAddedEvent for user: {}", memberData.getUserId());
+            log.info("Successfully processed ProjectMemberAddedEvent for user: {}", memberData.getUserId());
             
         } catch (Exception e) {
-            logger.error("Failed to process ProjectMemberAddedEvent for user: {}", 
+            log.error("Failed to process ProjectMemberAddedEvent for user: {}", 
                 event.getData().getUserId(), e);
             throw e;
         }

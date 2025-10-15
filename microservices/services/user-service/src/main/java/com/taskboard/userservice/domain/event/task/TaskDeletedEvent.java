@@ -3,113 +3,60 @@ package com.taskboard.userservice.domain.event.task;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 import com.taskboard.userservice.domain.event.IncomingEvent;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Event received when a task is deleted in the Task Service.
- * 
- * TODO: Add soft delete information
- * TODO: Add deletion reason
- * TODO: Add cascade deletion information
  */
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskDeletedEvent implements IncomingEvent<TaskDeletedEvent.TaskData> {
     
-    private final UUID eventId;
-    private final String eventType;
-    private final String sourceService;
-    private final LocalDateTime timestamp;
-    private final String version;
-    private final TaskData data;
+    public static final String EVENT_TYPE = "task.deleted";
+    public static final String CURRENT_VERSION = "1.0";
     
-    public TaskDeletedEvent(UUID eventId, String eventType, String sourceService, 
-                          LocalDateTime timestamp, String version, TaskData data) {
-        this.eventId = eventId;
-        this.eventType = eventType;
-        this.sourceService = sourceService;
-        this.timestamp = timestamp;
-        this.version = version;
-        this.data = data;
-    }
-    
-    @Override
-    public UUID getEventId() {
-        return eventId;
-    }
-    
-    @Override
-    public String getEventType() {
-        return eventType;
-    }
-    
-    @Override
-    public String getSourceService() {
-        return sourceService;
-    }
-    
-    @Override
-    public LocalDateTime getTimestamp() {
-        return timestamp;
-    }
-    
-    @Override
-    public String getVersion() {
-        return version;
-    }
-    
-    @Override
-    public TaskData getData() {
-        return data;
-    }
+    private UUID eventId;
+    private String eventType;
+    private String sourceService;
+    private LocalDateTime timestamp;
+    private String version;
+    private TaskData data;
     
     /**
      * Task data payload for TaskDeletedEvent.
      */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class TaskData {
-        private final Long taskId;
-        private final String title;
-        private final Long userId;
-        private final Long projectId;
-        private final LocalDateTime deletedAt;
-        private final String deletedBy;
-        private final String reason;
+        @NotNull
+        private Long taskId;
         
-        public TaskData(Long taskId, String title, Long userId, Long projectId, 
-                       LocalDateTime deletedAt, String deletedBy, String reason) {
-            this.taskId = taskId;
-            this.title = title;
-            this.userId = userId;
-            this.projectId = projectId;
-            this.deletedAt = deletedAt;
-            this.deletedBy = deletedBy;
-            this.reason = reason;
-        }
+        @NotBlank
+        private String title;
         
-        public Long getTaskId() {
-            return taskId;
-        }
+        @NotNull
+        private Long userId;
         
-        public String getTitle() {
-            return title;
-        }
+        private Long projectId;
         
-        public Long getUserId() {
-            return userId;
-        }
+        @NotNull
+        private LocalDateTime deletedAt;
         
-        public Long getProjectId() {
-            return projectId;
-        }
+        @NotBlank
+        private String deletedBy;
         
-        public LocalDateTime getDeletedAt() {
-            return deletedAt;
-        }
-        
-        public String getDeletedBy() {
-            return deletedBy;
-        }
-        
-        public String getReason() {
-            return reason;
-        }
+        private String reason;
     }
 }

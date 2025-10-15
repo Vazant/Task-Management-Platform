@@ -1,9 +1,14 @@
 package com.taskboard.userservice.domain.model;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -24,26 +29,41 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = {"userId"}) // Use userId as primary identifier
+@ToString(exclude = {"lastActivity", "lastTaskCreated", "lastTaskCompleted", "lastLoginAt"}) // Exclude temporal fields
 public class UserStatistics {
     
     private Long id;
+    
+    @NotNull
     private Long userId;
+    
+    @Min(0)
     private int totalTasks;
+    
+    @Min(0)
     private int completedTasks;
+    
+    @Min(0)
     private int inProgressTasks;
+    
+    @Min(0)
     private int todoTasks;
+    
+    @Min(0)
     private int activeProjects;
+    
+    @Min(0)
     private int totalProjects;
+    
     private LocalDateTime lastActivity;
     private LocalDateTime lastTaskCreated;
     private LocalDateTime lastTaskCompleted;
     private LocalDateTime lastLoginAt;
+    
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     
-    // Lombok @Data annotation provides getters and setters automatically
-    
-    // Lombok @Data annotation provides all getters automatically
     
     /**
      * Calculates the task completion rate.
@@ -93,8 +113,6 @@ public class UserStatistics {
         return java.time.Duration.between(lastActivity, LocalDateTime.now()).toDays();
     }
     
-    // Lombok @Builder annotation provides builder pattern automatically
-    
     /**
      * Gets pending tasks count (TODO + IN_PROGRESS).
      * 
@@ -115,25 +133,19 @@ public class UserStatistics {
     }
     
     /**
-     * Creates a copy of this statistics with updated values.
-     * 
-     * @return a new builder initialized with current values
+     * Sets the creation timestamp to current time.
+     * Should be called when creating new statistics.
      */
-    public UserStatisticsBuilder toBuilder() {
-        return UserStatistics.builder()
-            .id(id)
-            .userId(userId)
-            .totalTasks(totalTasks)
-            .completedTasks(completedTasks)
-            .inProgressTasks(inProgressTasks)
-            .todoTasks(todoTasks)
-            .activeProjects(activeProjects)
-            .totalProjects(totalProjects)
-            .lastActivity(lastActivity)
-            .lastTaskCreated(lastTaskCreated)
-            .lastTaskCompleted(lastTaskCompleted)
-            .lastLoginAt(lastLoginAt)
-            .createdAt(createdAt)
-            .updatedAt(updatedAt);
+    public void setCreatedNow() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+    
+    /**
+     * Updates the modification timestamp to current time.
+     * Should be called when updating statistics.
+     */
+    public void setUpdatedNow() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

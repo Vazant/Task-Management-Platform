@@ -229,6 +229,14 @@
         </dependency>
         
         
+        <!-- Spring Boot Testcontainers -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-testcontainers</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        
         <!-- WireMock for external service mocking -->
         <dependency>
             <groupId>com.github.tomakehurst</groupId>

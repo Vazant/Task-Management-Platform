@@ -3,8 +3,8 @@ package com.taskboard.userservice.application.service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +21,12 @@ import com.taskboard.userservice.domain.repository.UserRepository;
  * TODO: Integrate with external notification service
  */
 @Service
+@RequiredArgsConstructor
+@Slf4j
 @Transactional
 public class UserNotificationService {
     
-    private static final Logger logger = LoggerFactory.getLogger(UserNotificationService.class);
-    
     private final UserRepository userRepository;
-    
-    public UserNotificationService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
     
     /**
      * Sends notification when a task is created for a user.
@@ -40,12 +36,12 @@ public class UserNotificationService {
      * @param taskId the task ID
      */
     public void sendTaskCreatedNotification(Long userId, String taskTitle, Long taskId) {
-        logger.debug("Sending task created notification to user: {} for task: {}", userId, taskId);
+        log.debug("Sending task created notification to user: {} for task: {}", userId, taskId);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for notification: {}", userId);
+                log.warn("User not found for notification: {}", userId);
                 return;
             }
             
@@ -57,10 +53,10 @@ public class UserNotificationService {
             // 3. Send via preferred channels
             // 4. Log notification activity
             
-            logger.info("Sent task created notification to user: {} for task: {}", userId, taskId);
+            log.info("Sent task created notification to user: {} for task: {}", userId, taskId);
             
         } catch (Exception e) {
-            logger.error("Failed to send task created notification to user: {}", userId, e);
+            log.error("Failed to send task created notification to user: {}", userId, e);
             throw e;
         }
     }
@@ -76,13 +72,13 @@ public class UserNotificationService {
      */
     public void sendTaskStatusChangeNotification(Long userId, String taskTitle, Long taskId, 
                                                String oldStatus, String newStatus) {
-        logger.debug("Sending task status change notification to user: {} for task: {} from {} to {}", 
+        log.debug("Sending task status change notification to user: {} for task: {} from {} to {}", 
             userId, taskId, oldStatus, newStatus);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for notification: {}", userId);
+                log.warn("User not found for notification: {}", userId);
                 return;
             }
             
@@ -94,10 +90,10 @@ public class UserNotificationService {
             // 3. Send via preferred channels
             // 4. Log notification activity
             
-            logger.info("Sent task status change notification to user: {} for task: {}", userId, taskId);
+            log.info("Sent task status change notification to user: {} for task: {}", userId, taskId);
             
         } catch (Exception e) {
-            logger.error("Failed to send task status change notification to user: {}", userId, e);
+            log.error("Failed to send task status change notification to user: {}", userId, e);
             throw e;
         }
     }
@@ -111,13 +107,13 @@ public class UserNotificationService {
      * @param role the user role in the project
      */
     public void sendProjectWelcomeNotification(Long userId, String projectName, Long projectId, String role) {
-        logger.debug("Sending project welcome notification to user: {} for project: {} with role: {}", 
+        log.debug("Sending project welcome notification to user: {} for project: {} with role: {}", 
             userId, projectName, role);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for notification: {}", userId);
+                log.warn("User not found for notification: {}", userId);
                 return;
             }
             
@@ -129,10 +125,10 @@ public class UserNotificationService {
             // 3. Send via preferred channels
             // 4. Log notification activity
             
-            logger.info("Sent project welcome notification to user: {} for project: {}", userId, projectName);
+            log.info("Sent project welcome notification to user: {} for project: {}", userId, projectName);
             
         } catch (Exception e) {
-            logger.error("Failed to send project welcome notification to user: {}", userId, e);
+            log.error("Failed to send project welcome notification to user: {}", userId, e);
             throw e;
         }
     }
@@ -148,13 +144,13 @@ public class UserNotificationService {
      */
     public void sendPriorityChangeNotification(Long userId, String taskTitle, Long taskId, 
                                              String oldPriority, String newPriority) {
-        logger.debug("Sending priority change notification to user: {} for task: {} from {} to {}", 
+        log.debug("Sending priority change notification to user: {} for task: {} from {} to {}", 
             userId, taskId, oldPriority, newPriority);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for notification: {}", userId);
+                log.warn("User not found for notification: {}", userId);
                 return;
             }
             
@@ -166,10 +162,10 @@ public class UserNotificationService {
             // 3. Send via preferred channels
             // 4. Log notification activity
             
-            logger.info("Sent priority change notification to user: {} for task: {}", userId, taskId);
+            log.info("Sent priority change notification to user: {} for task: {}", userId, taskId);
             
         } catch (Exception e) {
-            logger.error("Failed to send priority change notification to user: {}", userId, e);
+            log.error("Failed to send priority change notification to user: {}", userId, e);
             throw e;
         }
     }
@@ -183,12 +179,12 @@ public class UserNotificationService {
      */
     @Transactional(readOnly = true)
     public boolean shouldNotifyUser(Long userId, String eventType) {
-        logger.debug("Checking notification preference for user: {} and event: {}", userId, eventType);
+        log.debug("Checking notification preference for user: {} and event: {}", userId, eventType);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for notification check: {}", userId);
+                log.warn("User not found for notification check: {}", userId);
                 return false;
             }
             
@@ -203,7 +199,7 @@ public class UserNotificationService {
             return true; // Placeholder - always notify for now
             
         } catch (Exception e) {
-            logger.error("Failed to check notification preference for user: {}", userId, e);
+            log.error("Failed to check notification preference for user: {}", userId, e);
             return false;
         }
     }
@@ -216,12 +212,12 @@ public class UserNotificationService {
      */
     @Transactional(readOnly = true)
     public UserNotificationPreferences getUserNotificationPreferences(Long userId) {
-        logger.debug("Getting notification preferences for user: {}", userId);
+        log.debug("Getting notification preferences for user: {}", userId);
         
         try {
             Optional<User> userOpt = userRepository.findById(userId);
             if (userOpt.isEmpty()) {
-                logger.warn("User not found for preferences retrieval: {}", userId);
+                log.warn("User not found for preferences retrieval: {}", userId);
                 return null;
             }
             
@@ -236,7 +232,7 @@ public class UserNotificationService {
             return new UserNotificationPreferences(userId);
             
         } catch (Exception e) {
-            logger.error("Failed to get notification preferences for user: {}", userId, e);
+            log.error("Failed to get notification preferences for user: {}", userId, e);
             throw e;
         }
     }
@@ -244,6 +240,8 @@ public class UserNotificationService {
     /**
      * User notification preferences data class.
      */
+    @lombok.Data
+    @lombok.AllArgsConstructor
     public static class UserNotificationPreferences {
         private final Long userId;
         private final boolean emailEnabled;
@@ -263,38 +261,6 @@ public class UserNotificationService {
             this.projectNotificationsEnabled = true; // TODO: Get from database
             this.doNotDisturbStart = null; // TODO: Get from database
             this.doNotDisturbEnd = null; // TODO: Get from database
-        }
-        
-        public Long getUserId() {
-            return userId;
-        }
-        
-        public boolean isEmailEnabled() {
-            return emailEnabled;
-        }
-        
-        public boolean isPushEnabled() {
-            return pushEnabled;
-        }
-        
-        public boolean isInAppEnabled() {
-            return inAppEnabled;
-        }
-        
-        public boolean isTaskNotificationsEnabled() {
-            return taskNotificationsEnabled;
-        }
-        
-        public boolean isProjectNotificationsEnabled() {
-            return projectNotificationsEnabled;
-        }
-        
-        public LocalDateTime getDoNotDisturbStart() {
-            return doNotDisturbStart;
-        }
-        
-        public LocalDateTime getDoNotDisturbEnd() {
-            return doNotDisturbEnd;
         }
     }
 }

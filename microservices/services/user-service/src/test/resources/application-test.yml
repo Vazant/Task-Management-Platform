@@ -1,9 +1,7 @@
 spring:
-  profiles:
-    active: test
-  
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    jdbc-url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password: 
@@ -21,6 +19,11 @@ spring:
     console:
       enabled: true
   
+  # Отключаем Flyway для тестов (используем Hibernate DDL)
+  flyway:
+    enabled: false
+  
+  # Отключаем Kafka для тестов
   kafka:
     bootstrap-servers: localhost:9092
     consumer:
@@ -30,6 +33,7 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
   
+  # Отключаем Redis для тестов
   redis:
     host: localhost
     port: 6379
@@ -39,6 +43,18 @@ spring:
         max-active: 8
         max-idle: 8
         min-idle: 0
+  
+  # Отключаем автоконфигурации для тестов
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration
+  
+  # Disable Spring Cloud compatibility check for tests
+  cloud:
+    compatibility-verifier:
+      enabled: false
 
 # JWT Configuration
 jwt:

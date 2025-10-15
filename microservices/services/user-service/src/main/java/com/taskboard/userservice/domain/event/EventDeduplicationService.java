@@ -7,9 +7,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service for event deduplication based on event ID.
@@ -25,9 +25,8 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
+@Slf4j
 public class EventDeduplicationService {
-    
-    private static final Logger logger = LoggerFactory.getLogger(EventDeduplicationService.class);
     
     /**
      * Cache for storing processed event IDs with their processing timestamps.
@@ -74,7 +73,7 @@ public class EventDeduplicationService {
         boolean isProcessed = processedEvents.containsKey(eventId);
         
         if (isProcessed) {
-            logger.debug("Event {} already processed, skipping", eventId);
+            log.debug("Event {} already processed, skipping", eventId);
         }
         
         return isProcessed;
@@ -89,7 +88,7 @@ public class EventDeduplicationService {
         LocalDateTime now = LocalDateTime.now();
         processedEvents.put(eventId, now);
         
-        logger.debug("Marked event {} as processed at {}", eventId, now);
+        log.debug("Marked event {} as processed at {}", eventId, now);
     }
     
     /**
@@ -109,7 +108,7 @@ public class EventDeduplicationService {
             markEventAsProcessed(eventId);
             return true;
         } catch (Exception e) {
-            logger.error("Failed to process event {}, will not mark as processed", eventId, e);
+            log.error("Failed to process event {}, will not mark as processed", eventId, e);
             throw e;
         }
     }
@@ -130,7 +129,7 @@ public class EventDeduplicationService {
     public void clearCache() {
         int clearedCount = processedEvents.size();
         processedEvents.clear();
-        logger.info("Cleared {} events from deduplication cache", clearedCount);
+        log.info("Cleared {} events from deduplication cache", clearedCount);
     }
     
     /**
@@ -144,7 +143,7 @@ public class EventDeduplicationService {
             TimeUnit.MINUTES
         );
         
-        logger.info("Started event deduplication cleanup scheduler with {} minute intervals", 
+        log.info("Started event deduplication cleanup scheduler with {} minute intervals", 
             CLEANUP_INTERVAL_MINUTES);
     }
     
@@ -161,7 +160,7 @@ public class EventDeduplicationService {
         int removedCount = initialSize - finalSize;
         
         if (removedCount > 0) {
-            logger.debug("Cleaned up {} expired events from deduplication cache", removedCount);
+            log.debug("Cleaned up {} expired events from deduplication cache", removedCount);
         }
     }
     
@@ -180,6 +179,6 @@ public class EventDeduplicationService {
             Thread.currentThread().interrupt();
         }
         
-        logger.info("Event deduplication service shutdown completed");
+        log.info("Event deduplication service shutdown completed");
     }
 }

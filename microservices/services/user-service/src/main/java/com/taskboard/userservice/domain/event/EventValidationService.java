@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,9 +28,8 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
+@Slf4j
 public class EventValidationService {
-    
-    private static final Logger logger = LoggerFactory.getLogger(EventValidationService.class);
     
     /**
      * Supported schema versions for events.
@@ -64,7 +62,7 @@ public class EventValidationService {
      * @throws EventValidationException if validation fails
      */
     public <T> void validateEvent(IncomingEvent<T> event) {
-        logger.debug("Validating event: {} from service: {}", 
+        log.debug("Validating event: {} from service: {}", 
             event.getEventType(), event.getSourceService());
         
         ValidationResult result = new ValidationResult();
@@ -78,12 +76,12 @@ public class EventValidationService {
         validateEventData(event.getData(), result);
         
         if (!result.isValid()) {
-            logger.warn("Event validation failed for event {}: {}", 
+            log.warn("Event validation failed for event {}: {}", 
                 event.getEventId(), result.getErrorMessage());
             throw new EventValidationException("Event validation failed: " + result.getErrorMessage());
         }
         
-        logger.debug("Event validation successful for event: {}", event.getEventId());
+        log.debug("Event validation successful for event: {}", event.getEventId());
     }
     
     /**
@@ -203,7 +201,7 @@ public class EventValidationService {
         
         // TODO: Implement specific validation rules for different event types
         // This would involve checking specific fields based on the event type
-        logger.debug("Event data validation completed for type: {}", data.getClass().getSimpleName());
+        log.debug("Event data validation completed for type: {}", data.getClass().getSimpleName());
     }
     
     /**

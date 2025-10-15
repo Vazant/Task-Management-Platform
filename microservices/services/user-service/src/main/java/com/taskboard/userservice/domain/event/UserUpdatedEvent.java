@@ -3,7 +3,9 @@ package com.taskboard.userservice.domain.event;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -23,6 +25,8 @@ import java.util.Map;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = {"userId", "username", "email"}) // Use significant fields for events
+@ToString(exclude = {"eventId", "changedFields"}) // Exclude technical fields and large objects
 public class UserUpdatedEvent {
 
     private Long userId;

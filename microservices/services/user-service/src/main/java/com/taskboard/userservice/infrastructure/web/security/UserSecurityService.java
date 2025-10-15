@@ -50,14 +50,14 @@ public class UserSecurityService {
         try {
             String currentUsername = authentication.getName();
             
-            // Получаем информацию о пользователе-владельце
+            // Get information about the owner user
             GetUserRequest request = GetUserRequest.builder()
                     .userId(userId)
                     .build();
             
             GetUserResponse userResponse = getUserUseCase.execute(request);
             
-            // Проверяем, совпадает ли имя пользователя
+            // Check if the username matches
             boolean isOwner = currentUsername.equals(userResponse.getUsername());
             
             log.debug("Security check - User '{}' is owner of user '{}': {}", 
@@ -107,8 +107,8 @@ public class UserSecurityService {
 
             String username = authentication.getName();
             
-            // TODO: Реализовать поиск пользователя по username для получения ID
-            // Это можно сделать через новый UseCase или расширить существующий
+            // TODO: Implement user search by username to get ID
+            // This can be done through a new UseCase or extend the existing one
             
             log.debug("Current user ID for '{}': {}", username, "not implemented yet");
             return null;

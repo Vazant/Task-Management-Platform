@@ -3,6 +3,9 @@ package com.taskboard.userservice.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -29,7 +32,10 @@ import java.util.Objects;
  */
 @Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = {"username", "email"}) // Use only business keys
+@ToString(exclude = {"password"}) // Exclude sensitive data
 public class User {
 
   private Long id;
@@ -41,23 +47,14 @@ public class User {
   @Builder.Default
   private UserStatus status = UserStatus.ACTIVE;
   private UserRole role;
-  @Builder.Default
-  private LocalDateTime createdAt = LocalDateTime.now();
-  @Builder.Default
-  private LocalDateTime updatedAt = LocalDateTime.now();
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
   private LocalDateTime lastLoginAt;
   @Builder.Default
   private boolean emailVerified = false;
   private String profileImageUrl;
   private String externalId;
 
-  /**
-   * Default constructor for frameworks that require it.
-   * Note: This creates an invalid user object. Use the parameterized constructor for valid users.
-   */
-  public User() {
-    // Default constructor for frameworks
-  }
 
   /**
    * Creates a new User with required fields.
@@ -243,8 +240,6 @@ public class User {
         return username != null ? username : "Unknown User";
     }
 
-  // Lombok @Data annotation provides getters and setters automatically
-
   /**
    * Updates user's profile image URL.
    *
@@ -254,8 +249,6 @@ public class User {
     this.profileImageUrl = profileImageUrl;
     this.updatedAt = LocalDateTime.now();
   }
-
-  // Lombok @Data annotation provides equals, hashCode, and toString automatically
 
   /**
    * Updates the user's email address.

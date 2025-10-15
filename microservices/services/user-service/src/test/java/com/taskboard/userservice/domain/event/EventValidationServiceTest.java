@@ -79,7 +79,7 @@ class EventValidationServiceTest {
         TestEvent event = new TestEvent(
             UUID.randomUUID(),
             "task.created",
-            "invalid-service",
+            "invalid",
             LocalDateTime.now(),
             "1.0",
             "test data"

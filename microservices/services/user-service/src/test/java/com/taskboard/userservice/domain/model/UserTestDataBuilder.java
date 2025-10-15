@@ -18,8 +18,8 @@ public class UserTestDataBuilder {
     private UserRole role = UserRole.USER;
     private UserStatus status = UserStatus.ACTIVE;
     private String profileImageUrl = "https://example.com/avatar.jpg";
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String externalId = UUID.randomUUID().toString();
     
     public static UserTestDataBuilder aUser() {
@@ -87,7 +87,7 @@ public class UserTestDataBuilder {
     }
     
     public User build() {
-        return User.builder()
+        User user = User.builder()
             .id(id)
             .username(username)
             .email(email)
@@ -101,5 +101,15 @@ public class UserTestDataBuilder {
             .updatedAt(updatedAt)
             .externalId(externalId)
             .build();
+        
+        // Set timestamps if not provided
+        if (user.getCreatedAt() == null) {
+            user.setCreatedAt(LocalDateTime.now());
+        }
+        if (user.getUpdatedAt() == null) {
+            user.setUpdatedAt(LocalDateTime.now());
+        }
+        
+        return user;
     }
 }

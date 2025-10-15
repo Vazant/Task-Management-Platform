@@ -1,4 +1,4 @@
-package com.taskboard.userservice.infrastructure.config;
+package com.taskboard.userservice.config;
 
 import com.taskboard.userservice.domain.event.UserEventPublisher;
 import com.taskboard.userservice.domain.repository.UserAuditRepository;
@@ -17,45 +17,44 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
- * Database configuration for User Service.
+ * Test infrastructure configuration for User Service.
  *
- * <p>This configuration class sets up the database connection, JPA entity manager, and transaction
- * management for the User Service. It provides a clean separation between infrastructure concerns
- * and business logic.
- *
- * <p>Key features:
- *
- * <ul>
- *   <li>PostgreSQL data source configuration
- *   <li>JPA entity manager factory setup
- *   <li>Transaction management configuration
- *   <li>Hibernate properties optimization
-   *   <li>Repository adapter beans configuration
-   *   <li>Domain service beans configuration
-   * </ul>
+ * <p>This configuration class overrides the main infrastructure configuration for testing purposes.
+ * It uses H2 in-memory database and Hibernate's create-drop strategy for automatic schema management.
  *
  * @author Task Management Platform Team
  * @version 1.0.0
  * @since 1.0.0
  */
 @Configuration
+@Profile("test")
 @EnableJpaRepositories(
     basePackages = "com.taskboard.userservice.infrastructure.persistence",
     entityManagerFactoryRef = "entityManagerFactory",
     transactionManagerRef = "transactionManager")
 @EnableTransactionManagement
-public class DatabaseConfig {
+public class TestInfrastructureConfig {
 
   /**
-   * Creates and configures the primary data source.
+   * Creates and configures the test data source.
    *
    * <p>This data source is configured using Spring Boot's auto-configuration properties and
    * provides connection pooling through HikariCP.
@@ -70,11 +69,11 @@ public class DatabaseConfig {
   }
 
   /**
-   * Creates and configures the JPA entity manager factory.
+   * Creates and configures the JPA entity manager factory for testing.
    *
    * <p>This factory is responsible for creating EntityManager instances and managing the
    * persistence context. It's configured with Hibernate as the JPA provider and optimized for
-   * PostgreSQL.
+   * H2 in-memory database.
    *
    * @param dataSource the data source to use
    * @return configured entity manager factory
@@ -88,8 +87,8 @@ public class DatabaseConfig {
 
     HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
     vendorAdapter.setShowSql(false);
-    vendorAdapter.setGenerateDdl(false);
-    vendorAdapter.setDatabasePlatform("org.hibernate.dialect.PostgreSQLDialect");
+    vendorAdapter.setGenerateDdl(true);
+    vendorAdapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
 
     em.setJpaVendorAdapter(vendorAdapter);
     em.setJpaProperties(hibernateProperties());
@@ -98,7 +97,7 @@ public class DatabaseConfig {
   }
 
   /**
-   * Creates and configures the transaction manager.
+   * Creates and configures the transaction manager for testing.
    *
    * <p>This transaction manager handles database transactions and ensures data consistency across
    * operations. It's configured to work with the JPA entity manager factory.
@@ -116,45 +115,26 @@ public class DatabaseConfig {
   }
 
   /**
-   * Configures Hibernate properties for optimal performance and behavior.
+   * Configures Hibernate properties for testing.
    *
-   * <p>These properties optimize Hibernate for production use with PostgreSQL, including connection
-   * pooling, batch processing, and query optimization.
+   * <p>These properties optimize Hibernate for testing with H2 in-memory database,
+   * including automatic schema creation and dropping.
    *
    * @return Hibernate properties
    */
   private Properties hibernateProperties() {
     Properties properties = new Properties();
 
-    // Connection and pooling
-    properties.setProperty("hibernate.connection.provider_disables_autocommit", "true");
-    properties.setProperty("hibernate.connection.autocommit", "false");
-
-    // Batch processing
-    properties.setProperty("hibernate.jdbc.batch_size", "20");
-    properties.setProperty("hibernate.jdbc.batch_versioned_data", "true");
-    properties.setProperty("hibernate.order_inserts", "true");
-    properties.setProperty("hibernate.order_updates", "true");
-
-    // Query optimization
-    properties.setProperty("hibernate.query.plan_cache_max_size", "2048");
-    properties.setProperty("hibernate.query.plan_parameter_metadata_max_size", "128");
-
-    // Second level cache (can be enabled later with Redis)
-    properties.setProperty("hibernate.cache.use_second_level_cache", "false");
-    properties.setProperty("hibernate.cache.use_query_cache", "false");
-
-    // Statistics and monitoring
-    properties.setProperty("hibernate.generate_statistics", "false");
-    properties.setProperty("hibernate.session.events.log.LOG_QUERIES_SLOWER_THAN_MS", "100");
-
-    // Schema validation
-    properties.setProperty("hibernate.hbm2ddl.auto", "validate");
+    // Schema management for testing
+    properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
 
     // Naming strategy
     properties.setProperty(
         "hibernate.physical_naming_strategy",
         "org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy");
+
+    // Disable statistics for testing
+    properties.setProperty("hibernate.generate_statistics", "false");
 
     return properties;
   }
@@ -195,4 +175,54 @@ public class DatabaseConfig {
   public UserDomainService userDomainService(UserRepository userRepository, UserEventPublisher eventPublisher) {
     return new UserDomainService(userRepository, eventPublisher);
   }
-}
+
+  /**
+   * Creates a test UserDetailsService bean.
+   *
+   * <p>This is a simple implementation for testing purposes that returns a test user.
+   *
+   * @return the UserDetailsService instance
+   */
+  @Bean
+  public UserDetailsService userDetailsService() {
+    return username -> {
+      if ("testuser".equals(username)) {
+        return User.builder()
+            .username("testuser")
+            .password(passwordEncoder().encode("password"))
+            .roles("USER")
+            .build();
+      }
+      throw new UsernameNotFoundException("User not found: " + username);
+    };
+  }
+
+         /**
+          * Creates a PasswordEncoder bean for testing.
+          *
+          * @return the PasswordEncoder instance
+          */
+         @Bean
+         public PasswordEncoder passwordEncoder() {
+           return new BCryptPasswordEncoder();
+         }
+
+         /**
+          * Creates an AuthenticationManager bean for testing.
+          *
+          * <p>This is a simple implementation for testing purposes that uses
+          * DaoAuthenticationProvider with the test UserDetailsService.
+          *
+          * @param userDetailsService the UserDetailsService
+          * @param passwordEncoder the PasswordEncoder
+          * @return the AuthenticationManager instance
+          */
+         @Bean
+         public AuthenticationManager authenticationManager(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+           DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+           authProvider.setUserDetailsService(userDetailsService);
+           authProvider.setPasswordEncoder(passwordEncoder);
+           return new ProviderManager(authProvider);
+         }
+       }
+

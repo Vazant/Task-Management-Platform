@@ -9,8 +9,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 /**
@@ -33,9 +32,8 @@ import org.springframework.stereotype.Service;
  * @since 1.0.0
  */
 @Service
+@Slf4j
 public class EventRetryService {
-    
-    private static final Logger logger = LoggerFactory.getLogger(EventRetryService.class);
     
     /**
      * Maximum number of retry attempts for event processing.
@@ -157,22 +155,22 @@ public class EventRetryService {
         
         try {
             context.incrementAttemptCount();
-            logger.debug("Processing event {} (attempt {}/{})", 
+            log.debug("Processing event {} (attempt {}/{})", 
                 context.getEventId(), context.getAttemptCount(), MAX_RETRY_ATTEMPTS);
             
             eventProcessor.get();
             
-            logger.info("Successfully processed event {} after {} attempts", 
+            log.info("Successfully processed event {} after {} attempts", 
                 context.getEventId(), context.getAttemptCount());
             future.complete(null);
             
         } catch (Exception e) {
             context.setLastException(e);
-            logger.warn("Failed to process event {} on attempt {}: {}", 
+            log.warn("Failed to process event {} on attempt {}: {}", 
                 context.getEventId(), context.getAttemptCount(), e.getMessage());
             
             if (context.hasExceededMaxAttempts()) {
-                logger.error("Max retry attempts exceeded for event {}, sending to dead letter queue", 
+                log.error("Max retry attempts exceeded for event {}, sending to dead letter queue", 
                     context.getEventId());
                 sendToDeadLetterQueue(context);
                 future.completeExceptionally(new EventProcessingException(
@@ -196,7 +194,7 @@ public class EventRetryService {
                               CompletableFuture<Void> future) {
         long delayMs = calculateRetryDelay(context.getAttemptCount());
         
-        logger.debug("Scheduling retry for event {} in {} ms", context.getEventId(), delayMs);
+        log.debug("Scheduling retry for event {} in {} ms", context.getEventId(), delayMs);
         
         retryExecutor.schedule(() -> {
             processEventWithRetry(context, eventProcessor)
@@ -237,7 +235,7 @@ public class EventRetryService {
      */
     private void sendToDeadLetterQueue(RetryContext context) {
         // TODO: Implement dead letter queue integration
-        logger.error("Sending event {} to dead letter queue after {} failed attempts over {} duration", 
+        log.error("Sending event {} to dead letter queue after {} failed attempts over {} duration", 
             context.getEventId(), 
             context.getAttemptCount(), 
             context.getTotalRetryDuration());
@@ -272,6 +270,6 @@ public class EventRetryService {
             Thread.currentThread().interrupt();
         }
         
-        logger.info("Event retry service shutdown completed");
+        log.info("Event retry service shutdown completed");
     }
 }
